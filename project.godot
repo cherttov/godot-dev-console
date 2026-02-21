@@ -11,7 +11,6 @@ config_version=5
 [application]
 
 config/name="dev-console"
-run/main_scene="uid://dybf75g8mfhqd"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="uid://ceeueu614baam"
 
