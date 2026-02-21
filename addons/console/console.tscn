@@ -1,0 +1,84 @@
+[gd_scene format=3 uid="uid://ccoijpiv8l45j"]
+
+[ext_resource type="Script" uid="uid://5t75e6fsg3w7" path="res://addons/console/console.gd" id="1_exr36"]
+[ext_resource type="Theme" uid="uid://dhref3s1cl5vq" path="res://addons/console/themes/console-theme.tres" id="2_b82et"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_s6s1i"]
+bg_color = Color(0.13725491, 0.13725491, 0.13725491, 1)
+
+[node name="Console" type="CanvasLayer" unique_id=303449653]
+script = ExtResource("1_exr36")
+
+[node name="Control" type="Control" parent="." unique_id=1906291707]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 600.0
+offset_bottom = 300.0
+
+[node name="Panel" type="Panel" parent="Control" unique_id=1328764802]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_s6s1i")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control" unique_id=1166908206]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_b82et")
+theme_override_constants/separation = 0
+
+[node name="Panel" type="Panel" parent="Control/VBoxContainer" unique_id=2105429090]
+custom_minimum_size = Vector2(0, 26)
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Control/VBoxContainer/Panel" unique_id=868736683]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_vertical = 0
+
+[node name="MarginContainer" type="MarginContainer" parent="Control/VBoxContainer/Panel/HBoxContainer" unique_id=1581205725]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 6
+
+[node name="TitleLabel" type="Label" parent="Control/VBoxContainer/Panel/HBoxContainer/MarginContainer" unique_id=2088292545]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "CONSOLE"
+
+[node name="CloseButton" type="Button" parent="Control/VBoxContainer/Panel/HBoxContainer" unique_id=1133550126]
+custom_minimum_size = Vector2(26, 0)
+layout_mode = 2
+size_flags_horizontal = 10
+theme_override_font_sizes/font_size = 16
+text = "✕"
+expand_icon = true
+
+[node name="Output" type="RichTextLabel" parent="Control/VBoxContainer" unique_id=1913245085]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+focus_mode = 2
+bbcode_enabled = true
+selection_enabled = true
+
+[node name="Input" type="LineEdit" parent="Control/VBoxContainer" unique_id=511806828]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 8
+
+[connection signal="gui_input" from="Control/VBoxContainer/Panel" to="." method="_on_panel_gui_input"]
+[connection signal="pressed" from="Control/VBoxContainer/Panel/HBoxContainer/CloseButton" to="." method="_on_close_button_pressed"]
+[connection signal="text_submitted" from="Control/VBoxContainer/Input" to="." method="_on_input_submitted"]

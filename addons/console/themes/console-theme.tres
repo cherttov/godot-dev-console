@@ -1,0 +1,41 @@
+[gd_resource type="Theme" format=3 uid="uid://dhref3s1cl5vq"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_k7wyh"]
+content_margin_left = 2.0
+content_margin_top = 2.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(1, 1, 1, 0.09411765)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ysvnw"]
+content_margin_left = 2.0
+content_margin_top = 2.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_phq7i"]
+content_margin_left = 2.0
+content_margin_top = 2.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(1, 1, 1, 0.047058824)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ruykr"]
+bg_color = Color(0.11372549, 0.11372549, 0.11372549, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mwp4g"]
+bg_color = Color(0.11372549, 0.11372549, 0.11372549, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4yhrb"]
+bg_color = Color(0.20392157, 0.20392157, 0.20392157, 1)
+
+[resource]
+Button/styles/hover = SubResource("StyleBoxFlat_k7wyh")
+Button/styles/normal = SubResource("StyleBoxFlat_ysvnw")
+Button/styles/pressed = SubResource("StyleBoxFlat_phq7i")
+LineEdit/colors/selection_color = Color(0.20392157, 0.20392157, 0.20392157, 0.8784314)
+LineEdit/styles/focus = SubResource("StyleBoxFlat_ruykr")
+LineEdit/styles/normal = SubResource("StyleBoxFlat_mwp4g")
+Panel/styles/panel = SubResource("StyleBoxFlat_4yhrb")
+RichTextLabel/colors/selection_color = Color(0.20392157, 0.20392157, 0.20392157, 0.8784314)
