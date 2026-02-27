@@ -30,6 +30,9 @@ func _ready() -> void:
 	commands = {};
 	command_history = [];
 	
+	if !%Input.focus_exited.is_connected(_on_input_focus_exited):
+		%Input.focus_exited.connect(_on_input_focus_exited);
+	
 	# Load default commands
 	if console_use_default_commands:
 		_load_default_commands();
@@ -53,6 +56,7 @@ func _input(event: InputEvent) -> void:
 		if visible:
 			%Input.grab_focus();
 			%Input.clear();
+			%Input.caret_column = %Input.text.length();
 		else:
 			%Input.release_focus();
 		
@@ -74,6 +78,8 @@ func _on_input_submitted(input: String) -> void:
 	var clean_input: String = input.strip_edges();
 	if clean_input.is_empty():
 		%Input.clear();
+		%Input.grab_focus();
+		%Input.caret_column = %Input.text.length();
 		return;
 	
 	# Command history
@@ -99,6 +105,8 @@ func _on_input_submitted(input: String) -> void:
 		_output_error("Unknown command.");
 	
 	%Input.clear();
+	%Input.grab_focus();
+	%Input.caret_column = %Input.text.length();
 
 # --------- Close button ---------
 func _on_close_button_pressed() -> void:
@@ -143,6 +151,9 @@ func _output_callback(text: String) -> void:
 func _on_panel_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT:
+			if visible and event.pressed:
+				%Input.grab_focus();
+				%Input.caret_column = %Input.text.length();
 			dragging = event.pressed;
 			drag_offset = console_viewport.get_global_mouse_position() - console_viewport.position;
 	elif event is InputEventMouseMotion and dragging:
@@ -162,6 +173,9 @@ func _navigate_history(direction: int) -> void:
 		var command = command_history[(command_history.size() - 1) - history_index];
 		%Input.text = command
 		%Input.caret_column = command.length();
+	
+	%Input.grab_focus();
+	%Input.caret_column = %Input.text.length();
 
 # --------- Keybinds mapping ---------
 func _ensure_keybinds() -> void:
@@ -188,3 +202,12 @@ func _ensure_keybinds() -> void:
 			var event_key: InputEventKey = InputEventKey.new();
 			event_key.physical_keycode = KEY_DOWN;
 			InputMap.action_add_event("dev_console_arrow_down", event_key);
+
+func _on_input_focus_exited() -> void:
+	if visible:
+		call_deferred("_refocus_input");
+
+func _refocus_input() -> void:
+	if visible:
+		%Input.grab_focus();
+		%Input.caret_column = %Input.text.length();
