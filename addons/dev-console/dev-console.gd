@@ -30,8 +30,11 @@ func _ready() -> void:
 	commands = {};
 	command_history = [];
 	
-	if !%Input.focus_exited.is_connected(_on_input_focus_exited):
-		%Input.focus_exited.connect(_on_input_focus_exited);
+	# Connecting signals
+	if !%CloseButton.pressed.is_connected(_on_close_button_pressed):
+		%CloseButton.pressed.connect(_on_close_button_pressed);
+	if !%Input.text_submitted.is_connected(_on_input_submitted):
+		%Input.text_submitted.connect(_on_input_submitted);
 	
 	# Load default commands
 	if console_use_default_commands:
@@ -202,12 +205,3 @@ func _ensure_keybinds() -> void:
 			var event_key: InputEventKey = InputEventKey.new();
 			event_key.physical_keycode = KEY_DOWN;
 			InputMap.action_add_event("dev_console_arrow_down", event_key);
-
-func _on_input_focus_exited() -> void:
-	if visible:
-		call_deferred("_refocus_input");
-
-func _refocus_input() -> void:
-	if visible:
-		%Input.grab_focus();
-		%Input.caret_column = %Input.text.length();
