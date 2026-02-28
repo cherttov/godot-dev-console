@@ -17,6 +17,7 @@ var drag_offset: Vector2 = Vector2.ZERO;
 @export var console_toggle_keybind: Key = KEY_QUOTELEFT;
 @export var console_use_default_commands: bool = true;
 @export var console_use_history: bool = true;
+@export_range(0.5, 1.0, 0.1) var console_background_transparency: float = 0.9;
 
 # --------- Init ---------
 func _ready() -> void:
@@ -35,6 +36,8 @@ func _ready() -> void:
 		%CloseButton.pressed.connect(_on_close_button_pressed);
 	if !%Input.text_submitted.is_connected(_on_input_submitted):
 		%Input.text_submitted.connect(_on_input_submitted);
+	if !$Control/VBoxContainer/Panel.gui_input.is_connected(_on_panel_gui_input):
+		$Control/VBoxContainer/Panel.gui_input.connect(_on_panel_gui_input);
 	
 	# Load default commands
 	if console_use_default_commands:
@@ -42,6 +45,9 @@ func _ready() -> void:
 	
 	# Set label
 	%TitleLabel.text = console_title_label;
+	
+	# Set transparency
+	$Control.modulate.a = console_background_transparency;
 	
 	# Set size
 	var viewport_size: Vector2 = get_viewport().get_visible_rect().size;
@@ -69,8 +75,10 @@ func _input(event: InputEvent) -> void:
 	if visible and console_use_history and !command_history.is_empty():
 		if event.is_action_pressed("dev_console_arrow_up"):
 			_navigate_history(1);
+			get_viewport().set_input_as_handled();
 		elif event.is_action_pressed("dev_console_arrow_down"):
 			_navigate_history(-1);
+			get_viewport().set_input_as_handled();
 
 # --------- Command adding ---------
 func add_command(command_name: String, callback: Callable) -> void:
@@ -120,6 +128,7 @@ func _load_default_commands() -> void:
 	add_command("close", _close_console);
 	add_command("help", _help_command);
 	add_command("cls", _clear_output);
+	add_command("set_alpha", _set_transparency);
 
 func _close_console() -> void:
 	visible = false;
@@ -136,6 +145,9 @@ func _help_command() -> void:
 
 func _clear_output() -> void:
 	%Output.clear();
+
+func _set_transparency(value: String) -> void:
+	$Control.modulate.a = clampf(value.to_float(), 0.5, 1.0);
 
 # --------- Output ---------
 func _output_input(text: String) -> void:
@@ -175,7 +187,7 @@ func _navigate_history(direction: int) -> void:
 	if history_index != -1:
 		var command = command_history[(command_history.size() - 1) - history_index];
 		%Input.text = command
-		%Input.caret_column = command.length();
+		%Input.caret_column = %Input.text.length();
 	
 	%Input.grab_focus();
 	%Input.caret_column = %Input.text.length();
