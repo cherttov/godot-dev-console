@@ -1,5 +1,10 @@
 extends CanvasLayer
 
+# Window sizes
+var default_window_size: Vector2;
+var minimum_window_size: Vector2 = Vector2(200, 150);
+var current_resizing_size: Vector2 = Vector2.ZERO;
+
 # Commands dictionary
 var commands: Dictionary[String, Callable];
 var command_history: Array[String];
@@ -11,6 +16,9 @@ var history_index: int = -1;
 # For console dragging
 var dragging: bool = false;
 var drag_offset: Vector2 = Vector2.ZERO;
+
+# For console resizing
+var is_resizing: bool = false;
 
 # Custom user properties
 @export var console_title_label: String = "CONSOLE";
@@ -38,6 +46,8 @@ func _ready() -> void:
 		%Input.text_submitted.connect(_on_input_submitted);
 	if !$Control/VBoxContainer/Panel.gui_input.is_connected(_on_panel_gui_input):
 		$Control/VBoxContainer/Panel.gui_input.connect(_on_panel_gui_input);
+	if !$Control/ResizeAnchor.gui_input.is_connected(_on_anchor_gui_input):
+		$Control/ResizeAnchor.gui_input.connect(_on_anchor_gui_input);
 	
 	# Load default commands
 	if console_use_default_commands:
@@ -53,7 +63,9 @@ func _ready() -> void:
 	var viewport_size: Vector2 = get_viewport().get_visible_rect().size;
 	var x: float = viewport_size.x / 100 * 50;
 	var y: float = viewport_size.y / 100 * 50;
-	console_viewport.custom_minimum_size = Vector2(x, y);
+	console_viewport.custom_minimum_size = minimum_window_size;
+	default_window_size = Vector2(x, y);
+	console_viewport.size = default_window_size;
 
 # --------- Input ---------
 func _input(event: InputEvent) -> void:
@@ -61,6 +73,7 @@ func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("dev_console_toggle"):
 		visible = !visible;
 		console_viewport.position = Vector2(0.0, 0.0);
+		console_viewport.size = default_window_size;
 		
 		if visible:
 			%Input.grab_focus();
@@ -79,6 +92,9 @@ func _input(event: InputEvent) -> void:
 		elif event.is_action_pressed("dev_console_arrow_down"):
 			_navigate_history(-1);
 			get_viewport().set_input_as_handled();
+
+func _process(delta: float) -> void:
+	_resize_console_window();
 
 # --------- Command adding ---------
 func add_command(command_name: String, callback: Callable) -> void:
@@ -166,13 +182,36 @@ func _output_callback(text: String) -> void:
 func _on_panel_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT:
-			if visible and event.pressed:
+			dragging = event.pressed;
+			if visible and dragging:
 				%Input.grab_focus();
 				%Input.caret_column = %Input.text.length();
-			dragging = event.pressed;
 			drag_offset = console_viewport.get_global_mouse_position() - console_viewport.position;
 	elif event is InputEventMouseMotion and dragging:
 		console_viewport.position = console_viewport.get_global_mouse_position() - drag_offset;
+
+# --------- Resize console window ---------
+func _on_anchor_gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			is_resizing = event.pressed;
+			if visible and is_resizing:
+				current_resizing_size = console_viewport.size;
+				drag_offset = self.get_viewport().get_mouse_position();
+				
+				%Input.grab_focus();
+				%Input.caret_column = %Input.text.length();
+
+func _resize_console_window() -> void:
+	if is_resizing:
+		var mouse_pos: Vector2 = get_viewport().get_mouse_position();
+		var diff: Vector2 = mouse_pos - drag_offset;
+		
+		var target_size: Vector2 = current_resizing_size + diff;
+		console_viewport.size = target_size;
+	
+	if is_resizing and !Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+		is_resizing = false;
 
 # --------- Command history ---------
 func _navigate_history(direction: int) -> void:

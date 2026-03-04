@@ -6,6 +6,11 @@
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_s6s1i"]
 bg_color = Color(0.13725491, 0.13725491, 0.13725491, 1)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ujw41"]
+bg_color = Color(0, 0, 0, 0)
+border_width_right = 2
+border_width_bottom = 2
+
 [node name="DevConsole" type="CanvasLayer" unique_id=303449653]
 script = ExtResource("1_rgua2")
 
@@ -81,6 +86,20 @@ layout_mode = 2
 size_flags_vertical = 8
 keep_editing_on_text_submit = true
 virtual_keyboard_enabled = false
+
+[node name="ResizeAnchor" type="Panel" parent="Control" unique_id=1190159452]
+custom_minimum_size = Vector2(10, 10)
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -8.0
+offset_top = -8.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ujw41")
 
 [connection signal="gui_input" from="Control/VBoxContainer/Panel" to="." method="_on_panel_gui_input"]
 [connection signal="pressed" from="Control/VBoxContainer/Panel/HBoxContainer/CloseButton" to="." method="_on_close_button_pressed"]
