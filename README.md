@@ -20,3 +20,5 @@ func _test() -> String:
   return "Hello world!";
 ```
 > **Note:** By returning a string you pass an output to the console, which will be displayed in it.
+## Example ##
+<img width="640" height="360" alt="image_6574" src="https://github.com/user-attachments/assets/7c4fbfc1-f4df-4700-9d6e-08f7c9258157" />
