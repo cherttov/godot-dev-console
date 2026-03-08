@@ -78,6 +78,7 @@ layout_mode = 2
 size_flags_vertical = 3
 focus_mode = 2
 bbcode_enabled = true
+scroll_following = true
 selection_enabled = true
 
 [node name="Input" type="LineEdit" parent="Control/VBoxContainer" unique_id=511806828]
