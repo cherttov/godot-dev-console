@@ -21,11 +21,11 @@ var drag_offset: Vector2 = Vector2.ZERO;
 var is_resizing: bool = false;
 
 # Custom user properties
-@export var console_title_label: String = "CONSOLE";
+@onready var console_title_label: String = ProjectSettings.get_setting("dev_console/console_title_label");
+@onready var console_use_default_commands: bool = ProjectSettings.get_setting("dev_console/console_use_default_commands");
+@onready var console_use_history: bool = ProjectSettings.get_setting("dev_console/console_use_command_history");
+@onready var console_background_transparency: float = ProjectSettings.get_setting("dev_console/console_background_transparency");
 @export var console_toggle_keybind: Key = KEY_QUOTELEFT;
-@export var console_use_default_commands: bool = true;
-@export var console_use_history: bool = true;
-@export_range(0.5, 1.0, 0.1) var console_background_transparency: float = 0.9;
 
 # --------- Init ---------
 func _ready() -> void:
