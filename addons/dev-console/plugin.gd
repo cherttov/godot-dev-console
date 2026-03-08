@@ -3,7 +3,6 @@ extends EditorPlugin
 
 const AUTOLOAD_NAME: String = "DevConsole";
 const AUTOLOAD_PATH: String = "res://addons/dev-console/dev-console.tscn";
-#const KEYBIND_HINT: String = "KEY_NONE,KEY_QUOTELEFT,KEY_F1";
 
 func _enable_plugin() -> void:
 	add_autoload_singleton(AUTOLOAD_NAME, AUTOLOAD_PATH);
@@ -11,15 +10,6 @@ func _enable_plugin() -> void:
 	# Configuration add settings
 	if !ProjectSettings.has_setting("dev_console/console_title_label"):
 		ProjectSettings.set_setting("dev_console/console_title_label", "CONSOLE");
-	
-	#if !ProjectSettings.has_setting("dev_console/console_toggle_keybind"):
-		#ProjectSettings.set_setting("dev_console/console_toggle_keybind", "KEY_QUOTELEFT");
-	#ProjectSettings.add_property_info({
-		#"name": "dev_console/console_toggle_keybind",
-		#"type": TYPE_STRING_NAME,
-		#"hint": PROPERTY_HINT_ENUM,
-		#"hint_string": KEYBIND_HINT
-	#});
 	
 	if !ProjectSettings.has_setting("dev_console/console_use_default_commands"):
 		ProjectSettings.set_setting("dev_console/console_use_default_commands", true);
@@ -44,9 +34,6 @@ func _disable_plugin():
 	# Configuration delete settings
 	if ProjectSettings.has_setting("dev_console/console_title_label"):
 		ProjectSettings.clear("dev_console/console_title_label");
-	
-	#if ProjectSettings.has_setting("dev_console/console_toggle_keybind"):
-		#ProjectSettings.clear("dev_console/console_toggle_keybind");
 	
 	if ProjectSettings.has_setting("dev_console/console_use_default_commands"):
 		ProjectSettings.clear("dev_console/console_use_default_commands");

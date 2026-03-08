@@ -100,6 +100,9 @@ func _process(delta: float) -> void:
 func add_command(command_name: String, callback: Callable) -> void:
 	commands[command_name] = callback;
 
+func add_signal(signal_name: String, target_signal: Signal) -> void:
+	target_signal.connect(func(...args): _output_signal(signal_name, args));
+
 # --------- Input submitted ---------
 func _on_input_submitted(input: String) -> void:
 	var clean_input: String = input.strip_edges();
@@ -177,6 +180,11 @@ func _output_callback(text: String) -> void:
 		%Output.append_text(text);
 	else:
 		%Output.append_text(text + "\n");
+
+func _output_signal(name: String, args: Array) -> void:
+	var arg_text: String = ", ".join(args.map(func(a): return str(a)));
+	%Output.append_text("[font_size=14][color=cyan] > Signal emitted: " + name + "[/color][/font_size]\n");
+	%Output.append_text(arg_text + "\n");
 
 # --------- Move console window ---------
 func _on_panel_gui_input(event: InputEvent) -> void:
