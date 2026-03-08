@@ -13,12 +13,16 @@ By openning the dev-console scene in `addons/dev-console/dev-console.tscn` and s
 In order to use, add commands with reference to a coresponding function in `_ready` function like this:
 ```gdscript
 func _ready() -> void:
-  # Register the command "test" to call the _test function
-  DevConsole.add_command("test", _test);
+  # Register the command "print" to call the _print function
+  DevConsole.add_command("print", _print);
 
-func _test() -> String:
-  return "Hello world!";
+# Print function that takes any amount of String and returns them
+func _print(first_word: String, ...others) -> String:
+  var output: String = first_word;
+  for word in others:
+    output += " " + word;
+  return output;
 ```
 > **Note:** By returning a string you pass an output to the console, which will be displayed in it.
 ## Example ##
-<img width="640" height="360" alt="image_6574" src="https://github.com/user-attachments/assets/7c4fbfc1-f4df-4700-9d6e-08f7c9258157" />
+<img width="576" height="324" alt="example_1" src="https://github.com/user-attachments/assets/cc00eae9-dd3b-4944-a648-6f50c1eddd57" />
