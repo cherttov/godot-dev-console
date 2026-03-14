@@ -46,8 +46,12 @@ func _ready() -> void:
 		%Input.text_submitted.connect(_on_input_submitted);
 	if !$Control/VBoxContainer/Panel.gui_input.is_connected(_on_panel_gui_input):
 		$Control/VBoxContainer/Panel.gui_input.connect(_on_panel_gui_input);
-	if !$Control/ResizeAnchor.gui_input.is_connected(_on_anchor_gui_input):
-		$Control/ResizeAnchor.gui_input.connect(_on_anchor_gui_input);
+	if !%ResizeAnchor.gui_input.is_connected(_on_anchor_gui_input):
+		%ResizeAnchor.gui_input.connect(_on_anchor_gui_input);
+	if !%ResizeAnchor.mouse_entered.is_connected(_on_anchor_mouse_entered):
+		%ResizeAnchor.mouse_entered.connect(_on_anchor_mouse_entered);
+	if !%ResizeAnchor.mouse_exited.is_connected(_on_anchor_mouse_exited):
+		%ResizeAnchor.mouse_exited.connect(_on_anchor_mouse_exited);
 	
 	# Load default commands
 	if console_use_default_commands:
@@ -58,6 +62,10 @@ func _ready() -> void:
 	
 	# Set transparency
 	$Control.modulate.a = console_background_transparency;
+	%ResizeAnchor.self_modulate.a = 0.7;
+	
+	# Disable focus
+	%Output.focus_mode = Control.FOCUS_NONE;
 	
 	# Set size
 	var viewport_size: Vector2 = get_viewport().get_visible_rect().size;
@@ -209,6 +217,12 @@ func _on_anchor_gui_input(event: InputEvent) -> void:
 				
 				%Input.grab_focus();
 				%Input.caret_column = %Input.text.length();
+
+func _on_anchor_mouse_entered() -> void:
+	%ResizeAnchor.self_modulate.a = 1.0;
+
+func _on_anchor_mouse_exited() -> void:
+	%ResizeAnchor.self_modulate.a = 0.7;
 
 func _resize_console_window() -> void:
 	if is_resizing:

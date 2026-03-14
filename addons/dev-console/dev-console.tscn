@@ -68,15 +68,22 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(26, 0)
 layout_mode = 2
 size_flags_horizontal = 10
+focus_mode = 0
 theme_override_font_sizes/font_size = 16
 text = "✕"
 expand_icon = true
 
-[node name="Output" type="RichTextLabel" parent="Control/VBoxContainer" unique_id=1913245085]
+[node name="MarginContainer" type="MarginContainer" parent="Control/VBoxContainer" unique_id=1271271661]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_left = 3
+theme_override_constants/margin_right = 3
+
+[node name="Output" type="RichTextLabel" parent="Control/VBoxContainer/MarginContainer" unique_id=1913245085]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
-focus_mode = 2
+focus_mode = 0
 bbcode_enabled = true
 scroll_following = true
 selection_enabled = true
@@ -89,6 +96,8 @@ keep_editing_on_text_submit = true
 virtual_keyboard_enabled = false
 
 [node name="ResizeAnchor" type="Panel" parent="Control" unique_id=1190159452]
+unique_name_in_owner = true
+self_modulate = Color(1, 1, 1, 0.70000005)
 custom_minimum_size = Vector2(10, 10)
 layout_mode = 1
 anchors_preset = 3
@@ -100,8 +109,12 @@ offset_left = -8.0
 offset_top = -8.0
 grow_horizontal = 0
 grow_vertical = 0
+mouse_default_cursor_shape = 12
 theme_override_styles/panel = SubResource("StyleBoxFlat_ujw41")
 
 [connection signal="gui_input" from="Control/VBoxContainer/Panel" to="." method="_on_panel_gui_input"]
 [connection signal="pressed" from="Control/VBoxContainer/Panel/HBoxContainer/CloseButton" to="." method="_on_close_button_pressed"]
 [connection signal="text_submitted" from="Control/VBoxContainer/Input" to="." method="_on_input_submitted"]
+[connection signal="gui_input" from="Control/ResizeAnchor" to="." method="_on_anchor_gui_input"]
+[connection signal="mouse_entered" from="Control/ResizeAnchor" to="." method="_on_anchor_mouse_entered"]
+[connection signal="mouse_exited" from="Control/ResizeAnchor" to="." method="_on_anchor_mouse_exited"]

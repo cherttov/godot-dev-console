@@ -39,3 +39,4 @@ LineEdit/styles/focus = SubResource("StyleBoxFlat_ruykr")
 LineEdit/styles/normal = SubResource("StyleBoxFlat_mwp4g")
 Panel/styles/panel = SubResource("StyleBoxFlat_4yhrb")
 RichTextLabel/colors/selection_color = Color(0.20392157, 0.20392157, 0.20392157, 0.8784314)
+RichTextLabel/constants/paragraph_separation = -2
