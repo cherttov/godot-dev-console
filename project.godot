@@ -18,13 +18,6 @@ config/icon="uid://ch2hwjikuonif"
 
 DevConsole="*uid://ccoijpiv8l45j"
 
-[dev_console]
-
-console_title_label="CONSOLE"
-console_use_default_commands=true
-console_use_command_history=true
-console_background_transparency=0.9
-
 [display]
 
 window/size/viewport_width=1280
