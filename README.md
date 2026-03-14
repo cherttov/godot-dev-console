@@ -2,8 +2,9 @@
 Godot addon that adds an in-game developer console to run and output in-game commands.
 ## Configuration ##
 After installation turn `ON` and `OFF` the plugin (if the plugin is already `OFF`, just turn it `ON`), this ensures the configuration settings load properly.
+> **Note:** Before updating or deleting the asset, turn it `OFF` in the **ProjectSettings > Plugins**
 
-By openning the `ProjectSettings` **(Project > Project Settings > General)** and scrolling down you can find the `Dev Console` tab.  
+By openning the `ProjectSettings` **(Project > Project Settings > General)** and scrolling down you can find the `Dev Console/Configuration` tab.  
 There will be the following parameters:
 |Parameter                        |Value Type           |
 |---------------------------------|---------------------|
@@ -49,6 +50,18 @@ func _input(event: InputEvent) -> void:
     emit_signal("test", "Hello World!");
 ```
 > **Note:** Signal doesn't have to return any value, but if it does, it is shown as a regular output in the OutputBox once the signal is emitted.
+
+### Using lambdas ###
+Here is my personal example of how to use lambdas with `Dev Console`
+```gdscript
+DevConsole.add_command("sync_stats", func() -> String:
+  return "RPCs sent: %d, Last size: %d bytes" % [
+    network_manager.sync_manager.rpc_count,
+    network_manager.sync_manager.last_rpc_size
+  ];
+);
+```
+> **Note:** While passing parameters to a lambda function it is recommended to pass everything as a **String** (e.g. `str(id = 5)`)
 
 ## Example output ##
 <img width="640" height="360" alt="example_1" src="https://github.com/user-attachments/assets/105d0f49-1eeb-431f-95c0-8eb4e93faceb" />
