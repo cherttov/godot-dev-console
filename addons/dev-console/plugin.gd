@@ -10,25 +10,21 @@ func _enable_plugin() -> void:
 	# Configuration add settings
 	if !ProjectSettings.has_setting("dev_console/configuration/console_title_label"):
 		ProjectSettings.set_setting("dev_console/configuration/console_title_label", "CONSOLE");
-	ProjectSettings.set_initial_value("dev_console/configuration/console_title_label", "CONSOLE");
 	
 	if !ProjectSettings.has_setting("dev_console/configuration/console_use_default_commands"):
 		ProjectSettings.set_setting("dev_console/configuration/console_use_default_commands", true);
-	ProjectSettings.set_initial_value("dev_console/configuration/console_use_default_commands", true);
 	
 	if !ProjectSettings.has_setting("dev_console/configuration/console_use_command_history"):
 		ProjectSettings.set_setting("dev_console/configuration/console_use_command_history", true);
-	ProjectSettings.set_initial_value("dev_console/configuration/console_use_command_history", true);
 	
 	if !ProjectSettings.has_setting("dev_console/configuration/console_background_transparency"):
 		ProjectSettings.set_setting("dev_console/configuration/console_background_transparency", 0.9);
-	ProjectSettings.add_property_info({
-		"name": "dev_console/configuration/console_background_transparency",
-		"type": TYPE_FLOAT,
-		"hint": PROPERTY_HINT_RANGE,
-		"hint_string": "0.5,1.0,0.1"
-	});
-	ProjectSettings.set_initial_value("dev_console/configuration/console_background_transparency", 0.9);
+		ProjectSettings.add_property_info({
+			"name": "dev_console/configuration/console_background_transparency",
+			"type": TYPE_FLOAT,
+			"hint": PROPERTY_HINT_RANGE,
+			"hint_string": "0.5,1.0,0.1"
+		});
 	
 	ProjectSettings.save();
 

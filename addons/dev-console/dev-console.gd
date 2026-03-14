@@ -65,6 +65,7 @@ func _ready() -> void:
 	%ResizeAnchor.self_modulate.a = 0.7;
 	
 	# Disable focus
+	%CloseButton.focus_mode = Control.FOCUS_NONE;
 	%Output.focus_mode = Control.FOCUS_NONE;
 	
 	# Set size
