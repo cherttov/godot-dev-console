@@ -82,11 +82,11 @@ func _ready() -> void:
 func _input(event: InputEvent) -> void:
 	# Toggle console
 	if event.is_action_pressed("dev_console_toggle"):
-		visible = !visible;
+		self.visible = !self.visible;
 		console_viewport.position = Vector2(0.0, 0.0);
 		console_viewport.size = default_window_size;
 		
-		if visible:
+		if self.visible:
 			%Input.grab_focus();
 			%Input.clear();
 			%Input.caret_column = %Input.text.length();
@@ -96,7 +96,7 @@ func _input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled();
 	
 	# Arrow up/down (history)
-	if visible and console_use_history and !command_history.is_empty():
+	if self.visible and console_use_history and !command_history.is_empty():
 		if event.is_action_pressed("dev_console_arrow_up"):
 			_navigate_history(1);
 			get_viewport().set_input_as_handled();
@@ -231,6 +231,9 @@ func _on_anchor_mouse_exited() -> void:
 
 func _resize_console_window() -> void:
 	if is_resizing:
+		if !self.visible:
+			is_resizing = false;
+		
 		var mouse_pos: Vector2 = get_viewport().get_mouse_position();
 		var diff: Vector2 = mouse_pos - drag_offset;
 		
