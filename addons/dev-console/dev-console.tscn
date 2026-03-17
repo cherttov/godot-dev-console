@@ -3,9 +3,6 @@
 [ext_resource type="Script" uid="uid://5t75e6fsg3w7" path="res://addons/dev-console/dev-console.gd" id="1_rgua2"]
 [ext_resource type="Theme" uid="uid://dhref3s1cl5vq" path="res://addons/dev-console/themes/dev-console-theme.tres" id="2_u37vs"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_s6s1i"]
-bg_color = Color(0.13725491, 0.13725491, 0.13725491, 1)
-
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ujw41"]
 bg_color = Color(0, 0, 0, 0)
 border_width_right = 2
@@ -19,6 +16,7 @@ layout_mode = 3
 anchors_preset = 0
 offset_right = 600.0
 offset_bottom = 300.0
+theme = ExtResource("2_u37vs")
 
 [node name="Panel" type="Panel" parent="Control" unique_id=1328764802]
 layout_mode = 1
@@ -27,7 +25,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_s6s1i")
+theme_type_variation = &"BackgroundPanel"
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Control" unique_id=1166908206]
 layout_mode = 1
@@ -36,7 +34,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme = ExtResource("2_u37vs")
 theme_override_constants/separation = 0
 
 [node name="Panel" type="Panel" parent="Control/VBoxContainer" unique_id=2105429090]

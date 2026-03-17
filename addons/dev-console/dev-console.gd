@@ -27,6 +27,8 @@ var settings_path: String = "dev_console/configuration/";
 @onready var console_use_history: bool = ProjectSettings.get_setting(settings_path + "use_command_history");
 @onready var console_background_transparency: float = ProjectSettings.get_setting(settings_path + "background_transparency");
 @onready var console_view_default_commands: bool = ProjectSettings.get_setting(settings_path + "view_default_commands");
+@onready var console_keep_size_after_closing: bool = ProjectSettings.get_setting(settings_path + "keep_size_after_closing");
+@onready var console_keep_position_after_closing: bool = ProjectSettings.get_setting(settings_path + "keep_position_after_closing");
 @export var console_toggle_keybind: Key = KEY_QUOTELEFT;
 
 # --------- Init ---------
@@ -83,8 +85,10 @@ func _input(event: InputEvent) -> void:
 	# Toggle console
 	if event.is_action_pressed("dev_console_toggle"):
 		self.visible = !self.visible;
-		console_viewport.position = Vector2(0.0, 0.0);
-		console_viewport.size = default_window_size;
+		if !console_keep_position_after_closing:
+			console_viewport.position = Vector2(0.0, 0.0);
+		if !console_keep_size_after_closing:
+			console_viewport.size = default_window_size;
 		
 		if self.visible:
 			%Input.grab_focus();

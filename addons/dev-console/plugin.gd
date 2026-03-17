@@ -29,6 +29,12 @@ func _enable_plugin() -> void:
 			"hint_string": "0.5,1.0,0.1"
 		});
 	
+	if !ProjectSettings.has_setting("dev_console/configuration/keep_size_after_closing"):
+		ProjectSettings.set_setting("dev_console/configuration/keep_size_after_closing", false);
+	
+	if !ProjectSettings.has_setting("dev_console/configuration/keep_position_after_closing"):
+		ProjectSettings.set_setting("dev_console/configuration/keep_position_after_closing", false);
+	
 	ProjectSettings.save();
 
 func _disable_plugin():
@@ -49,5 +55,11 @@ func _disable_plugin():
 	
 	if ProjectSettings.has_setting("dev_console/configuration/background_transparency"):
 		ProjectSettings.clear("dev_console/configuration/background_transparency");
+	
+	if ProjectSettings.has_setting("dev_console/configuration/keep_size_after_closing"):
+		ProjectSettings.clear("dev_console/configuration/keep_size_after_closing");
+	
+	if ProjectSettings.has_setting("dev_console/configuration/keep_position_after_closing"):
+		ProjectSettings.clear("dev_console/configuration/keep_position_after_closing");
 	
 	ProjectSettings.save();
