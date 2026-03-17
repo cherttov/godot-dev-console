@@ -8,10 +8,15 @@ By openning the `ProjectSettings` **(Project > Project Settings > General)** and
 There will be the following parameters:
 |Parameter                        |Value Type           |
 |---------------------------------|---------------------|
-|`Console Window Title`           | String              |
-|`Console Default Commands`       | Boolean             |
-|`Console Use History`            | Boolean             |
-|`Console Background Transparency`| Float _(0.5 to 1.0)_|
+|`Window Title`                   | String              |
+|`Default Commands`               | Boolean             |
+|`View Default Commands`          | Boolean             |
+|`Use History`                    | Boolean             |
+|`Background Transparency`        | Float _(0.5 to 1.0)_|
+|`Keep Size After Closing`        | Boolean             |
+|`Keep Position After Closing`    | Boolean             |
+
+> **Note:** To reset the settings just turn `OFF` and `ON` the plugin
 
 By default the keybind for openning/closing the console is `KEY_QUOTELEFT`. 
 
@@ -64,5 +69,6 @@ DevConsole.add_command("sync_stats", func() -> String:
 > **Note:** While passing parameters to a lambda function it is recommended to pass everything as a **String** (e.g. `str(id = 5)`)
 
 ## Example output ##
-<img width="640" height="360" alt="example_1" src="https://github.com/user-attachments/assets/105d0f49-1eeb-431f-95c0-8eb4e93faceb" />
+<img width="640" height="360" alt="example_1" src="https://github.com/user-attachments/assets/105d0f49-1eeb-431f-95c0-8eb4e93faceb" />  
 
+*Open to suggestions for improvement. For suggestions, issues, or bugs, please use the [Issues](https://github.com/cherttov/godot-dev-console/issues) tab*
