@@ -68,6 +68,18 @@ DevConsole.add_command("sync_stats", func() -> String:
 ```
 > **Note:** While passing parameters to a lambda function it is recommended to pass everything as a **String** (e.g. `str(id = 5)`)
 
+### Other functions ###
+```gdscript
+DevConsole.get_commands(); # Dictionary[String, Callable]
+DevConsole.get_signals(); # Dictionary[String, Dictionary[String, Variant]]
+
+DevConsole.delete_command("print");
+DevConsole.delete_signal("test");
+
+DevConsole.has_command("print"); # bool
+DevConsole.has_signal_connected("test"); # bool
+```
+
 ## Example output ##
 <img width="640" height="360" alt="example_1" src="https://github.com/user-attachments/assets/105d0f49-1eeb-431f-95c0-8eb4e93faceb" />  
 
