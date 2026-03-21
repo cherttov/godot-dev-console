@@ -7,6 +7,7 @@ var current_resizing_size: Vector2 = Vector2.ZERO;
 
 # Commands dictionary
 var commands: Dictionary[String, Callable];
+var signals: Dictionary[String, Dictionary];
 var command_history: Array[String];
 var history_index: int = -1;
 
@@ -41,6 +42,7 @@ func _ready() -> void:
 	%Input.release_focus();
 	%Input.clear();
 	commands = {};
+	signals = {};
 	command_history = [];
 	
 	# Connecting signals
@@ -116,7 +118,44 @@ func add_command(command_name: String, callback: Callable) -> void:
 	commands[command_name] = callback;
 
 func add_signal(signal_name: String, target_signal: Signal) -> void:
-	target_signal.connect(func(...args): _output_signal(signal_name, args));
+	var callable = func(...args): _output_signal(signal_name, args);
+	signals[signal_name] = {
+		"signal": target_signal,
+		"callable": callable
+	};
+	target_signal.connect(callable);
+
+# --------- Command deleting ---------
+func delete_command(command_name: String) -> void:
+	if commands.has(command_name):
+		commands.erase(command_name);
+	else:
+		push_warning("Command not found: " + command_name);
+
+func delete_signal(signal_name: String) -> void:
+	if signals.has(signal_name):
+		var target_signal = signals[signal_name]["signal"];
+		var callable = signals[signal_name]["callable"];
+		
+		if target_signal.is_connected(callable):
+			target_signal.disconnect(callable);
+		
+		signals.erase(signal_name);
+	else:
+		push_warning("Signal not found: " + signal_name);
+
+# --------- Getters ---------
+func has_command(command_name: String) -> bool:
+	return commands.has(command_name);
+
+func has_signal_connected(signal_name: String) -> bool:
+	return signals.has(signal_name);
+
+func get_commands() -> Dictionary[String, Callable]:
+	return commands;
+
+func get_signals() -> Dictionary[String, Dictionary]:
+	return signals;
 
 # --------- Input submitted ---------
 func _on_input_submitted(input: String) -> void:
