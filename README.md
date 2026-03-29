@@ -15,6 +15,7 @@ There will be the following parameters:
 |`Background Transparency`        | Float _(0.5 to 1.0)_|
 |`Keep Size After Closing`        | Boolean             |
 |`Keep Position After Closing`    | Boolean             |
+|`Keep Topmost`                   | Boolean             |
 
 > **Note:** To reset the settings just turn `OFF` and `ON` the plugin
 
