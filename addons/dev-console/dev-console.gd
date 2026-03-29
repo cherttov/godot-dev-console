@@ -31,10 +31,15 @@ var settings_path: String = "dev_console/configuration/";
 @onready var console_keep_size_after_closing: bool = ProjectSettings.get_setting(settings_path + "keep_size_after_closing");
 @onready var console_keep_position_after_closing: bool = ProjectSettings.get_setting(settings_path + "keep_position_after_closing");
 @onready var console_keep_topmost: bool = ProjectSettings.get_setting(settings_path + "keep_topmost");
+@onready var console_debug_only: bool = ProjectSettings.get_setting(settings_path + "debug_only");
 @export var console_toggle_keybind: Key = KEY_QUOTELEFT;
 
 # --------- Init ---------
 func _ready() -> void:
+	if console_debug_only and not OS.is_debug_build():
+		self.queue_free();
+		return;
+	
 	# Bind keybinds
 	_ensure_keybinds();
 	

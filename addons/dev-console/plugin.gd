@@ -38,6 +38,9 @@ func _enable_plugin() -> void:
 	if !ProjectSettings.has_setting("dev_console/configuration/keep_topmost"):
 		ProjectSettings.set_setting("dev_console/configuration/keep_topmost", true);
 	
+	if !ProjectSettings.has_setting("dev_console/configuration/debug_only"):
+		ProjectSettings.set_setting("dev_console/configuration/debug_only", true);
+	
 	ProjectSettings.save();
 
 func _disable_plugin():
@@ -67,5 +70,8 @@ func _disable_plugin():
 	
 	if ProjectSettings.has_setting("dev_console/configuration/keep_topmost"):
 		ProjectSettings.clear("dev_console/configuration/keep_topmost");
+	
+	if ProjectSettings.has_setting("dev_console/configuration/debug_only"):
+		ProjectSettings.clear("dev_console/configuration/debug_only");
 	
 	ProjectSettings.save();
