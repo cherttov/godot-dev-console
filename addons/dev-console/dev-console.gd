@@ -30,6 +30,7 @@ var settings_path: String = "dev_console/configuration/";
 @onready var console_view_default_commands: bool = ProjectSettings.get_setting(settings_path + "view_default_commands");
 @onready var console_keep_size_after_closing: bool = ProjectSettings.get_setting(settings_path + "keep_size_after_closing");
 @onready var console_keep_position_after_closing: bool = ProjectSettings.get_setting(settings_path + "keep_position_after_closing");
+@onready var console_keep_topmost: bool = ProjectSettings.get_setting(settings_path + "keep_topmost");
 @export var console_toggle_keybind: Key = KEY_QUOTELEFT;
 
 # --------- Init ---------
@@ -69,6 +70,10 @@ func _ready() -> void:
 	# Set transparency
 	$Control.modulate.a = console_background_transparency;
 	%ResizeAnchor.self_modulate.a = 0.7;
+	
+	# Set rendering layer
+	if console_keep_topmost:
+		self.layer = RenderingServer.CANVAS_LAYER_MAX;
 	
 	# Disable focus
 	%CloseButton.focus_mode = Control.FOCUS_NONE;

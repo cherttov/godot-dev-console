@@ -27,6 +27,7 @@ configuration/use_command_history=true
 configuration/background_transparency=0.9
 configuration/keep_size_after_closing=false
 configuration/keep_position_after_closing=false
+configuration/keep_topmost=true
 
 [display]
 

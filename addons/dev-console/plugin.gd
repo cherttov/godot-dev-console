@@ -35,6 +35,9 @@ func _enable_plugin() -> void:
 	if !ProjectSettings.has_setting("dev_console/configuration/keep_position_after_closing"):
 		ProjectSettings.set_setting("dev_console/configuration/keep_position_after_closing", false);
 	
+	if !ProjectSettings.has_setting("dev_console/configuration/keep_topmost"):
+		ProjectSettings.set_setting("dev_console/configuration/keep_topmost", true);
+	
 	ProjectSettings.save();
 
 func _disable_plugin():
@@ -61,5 +64,8 @@ func _disable_plugin():
 	
 	if ProjectSettings.has_setting("dev_console/configuration/keep_position_after_closing"):
 		ProjectSettings.clear("dev_console/configuration/keep_position_after_closing");
+	
+	if ProjectSettings.has_setting("dev_console/configuration/keep_topmost"):
+		ProjectSettings.clear("dev_console/configuration/keep_topmost");
 	
 	ProjectSettings.save();
