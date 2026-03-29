@@ -16,6 +16,7 @@ There will be the following parameters:
 |`Keep Size After Closing`        | Boolean             |
 |`Keep Position After Closing`    | Boolean             |
 |`Keep Topmost`                   | Boolean             |
+|`Debug Only`                     | Boolean             |
 
 > **Note:** To reset the settings just turn `OFF` and `ON` the plugin
 
