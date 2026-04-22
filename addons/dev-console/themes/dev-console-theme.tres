@@ -33,6 +33,9 @@ bg_color = Color(0.11372549, 0.11372549, 0.11372549, 1)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4yhrb"]
 bg_color = Color(0.20392157, 0.20392157, 0.20392157, 1)
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_750r3"]
+content_margin_bottom = 2.0
+
 [resource]
 BackgroundPanel/base_type = &"Panel"
 BackgroundPanel/styles/panel = SubResource("StyleBoxFlat_750r3")
@@ -45,3 +48,4 @@ LineEdit/styles/normal = SubResource("StyleBoxFlat_mwp4g")
 Panel/styles/panel = SubResource("StyleBoxFlat_4yhrb")
 RichTextLabel/colors/selection_color = Color(0.20392157, 0.20392157, 0.20392157, 0.8784314)
 RichTextLabel/constants/paragraph_separation = -2
+RichTextLabel/styles/normal = SubResource("StyleBoxEmpty_750r3")
