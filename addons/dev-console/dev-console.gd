@@ -23,15 +23,15 @@ var is_resizing: bool = false;
 
 # Custom user properties
 var settings_path: String = "dev_console/configuration/";
-@onready var console_title_label: String = ProjectSettings.get_setting(settings_path + "title_label");
-@onready var console_use_default_commands: bool = ProjectSettings.get_setting(settings_path + "use_default_commands");
-@onready var console_use_history: bool = ProjectSettings.get_setting(settings_path + "use_command_history");
-@onready var console_background_transparency: float = ProjectSettings.get_setting(settings_path + "background_transparency");
-@onready var console_view_default_commands: bool = ProjectSettings.get_setting(settings_path + "view_default_commands");
-@onready var console_keep_size_after_closing: bool = ProjectSettings.get_setting(settings_path + "keep_size_after_closing");
-@onready var console_keep_position_after_closing: bool = ProjectSettings.get_setting(settings_path + "keep_position_after_closing");
-@onready var console_keep_topmost: bool = ProjectSettings.get_setting(settings_path + "keep_topmost");
-@onready var console_debug_only: bool = ProjectSettings.get_setting(settings_path + "debug_only");
+@onready var console_title_label: String = ProjectSettings.get_setting(settings_path + "title_label", "CONSOLE");
+@onready var console_use_default_commands: bool = ProjectSettings.get_setting(settings_path + "use_default_commands", true);
+@onready var console_use_history: bool = ProjectSettings.get_setting(settings_path + "use_command_history", true);
+@onready var console_background_transparency: float = ProjectSettings.get_setting(settings_path + "background_transparency", 0.9);
+@onready var console_view_default_commands: bool = ProjectSettings.get_setting(settings_path + "view_default_commands", true);
+@onready var console_keep_size_after_closing: bool = ProjectSettings.get_setting(settings_path + "keep_size_after_closing", false);
+@onready var console_keep_position_after_closing: bool = ProjectSettings.get_setting(settings_path + "keep_position_after_closing", false);
+@onready var console_keep_topmost: bool = ProjectSettings.get_setting(settings_path + "keep_topmost", true);
+@onready var console_debug_only: bool = ProjectSettings.get_setting(settings_path + "debug_only", true);
 @export var console_toggle_keybind: Key = KEY_QUOTELEFT;
 
 # --------- Init ---------
@@ -64,6 +64,8 @@ func _ready() -> void:
 		%ResizeAnchor.mouse_entered.connect(_on_anchor_mouse_entered);
 	if !%ResizeAnchor.mouse_exited.is_connected(_on_anchor_mouse_exited):
 		%ResizeAnchor.mouse_exited.connect(_on_anchor_mouse_exited);
+	if !get_viewport().size_changed.is_connected(_on_viewport_size_changed):
+		get_viewport().size_changed.connect(_on_viewport_size_changed);
 	
 	# Load default commands
 	if console_use_default_commands:
@@ -89,7 +91,7 @@ func _ready() -> void:
 	var x: float = viewport_size.x / 100 * 50;
 	var y: float = viewport_size.y / 100 * 50;
 	console_viewport.custom_minimum_size = minimum_window_size;
-	default_window_size = Vector2(x, y);
+	default_window_size = _compute_default_window_size();
 	console_viewport.size = default_window_size;
 
 # --------- Input ---------
@@ -119,6 +121,12 @@ func _input(event: InputEvent) -> void:
 		elif event.is_action_pressed("dev_console_arrow_down"):
 			_navigate_history(-1);
 			get_viewport().set_input_as_handled();
+	
+	# Close on Escape (ESC)
+	if self.visible and event.is_action_pressed("ui_cancel"):
+		self.visible = false;
+		%Input.release_focus();
+		get_viewport().set_input_as_handled();
 
 func _process(delta: float) -> void:
 	_resize_console_window();
@@ -128,6 +136,9 @@ func add_command(command_name: String, callback: Callable) -> void:
 	commands[command_name] = callback;
 
 func add_signal(signal_name: String, target_signal: Signal) -> void:
+	if signals.has(signal_name):
+		delete_signal(signal_name);
+	
 	var callable = func(...args): _output_signal(signal_name, args);
 	signals[signal_name] = {
 		"signal": target_signal,
@@ -225,7 +236,7 @@ func _help_command() -> void:
 			continue;
 		command_list = command_list + command + "\n";
 		
-	command_list.trim_suffix("\n");
+	command_list = command_list.trim_suffix("\n");
 	_output_callback(command_list);
 
 func _clear_output() -> void:
@@ -236,21 +247,22 @@ func _set_transparency(value: String) -> void:
 
 # --------- Output ---------
 func _output_input(text: String) -> void:
-	%Output.append_text("[font_size=14][color=gray] > " + text + "[/color][/font_size]\n");
+	%Output.append_text("[font_size=14][color=gray] > " + _escape_bbcode(text) + "[/color][/font_size]\n");
 
 func _output_error(text: String) -> void:
-	%Output.append_text("[color=red]" + text + "[/color]\n");
+	%Output.append_text("[color=red]" + _escape_bbcode(text) + "[/color]\n");
 
 func _output_callback(text: String) -> void:
-	if text.ends_with("\n"):
-		%Output.append_text(text);
+	var safe_text: String = _escape_bbcode(text);
+	if safe_text.ends_with("\n"):
+		%Output.append_text(safe_text);
 	else:
-		%Output.append_text(text + "\n");
+		%Output.append_text(safe_text + "\n");
 
 func _output_signal(name: String, args: Array) -> void:
 	var arg_text: String = ", ".join(args.map(func(a): return str(a)));
-	%Output.append_text("[font_size=14][color=cyan] > Signal emitted: " + name + "[/color][/font_size]\n");
-	%Output.append_text(arg_text + "\n");
+	%Output.append_text("[font_size=14][color=cyan] > Signal emitted: " + _escape_bbcode(name) + "[/color][/font_size]\n");
+	%Output.append_text(_escape_bbcode(arg_text) + "\n");
 
 # --------- Move console window ---------
 func _on_panel_gui_input(event: InputEvent) -> void:
@@ -262,7 +274,8 @@ func _on_panel_gui_input(event: InputEvent) -> void:
 				%Input.caret_column = %Input.text.length();
 			drag_offset = console_viewport.get_global_mouse_position() - console_viewport.position;
 	elif event is InputEventMouseMotion and dragging:
-		console_viewport.position = console_viewport.get_global_mouse_position() - drag_offset;
+		var new_position: Vector2 = console_viewport.get_global_mouse_position() - drag_offset;
+		console_viewport.position = _clamp_console_position(new_position, console_viewport.position);
 
 # --------- Resize console window ---------
 func _on_anchor_gui_input(event: InputEvent) -> void:
@@ -291,20 +304,23 @@ func _resize_console_window() -> void:
 		var diff: Vector2 = mouse_pos - drag_offset;
 		
 		var target_size: Vector2 = current_resizing_size + diff;
-		console_viewport.size = target_size;
+		console_viewport.size = _clamp_console_size(target_size, console_viewport.position);
 	
 	if is_resizing and !Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 		is_resizing = false;
+
+func _on_viewport_size_changed() -> void:
+	default_window_size = _compute_default_window_size();
+	console_viewport.size = _clamp_console_size(console_viewport.size, console_viewport.position);
+	console_viewport.position = _clamp_console_position(console_viewport.position, console_viewport.size);
 
 # --------- Command history ---------
 func _navigate_history(direction: int) -> void:
 	history_index += direction;
 	
-	if history_index >= command_history.size():
+	if history_index >= command_history.size() or history_index < 0:
 		history_index = -1;
 		%Input.clear();
-	elif history_index < 0:
-		history_index = 0;
 	
 	if history_index != -1:
 		var command = command_history[(command_history.size() - 1) - history_index];
@@ -339,3 +355,30 @@ func _ensure_keybinds() -> void:
 			var event_key: InputEventKey = InputEventKey.new();
 			event_key.physical_keycode = KEY_DOWN;
 			InputMap.action_add_event("dev_console_arrow_down", event_key);
+
+# --------- Helpers ---------
+func _escape_bbcode(text: String) -> String:
+	return text.replace("[", "[lb]");
+
+func _clamp_console_size(size: Vector2, position: Vector2) -> Vector2:
+	var viewport_size: Vector2 = get_viewport().get_visible_rect().size;
+	
+	var max_size: Vector2 = Vector2(
+		max(minimum_window_size.x, viewport_size.x - position.x),
+		max(minimum_window_size.y, viewport_size.y - position.y)
+	);
+	return Vector2(
+		clampf(size.x, minimum_window_size.x, max_size.x),
+		clampf(size.y, minimum_window_size.y, max_size.y)
+	);
+
+func _clamp_console_position(position: Vector2, size: Vector2) -> Vector2:
+	var viewport_size: Vector2 = get_viewport().get_visible_rect().size;
+	return Vector2(
+		clampf(position.x, 0.0, max(0.0, viewport_size.x - size.x)),
+		clampf(position.y, 0.0, max(0.0, viewport_size.y - size.y))
+	);
+
+func _compute_default_window_size() -> Vector2:
+	var viewport_size: Vector2 = get_viewport().get_visible_rect().size;
+	return Vector2(viewport_size.x / 100 * 50, viewport_size.y /100 * 50);
