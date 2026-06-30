@@ -12,7 +12,7 @@ There will be the following parameters:
 |`Default Commands`               | Boolean             |
 |`View Default Commands`          | Boolean             |
 |`Use History`                    | Boolean             |
-|`Background Transparency`        | Float _(0.5 to 1.0)_|
+|`Background Transparency`        | Float *(0.5 to 1.0)*|
 |`Keep Size After Closing`        | Boolean             |
 |`Keep Position After Closing`    | Boolean             |
 |`Keep Topmost`                   | Boolean             |
@@ -84,7 +84,7 @@ DevConsole.has_signal_connected("test"); # bool
 ```
 
 ## Requirements ##
-**Language:** GDscript
+**Language:** GDscript  
 **Minimum version:** Godot 4.4.x  
 **Maximum version:** Godot 4.7.x  
 
