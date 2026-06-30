@@ -24,6 +24,7 @@ By default the keybind for openning/closing the console is `KEY_QUOTELEFT`.
 
 To rebind the key, navigate to `res://addons/dev-console` directory, open (double-click) the `dev-console.tscn` scene, click once on the root `CanvasLayer` node (DevConsole),  
 By default on the right side of the screen there will be an `Inspector` tab, at the top there is a `Console Toggle Keybind` parameter with a drop down menu of all the [Keys](https://docs.godotengine.org/en/4.6/classes/class_@globalscope.html#enum-globalscope-key) available.
+
 ## Usage ##
 ### Adding commands ###
 In order to use, add commands with reference to a coresponding function in `_ready` function like this:
@@ -82,7 +83,13 @@ DevConsole.has_command("print"); # bool
 DevConsole.has_signal_connected("test"); # bool
 ```
 
+## Requirements ##
+**Language:** GDscript
+**Minimum version:** Godot 4.4.x  
+**Maximum version:** Godot 4.7.x  
+
 ## Example output ##
-<img width="640" height="360" alt="example_1" src="https://github.com/user-attachments/assets/105d0f49-1eeb-431f-95c0-8eb4e93faceb" />  
+<img width="640" height="360" alt="example_1" src="https://github.com/user-attachments/assets/105d0f49-1eeb-431f-95c0-8eb4e93faceb" />   
+
 
 *Open to suggestions for improvement. For suggestions, issues, or bugs, please use the [Issues](https://github.com/cherttov/godot-dev-console/issues) tab*
