@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="dev-console"
-config/features=PackedStringArray("4.6", "GL Compatibility")
+config/features=PackedStringArray("4.7", "GL Compatibility")
 config/icon="uid://ch2hwjikuonif"
 
 [autoload]
@@ -34,6 +34,10 @@ configuration/debug_only=true
 
 window/size/viewport_width=1280
 window/size/viewport_height=720
+
+[dotnet]
+
+project/assembly_name="dev-console"
 
 [editor_plugins]
 
