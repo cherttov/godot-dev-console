@@ -17,25 +17,41 @@ func _ready() -> void:
 
 # ------ PUBLIC METHODS ------
 func add_command(command_name: String, callback: Callable) -> void:
-	_internal_console.add_command(command_name, callback);
+	if _internal_console:
+		_internal_console.add_command(command_name, callback);
 
 func add_signal(signal_name: String, target_signal: Signal) -> void:
-	_internal_console.add_signal(signal_name, target_signal);
+	if _internal_console:
+		_internal_console.add_signal(signal_name, target_signal);
 
 func delete_command(command_name: String) -> void:
-	_internal_console.delete_command(command_name);
+	if _internal_console:
+		_internal_console.delete_command(command_name);
 
 func delete_signal(signal_name: String) -> void:
-	_internal_console.delete_signal(signal_name);
+	if _internal_console:
+		_internal_console.delete_signal(signal_name);
 
 func has_command(command_name: String) -> bool:
-	return _internal_console.has_command(command_name);
+	if _internal_console:
+		return _internal_console.has_command(command_name);
+	else:
+		return false;
 
 func has_signal_connected(signal_name: String) -> bool:
-	return _internal_console.has_signal_connected(signal_name);
+	if _internal_console:
+		return _internal_console.has_signal_connected(signal_name);
+	else:
+		return false;
 
 func get_commands() -> Dictionary[String, Callable]:
-	return _internal_console.commands;
+	if _internal_console:
+		return _internal_console.commands;
+	else:
+		return { };
 
 func get_signals() -> Dictionary[String, Dictionary]:
-	return _internal_console.signals;
+	if _internal_console:
+		return _internal_console.signals;
+	else:
+		return { };
