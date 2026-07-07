@@ -174,6 +174,16 @@ func get_commands() -> Dictionary[String, Callable]:
 func get_signals() -> Dictionary[String, Dictionary]:
 	return signals;
 
+# --------- Printers ---------
+func print_line(text: String) -> void:
+	_output_callback(text);
+
+func print_error(text: String) -> void:
+	_output_error(text);
+
+func print_warning(text: String) -> void:
+	_output_warning(text);
+
 # --------- Input submitted ---------
 func _on_input_submitted(input: String) -> void:
 	var clean_input: String = input.strip_edges();
@@ -215,10 +225,11 @@ func _on_close_button_pressed() -> void:
 
 # --------- Default commands ---------
 func _load_default_commands() -> void:
-	add_command("close", _close_console);
 	add_command("help", _help_command);
-	add_command("cls", _clear_output);
+	add_command("cls", clear_output);
 	add_command("set_alpha", _set_transparency);
+	add_command("close", _close_console);
+	add_command("quit", _quit_program);
 
 func _close_console() -> void:
 	visible = false;
@@ -235,11 +246,14 @@ func _help_command() -> void:
 	command_list = command_list.trim_suffix("\n");
 	_output_callback(command_list);
 
-func _clear_output() -> void:
+func clear_output() -> void:
 	%Output.clear();
 
 func _set_transparency(value: String) -> void:
 	$Control.modulate.a = clampf(value.to_float(), 0.5, 1.0);
+
+func _quit_program() -> void:
+	self.get_tree().quit();
 
 # --------- Output ---------
 func _output_input(text: String) -> void:
@@ -247,6 +261,9 @@ func _output_input(text: String) -> void:
 
 func _output_error(text: String) -> void:
 	%Output.append_text("[color=red]" + _escape_bbcode(text) + "[/color]\n");
+
+func _output_warning(text: String) -> void:
+	%Output.append_text("[color=orange]" + _escape_bbcode(text) + "[/color]\n");
 
 func _output_callback(text: String) -> void:
 	var safe_text: String = _escape_bbcode(text);

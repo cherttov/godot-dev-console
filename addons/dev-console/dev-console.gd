@@ -16,6 +16,7 @@ func _ready() -> void:
 	get_tree().root.add_child(_internal_console);
 
 # ------ PUBLIC METHODS ------
+# Adders
 func add_command(command_name: String, callback: Callable) -> void:
 	if _internal_console:
 		_internal_console.add_command(command_name, callback);
@@ -24,6 +25,7 @@ func add_signal(signal_name: String, target_signal: Signal) -> void:
 	if _internal_console:
 		_internal_console.add_signal(signal_name, target_signal);
 
+# Deleters
 func delete_command(command_name: String) -> void:
 	if _internal_console:
 		_internal_console.delete_command(command_name);
@@ -32,6 +34,7 @@ func delete_signal(signal_name: String) -> void:
 	if _internal_console:
 		_internal_console.delete_signal(signal_name);
 
+# Has checks
 func has_command(command_name: String) -> bool:
 	if _internal_console:
 		return _internal_console.has_command(command_name);
@@ -44,6 +47,7 @@ func has_signal_connected(signal_name: String) -> bool:
 	else:
 		return false;
 
+# Getters
 func get_commands() -> Dictionary[String, Callable]:
 	if _internal_console:
 		return _internal_console.commands;
@@ -55,3 +59,17 @@ func get_signals() -> Dictionary[String, Dictionary]:
 		return _internal_console.signals;
 	else:
 		return { };
+
+# Printers
+func print_line(text: String) -> void:
+	_internal_console.print_line(text);
+
+func print_error(text: String) -> void:
+	_internal_console.print_error(text);
+
+func print_warning(text: String) -> void:
+	_internal_console.print_warning(text);
+
+# Clearers
+func clear_output() -> void:
+	_internal_console.clear_output();
