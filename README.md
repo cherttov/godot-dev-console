@@ -81,6 +81,12 @@ DevConsole.delete_signal("test");
 
 DevConsole.has_command("print"); # bool
 DevConsole.has_signal_connected("test"); # bool
+
+DevConsole.print_line("Hello World!"); # Outputs to console white text
+DevConsole.print_warning("Hello, World?"); # Outputs to console orange text
+DevConsole.print_error("Goodbye World!"); # Outputs to console red text
+
+DevConsole.clear_output(); # Clears the console
 ```
 
 ## Requirements ##
