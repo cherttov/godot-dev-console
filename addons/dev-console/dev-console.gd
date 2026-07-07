@@ -60,16 +60,27 @@ func get_signals() -> Dictionary[String, Dictionary]:
 	else:
 		return { };
 
+# Visibility
+func is_visible() -> bool:
+	if _internal_console:
+		return _internal_console.visible;
+	else:
+		return false;
+
 # Printers
 func print_line(text: String) -> void:
-	_internal_console.print_line(text);
+	if _internal_console:
+		_internal_console.print_line(text);
 
 func print_error(text: String) -> void:
-	_internal_console.print_error(text);
+	if _internal_console:
+		_internal_console.print_error(text);
 
 func print_warning(text: String) -> void:
-	_internal_console.print_warning(text);
+	if _internal_console:
+		_internal_console.print_warning(text);
 
 # Clearers
 func clear_output() -> void:
-	_internal_console.clear_output();
+	if _internal_console:
+		_internal_console.clear_output();
