@@ -73,20 +73,22 @@ DevConsole.add_command("sync_stats", func() -> String:
 
 ### Other functions ###
 ```gdscript
-DevConsole.get_commands(); # Dictionary[String, Callable]
-DevConsole.get_signals(); # Dictionary[String, Dictionary[String, Variant]]
+DevConsole.get_commands(); # returns Dictionary[String, Callable]
+DevConsole.get_signals(); # returns Dictionary[String, Dictionary[String, Variant]]
 
 DevConsole.delete_command("print");
 DevConsole.delete_signal("test");
 
-DevConsole.has_command("print"); # bool
-DevConsole.has_signal_connected("test"); # bool
+DevConsole.has_command("print"); # returns bool
+DevConsole.has_signal_connected("test"); # returs bool
 
 DevConsole.print_line("Hello World!"); # Outputs to console white text
 DevConsole.print_warning("Hello, World?"); # Outputs to console orange text
 DevConsole.print_error("Goodbye World!"); # Outputs to console red text
 
 DevConsole.clear_output(); # Clears the console
+
+DevConsole.is_visible(); # returns bool
 ```
 
 ## Requirements ##
