@@ -93,7 +93,7 @@ DevConsole.is_visible(); # returns bool
 
 ## Requirements ##
 **Language:** GDscript  
-**Minimum version:** Godot 4.4.x  
+**Minimum version:** Godot 4.6.x  
 **Maximum version:** Godot 4.7.x  
 
 ## Example output ##
