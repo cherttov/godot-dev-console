@@ -6,3 +6,6 @@ export_presets.cfg
 *.tmp
 /testing
 *.translation
+.DS_Store
+**.DS_Store
+__MACOSX/
