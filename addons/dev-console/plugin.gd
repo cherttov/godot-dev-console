@@ -2,7 +2,7 @@
 extends EditorPlugin
 
 const AUTOLOAD_NAME: String = "DevConsole";
-const AUTOLOAD_PATH: String = "res://addons/dev-console/dev-console.tscn";
+const AUTOLOAD_PATH: String = "res://addons/dev-console/dev-console.gd";
 
 func _enable_plugin() -> void:
 	add_autoload_singleton(AUTOLOAD_NAME, AUTOLOAD_PATH);

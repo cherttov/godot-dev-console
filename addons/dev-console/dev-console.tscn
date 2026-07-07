@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://ccoijpiv8l45j"]
 
-[ext_resource type="Script" uid="uid://5t75e6fsg3w7" path="res://addons/dev-console/dev-console.gd" id="1_rgua2"]
+[ext_resource type="Script" uid="uid://ps6c54gym1kf" path="res://addons/dev-console/dev-console-internal.gd" id="1_ujw41"]
 [ext_resource type="Theme" uid="uid://dhref3s1cl5vq" path="res://addons/dev-console/themes/dev-console-theme.tres" id="2_u37vs"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ujw41"]
@@ -9,7 +9,7 @@ border_width_right = 2
 border_width_bottom = 2
 
 [node name="DevConsole" type="CanvasLayer" unique_id=303449653]
-script = ExtResource("1_rgua2")
+script = ExtResource("1_ujw41")
 
 [node name="Control" type="Control" parent="." unique_id=1906291707]
 layout_mode = 3
