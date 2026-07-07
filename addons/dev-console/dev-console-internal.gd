@@ -32,15 +32,10 @@ var settings_path: String = "dev_console/configuration/";
 @onready var console_keep_size_after_closing: bool = ProjectSettings.get_setting(settings_path + "keep_size_after_closing", false);
 @onready var console_keep_position_after_closing: bool = ProjectSettings.get_setting(settings_path + "keep_position_after_closing", false);
 @onready var console_keep_topmost: bool = ProjectSettings.get_setting(settings_path + "keep_topmost", true);
-@onready var console_debug_only: bool = ProjectSettings.get_setting(settings_path + "debug_only", true);
 @export var console_toggle_keybind: Key = KEY_QUOTELEFT;
 
 # --------- Init ---------
 func _ready() -> void:
-	if console_debug_only and not OS.is_debug_build():
-		self.queue_free();
-		return;
-	
 	# Bind keybinds
 	_ensure_keybinds();
 	
@@ -128,9 +123,9 @@ func _input(event: InputEvent) -> void:
 		self.visible = false;
 		%Input.release_focus();
 		get_viewport().set_input_as_handled();
-
-func _process(delta: float) -> void:
-	_resize_console_window();
+	
+	if is_resizing:
+		_resize_console_window(event);
 
 # --------- Command adding ---------
 func add_command(command_name: String, callback: Callable) -> void:
@@ -194,7 +189,7 @@ func _on_input_submitted(input: String) -> void:
 	history_index = -1
 	
 	# Splitting input
-	var parts: PackedStringArray = clean_input.split(" ");
+	var parts: PackedStringArray = clean_input.split(" ", false);
 	var command_name: String = parts[0].strip_edges();
 	parts.remove_at(0);
 	
@@ -276,7 +271,7 @@ func _on_panel_gui_input(event: InputEvent) -> void:
 			drag_offset = console_viewport.get_global_mouse_position() - console_viewport.position;
 	elif event is InputEventMouseMotion and dragging:
 		var new_position: Vector2 = console_viewport.get_global_mouse_position() - drag_offset;
-		console_viewport.position = _clamp_console_position(new_position, console_viewport.position);
+		console_viewport.position = _clamp_console_position(new_position, console_viewport.size);
 
 # --------- Resize console window ---------
 func _on_anchor_gui_input(event: InputEvent) -> void:
@@ -296,19 +291,17 @@ func _on_anchor_mouse_entered() -> void:
 func _on_anchor_mouse_exited() -> void:
 	%ResizeAnchor.self_modulate.a = 0.7;
 
-func _resize_console_window() -> void:
-	if is_resizing:
-		if !self.visible:
-			is_resizing = false;
-		
+func _resize_console_window(event: InputEvent) -> void:
+	if event is InputEventMouseMotion:
 		var mouse_pos: Vector2 = get_viewport().get_mouse_position();
 		var diff: Vector2 = mouse_pos - drag_offset;
-		
 		var target_size: Vector2 = current_resizing_size + diff;
 		console_viewport.size = _clamp_console_size(target_size, console_viewport.position);
-	
-	if is_resizing and !Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+		get_viewport().set_input_as_handled();
+		
+	elif event is InputEventMouseButton and not event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		is_resizing = false;
+		get_viewport().set_input_as_handled();
 
 func _on_viewport_size_changed() -> void:
 	default_window_size = _compute_default_window_size();

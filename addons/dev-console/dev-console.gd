@@ -6,6 +6,11 @@ var _internal_console: DevConsoleInternal = null;
 
 # Onready
 func _ready() -> void:
+	# Don't complete initialization if debug_only in release
+	var console_debug_only: bool = ProjectSettings.get_setting("dev_console/configuration/debug_only", true);
+	if console_debug_only and not OS.is_debug_build():
+		return;
+	
 	_internal_console = CONSOLE_SCENE.instantiate();
 	
 	get_tree().root.add_child(_internal_console);
