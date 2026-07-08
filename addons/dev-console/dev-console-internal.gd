@@ -7,9 +7,9 @@ var minimum_window_size: Vector2 = Vector2(200, 150);
 var current_resizing_size: Vector2 = Vector2.ZERO;
 
 # Commands dictionary
-var commands: Dictionary[String, Callable];
-var signals: Dictionary[String, Dictionary];
-var command_history: Array[String];
+var commands: Dictionary[String, Callable] = {};
+var signals: Dictionary[String, Dictionary] = {};
+var command_history: Array[String] = [];
 var history_index: int = -1;
 
 # Console root
@@ -43,9 +43,6 @@ func _ready() -> void:
 	self.visible = false;
 	%Input.release_focus();
 	%Input.clear();
-	commands = {};
-	signals = {};
-	command_history = [];
 	
 	# Connecting signals
 	if !%CloseButton.pressed.is_connected(_on_close_button_pressed):
@@ -222,6 +219,33 @@ func _on_input_submitted(input: String) -> void:
 # --------- Close button ---------
 func _on_close_button_pressed() -> void:
 	_close_console();
+
+# --------- Visibility ---------
+func show_console() -> void:
+	if self.visible:
+		return;
+	self.visible = true;
+	
+	if !console_keep_position_after_closing:
+		console_viewport.position = Vector2(0.0, 0.0);
+	if !console_keep_size_after_closing:
+		console_viewport.size = default_window_size;
+	
+	%Input.grab_focus();
+	%Input.clear();
+	%Input.caret_column = %Input.text.length();
+
+func hide_console() -> void:
+	if not self.visible:
+		return;
+	self.visible = false;
+	%Input.release_focus();
+
+func toggle_console() -> void:
+	if self.visible:
+		hide_console();
+	else:
+		show_console();
 
 # --------- Default commands ---------
 func _load_default_commands() -> void:

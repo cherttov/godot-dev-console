@@ -13,7 +13,7 @@ func _ready() -> void:
 	
 	_internal_console = CONSOLE_SCENE.instantiate();
 	
-	get_tree().root.add_child(_internal_console);
+	get_tree().root.add_child.call_deferred(_internal_console);
 
 # ------ PUBLIC METHODS ------
 # Adders
@@ -38,34 +38,41 @@ func delete_signal(signal_name: String) -> void:
 func has_command(command_name: String) -> bool:
 	if _internal_console:
 		return _internal_console.has_command(command_name);
-	else:
-		return false;
+	return false;
 
 func has_signal_connected(signal_name: String) -> bool:
 	if _internal_console:
 		return _internal_console.has_signal_connected(signal_name);
-	else:
-		return false;
+	return false;
 
 # Getters
 func get_commands() -> Dictionary[String, Callable]:
 	if _internal_console:
 		return _internal_console.commands;
-	else:
-		return { };
+	return { };
 
 func get_signals() -> Dictionary[String, Dictionary]:
 	if _internal_console:
 		return _internal_console.signals;
-	else:
-		return { };
+	return { };
 
 # Visibility
+func show() -> void:
+	if _internal_console:
+		_internal_console.show_console();
+
+func hide() -> void:
+	if _internal_console:
+		_internal_console.hide_console();
+
+func toggle_visibility() -> void:
+	if _internal_console:
+		_internal_console.toggle_console();
+
 func is_visible() -> bool:
 	if _internal_console:
 		return _internal_console.visible;
-	else:
-		return false;
+	return false;
 
 # Printers
 func print_line(text: String) -> void:
