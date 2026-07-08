@@ -7,6 +7,7 @@ var minimum_window_size: Vector2 = Vector2(200, 150);
 var current_resizing_size: Vector2 = Vector2.ZERO;
 
 # Commands dictionary
+var default_commands: Array[String] = ["close", "help", "cls", "set_alpha", "get_alpha", "quit"];
 var commands: Dictionary[String, Callable] = {};
 var signals: Dictionary[String, Dictionary] = {};
 var command_history: Array[String] = [];
@@ -153,10 +154,10 @@ func has_signal_connected(signal_name: String) -> bool:
 	return signals.has(signal_name);
 
 func get_commands() -> Dictionary[String, Callable]:
-	return commands;
+	return commands.duplicate();
 
 func get_signals() -> Dictionary[String, Dictionary]:
-	return signals;
+	return signals.duplicate();
 
 # --------- Printers ---------
 func print_line(text: String) -> void:
@@ -234,11 +235,19 @@ func toggle_console() -> void:
 	else:
 		show_console();
 
+# --------- Opacity ---------
+func set_alpha(value: String) -> void:
+	$Control.modulate.a = clampf(value.to_float(), 0.5, 1.0);
+
+func get_alpha() -> float:
+	return float($Control.modulate.a);
+
 # --------- Default commands ---------
 func _load_default_commands() -> void:
 	add_command("help", _help_command);
 	add_command("cls", clear_output);
-	add_command("set_alpha", _set_transparency);
+	add_command("set_alpha", set_alpha);
+	add_command("get_alpha", get_alpha);
 	add_command("close", hide_console);
 	add_command("quit", _quit_program);
 
@@ -246,7 +255,7 @@ func _help_command() -> void:
 	var command_list: String = "";
 	
 	for command in commands.keys():
-		if !console_view_default_commands and command in ["close", "help", "cls", "set_alpha", "quit"]:
+		if !console_view_default_commands and command in default_commands:
 			continue;
 		command_list = command_list + command + "\n";
 		

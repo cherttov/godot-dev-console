@@ -97,6 +97,19 @@ func is_visible() -> bool:
 		return _internal_console.visible;
 	return false;
 
+# Opacity
+func set_alpha(value: float) -> void:
+	if _console_ready:
+		_internal_console.set_alpha(str(value));
+	else:
+		_pending_calls.append(set_alpha.bind(value));
+
+func get_alpha() -> float:
+	if _console_ready:
+		return _internal_console.get_alpha();
+	else:
+		return 0.0;
+
 # Printers
 func print_line(text: String) -> void:
 	if _console_ready:
