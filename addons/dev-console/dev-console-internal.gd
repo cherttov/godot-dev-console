@@ -91,19 +91,7 @@ func _ready() -> void:
 func _input(event: InputEvent) -> void:
 	# Toggle console
 	if event.is_action_pressed("dev_console_toggle"):
-		self.visible = !self.visible;
-		if !console_keep_position_after_closing:
-			console_viewport.position = Vector2(0.0, 0.0);
-		if !console_keep_size_after_closing:
-			console_viewport.size = default_window_size;
-		
-		if self.visible:
-			%Input.grab_focus();
-			%Input.clear();
-			%Input.caret_column = %Input.text.length();
-		else:
-			%Input.release_focus();
-		
+		toggle_console();
 		get_viewport().set_input_as_handled();
 	
 	# Arrow up/down (history)
@@ -117,8 +105,7 @@ func _input(event: InputEvent) -> void:
 	
 	# Close on Escape (ESC)
 	if self.visible and event.is_action_pressed("ui_cancel"):
-		self.visible = false;
-		%Input.release_focus();
+		hide_console();
 		get_viewport().set_input_as_handled();
 	
 	if is_resizing:
@@ -218,7 +205,7 @@ func _on_input_submitted(input: String) -> void:
 
 # --------- Close button ---------
 func _on_close_button_pressed() -> void:
-	_close_console();
+	hide_console();
 
 # --------- Visibility ---------
 func show_console() -> void:
@@ -252,18 +239,14 @@ func _load_default_commands() -> void:
 	add_command("help", _help_command);
 	add_command("cls", clear_output);
 	add_command("set_alpha", _set_transparency);
-	add_command("close", _close_console);
+	add_command("close", hide_console);
 	add_command("quit", _quit_program);
-
-func _close_console() -> void:
-	visible = false;
-	%Input.release_focus();
 
 func _help_command() -> void:
 	var command_list: String = "";
 	
 	for command in commands.keys():
-		if !console_view_default_commands and command in ["close", "help", "cls", "set_alpha"]:
+		if !console_view_default_commands and command in ["close", "help", "cls", "set_alpha", "quit"]:
 			continue;
 		command_list = command_list + command + "\n";
 		
