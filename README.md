@@ -26,6 +26,8 @@ To rebind the key, navigate to `res://addons/dev-console` directory, open (doubl
 By default on the right side of the screen there will be an `Inspector` tab, at the top there is a `Console Toggle Keybind` parameter with a drop down menu of all the [Keys](https://docs.godotengine.org/en/4.6/classes/class_@globalscope.html#enum-globalscope-key) available.
 
 ## Usage ##
+Do not use the `DevConsoleInternal` class, intead use the `DevConsole` singleton as shown below
+
 ### Adding commands ###
 In order to use, add commands with reference to a coresponding function in `_ready` function like this:
 ```gdscript
@@ -88,7 +90,13 @@ DevConsole.print_error("Goodbye World!"); # Outputs to console red text
 
 DevConsole.clear_output(); # Clears the console
 
+DevConsole.show(); # Opens the console in player
+DevConsole.hide(); # Closes the console in player
+DevConsole.toggle(); # Opens/closes the console in player based on previous state
 DevConsole.is_visible(); # returns bool
+
+DevConsole.set_alpha(0.5) # Sets the console opacity to float value (0.5 to 1.0)
+DevConsole.get_alpha(); # returns float
 ```
 
 ## Requirements ##
