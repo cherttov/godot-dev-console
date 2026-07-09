@@ -52,19 +52,16 @@ func _setup_project_settings() -> void:
 		ProjectSettings.set_setting(CONFIG_PATH + "debug_only", true);
 	ProjectSettings.set_initial_value(CONFIG_PATH + "debug_only", true);
 	
+	var toggle_keybind_hint: String = "QuoteLeft,Tab,F1,F2,F3,F4,F5";
 	if !ProjectSettings.has_setting(CONFIG_PATH + "toggle_keybind"):
-		var default_key: InputEventKey = InputEventKey.new();
-		default_key.keycode = KEY_QUOTELEFT;
-		ProjectSettings.set_setting(CONFIG_PATH + "toggle_keybind", default_key);
+		ProjectSettings.set_setting(CONFIG_PATH + "toggle_keybind", "QuoteLeft");
 	ProjectSettings.add_property_info({
 		"name": CONFIG_PATH + "toggle_keybind",
-		"type": TYPE_OBJECT,
-		"hint": PROPERTY_HINT_RESOURCE_TYPE,
-		"hint_string": "InputEvent"
+		"type": TYPE_STRING,
+		"hint": PROPERTY_HINT_ENUM,
+		"hint_string": toggle_keybind_hint
 	});
-	var reference_key: InputEventKey = InputEventKey.new();
-	reference_key.keycode = KEY_QUOTELEFT;
-	ProjectSettings.set_initial_value(CONFIG_PATH + "toggle_keybind", reference_key);
+	ProjectSettings.set_initial_value(CONFIG_PATH + "toggle_keybind", "QuoteLeft");
 	
 	
 	if !ProjectSettings.has_setting(CONFIG_PATH + "close_on_escape"):

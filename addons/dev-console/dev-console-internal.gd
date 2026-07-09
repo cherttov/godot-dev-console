@@ -33,14 +33,13 @@ const THEME_PATH: String = "dev_console/theme/";
 @onready var console_keep_size_after_closing: bool = ProjectSettings.get_setting(CONFIG_PATH + "keep_size_after_closing", false);
 @onready var console_keep_position_after_closing: bool = ProjectSettings.get_setting(CONFIG_PATH + "keep_position_after_closing", false);
 @onready var console_keep_topmost: bool = ProjectSettings.get_setting(CONFIG_PATH + "keep_topmost", true);
-@onready var console_toggle_keybind: Variant = ProjectSettings.get_setting(CONFIG_PATH + "toggle_keybind");
+@onready var console_toggle_keybind: String = ProjectSettings.get_setting(CONFIG_PATH + "toggle_keybind", "QuoteLeft");
 @onready var console_close_on_escape: bool = ProjectSettings.get_setting(CONFIG_PATH + "close_on_escape", true);
 @onready var console_background_transparency: float = ProjectSettings.get_setting(THEME_PATH + "background_transparency", 0.9);
 
 # --------- Init ---------
 func _ready() -> void:
 	# Bind keybinds
-	print(ProjectSettings.get_setting(CONFIG_PATH + "toggle_keybind"));
 	_ensure_keybinds();
 	
 	# Some clearing
@@ -361,19 +360,24 @@ func _navigate_history(direction: int) -> void:
 	%Input.caret_column = %Input.text.length();
 
 # --------- Keybinds mapping ---------
+func _resolve_toggle_keybind(option: String) -> Key:
+	match option:
+		"QuoteLeft": return KEY_QUOTELEFT;
+		"Tab": return KEY_TAB;
+		"F1": return KEY_F1;
+		"F2": return KEY_F2;
+		"F3": return KEY_F3;
+		"F4": return KEY_F4;
+		"F5": return KEY_F5
+		_: return KEY_QUOTELEFT;
+
 func _ensure_keybinds() -> void:
 	# --- Toggle keybind ---
 	if !InputMap.has_action("dev_console_toggle"):
 		InputMap.add_action("dev_console_toggle");
-		
-		InputMap.action_erase_events("dev_console_toggle");
-		
-		if console_toggle_keybind is InputEventKey:
-			InputMap.action_add_event("dev_console_toggle", console_toggle_keybind);
-		else:
-			var default_event = InputEventKey.new()
-			default_event.keycode = KEY_QUOTELEFT
-			InputMap.action_add_event("dev_console_toggle", default_event)
+	var toggle_keybind: InputEventKey = InputEventKey.new();
+	toggle_keybind.physical_keycode = _resolve_toggle_keybind(console_toggle_keybind);
+	InputMap.action_add_event("dev_console_toggle", toggle_keybind);
 	
 	# --- Arrows for history ---
 	if console_use_history:
