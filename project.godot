@@ -20,15 +20,8 @@ DevConsole="*uid://5t75e6fsg3w7"
 
 [dev_console]
 
-configuration/title_label="CONSOLE"
-configuration/use_default_commands=true
-configuration/view_default_commands=true
-configuration/use_command_history=true
-configuration/background_transparency=0.9
-configuration/keep_size_after_closing=false
-configuration/keep_position_after_closing=false
-configuration/keep_topmost=true
-configuration/debug_only=true
+configuration/toggle_keybind=Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":16,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":96,"physical_keycode":0,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+
 
 [display]
 

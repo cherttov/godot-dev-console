@@ -23,21 +23,24 @@ var drag_offset: Vector2 = Vector2.ZERO;
 # For console resizing
 var is_resizing: bool = false;
 
-# Custom user properties
-var settings_path: String = "dev_console/configuration/";
-@onready var console_title_label: String = ProjectSettings.get_setting(settings_path + "title_label", "CONSOLE");
-@onready var console_use_default_commands: bool = ProjectSettings.get_setting(settings_path + "use_default_commands", true);
-@onready var console_use_history: bool = ProjectSettings.get_setting(settings_path + "use_command_history", true);
-@onready var console_background_transparency: float = ProjectSettings.get_setting(settings_path + "background_transparency", 0.9);
-@onready var console_view_default_commands: bool = ProjectSettings.get_setting(settings_path + "view_default_commands", true);
-@onready var console_keep_size_after_closing: bool = ProjectSettings.get_setting(settings_path + "keep_size_after_closing", false);
-@onready var console_keep_position_after_closing: bool = ProjectSettings.get_setting(settings_path + "keep_position_after_closing", false);
-@onready var console_keep_topmost: bool = ProjectSettings.get_setting(settings_path + "keep_topmost", true);
-@export var console_toggle_keybind: Key = KEY_QUOTELEFT;
+# Custom user settings
+const CONFIG_PATH: String = "dev_console/configuration/";
+const THEME_PATH: String = "dev_console/theme/";
+@onready var console_title_label: String = ProjectSettings.get_setting(CONFIG_PATH + "title_label", "CONSOLE");
+@onready var console_use_default_commands: bool = ProjectSettings.get_setting(CONFIG_PATH + "use_default_commands", true);
+@onready var console_use_history: bool = ProjectSettings.get_setting(CONFIG_PATH + "use_command_history", true);
+@onready var console_view_default_commands: bool = ProjectSettings.get_setting(CONFIG_PATH + "view_default_commands", true);
+@onready var console_keep_size_after_closing: bool = ProjectSettings.get_setting(CONFIG_PATH + "keep_size_after_closing", false);
+@onready var console_keep_position_after_closing: bool = ProjectSettings.get_setting(CONFIG_PATH + "keep_position_after_closing", false);
+@onready var console_keep_topmost: bool = ProjectSettings.get_setting(CONFIG_PATH + "keep_topmost", true);
+@onready var console_toggle_keybind: Variant = ProjectSettings.get_setting(CONFIG_PATH + "toggle_keybind");
+@onready var console_close_on_escape: bool = ProjectSettings.get_setting(CONFIG_PATH + "close_on_escape", true);
+@onready var console_background_transparency: float = ProjectSettings.get_setting(THEME_PATH + "background_transparency", 0.9);
 
 # --------- Init ---------
 func _ready() -> void:
 	# Bind keybinds
+	print(ProjectSettings.get_setting(CONFIG_PATH + "toggle_keybind"));
 	_ensure_keybinds();
 	
 	# Some clearing
@@ -105,7 +108,7 @@ func _input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled();
 	
 	# Close on Escape (ESC)
-	if self.visible and event.is_action_pressed("ui_cancel"):
+	if self.visible and console_close_on_escape and event.is_action_pressed("dev_console_escape"):
 		hide_console();
 		get_viewport().set_input_as_handled();
 	
@@ -359,13 +362,20 @@ func _navigate_history(direction: int) -> void:
 
 # --------- Keybinds mapping ---------
 func _ensure_keybinds() -> void:
+	# --- Toggle keybind ---
 	if !InputMap.has_action("dev_console_toggle"):
 		InputMap.add_action("dev_console_toggle");
 		
-		var event_key: InputEventKey = InputEventKey.new();
-		event_key.physical_keycode = console_toggle_keybind;
-		InputMap.action_add_event("dev_console_toggle", event_key);
+		InputMap.action_erase_events("dev_console_toggle");
+		
+		if console_toggle_keybind is InputEventKey:
+			InputMap.action_add_event("dev_console_toggle", console_toggle_keybind);
+		else:
+			var default_event = InputEventKey.new()
+			default_event.keycode = KEY_QUOTELEFT
+			InputMap.action_add_event("dev_console_toggle", default_event)
 	
+	# --- Arrows for history ---
 	if console_use_history:
 		# Arrow up
 		if !InputMap.has_action("dev_console_arrow_up"):
@@ -382,6 +392,15 @@ func _ensure_keybinds() -> void:
 			var event_key: InputEventKey = InputEventKey.new();
 			event_key.physical_keycode = KEY_DOWN;
 			InputMap.action_add_event("dev_console_arrow_down", event_key);
+	
+	# --- Escape key to close ---
+	if console_close_on_escape:
+		if !InputMap.has_action("dev_console_escape"):
+			InputMap.add_action("dev_console_escape");
+			
+			var event_key: InputEventKey = InputEventKey.new();
+			event_key.physical_keycode = KEY_ESCAPE;
+			InputMap.action_add_event("dev_console_escape", event_key);
 
 # --------- Helpers ---------
 func _escape_bbcode(text: String) -> String:
