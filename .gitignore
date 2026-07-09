@@ -4,8 +4,15 @@
 export.cfg
 export_presets.cfg
 *.tmp
-/testing
 *.translation
+
+# Personal testing ignore
+/testing
+
+# Macos metadata ignore
 .DS_Store
 **.DS_Store
 __MACOSX/
+
+# Vscode directory ignore
+.vscode/
