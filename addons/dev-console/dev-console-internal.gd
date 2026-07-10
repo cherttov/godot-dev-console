@@ -161,16 +161,6 @@ func get_commands() -> Dictionary[String, Callable]:
 func get_signals() -> Dictionary[String, Dictionary]:
 	return signals.duplicate();
 
-# --------- Printers ---------
-func print_line(text: String) -> void:
-	_output_callback(text);
-
-func print_error(text: String) -> void:
-	_output_error(text);
-
-func print_warning(text: String) -> void:
-	_output_warning(text);
-
 # --------- Input submitted ---------
 func _on_input_submitted(input: String) -> void:
 	var clean_input: String = input.strip_edges();
@@ -191,16 +181,26 @@ func _on_input_submitted(input: String) -> void:
 	parts.remove_at(0);
 	
 	# Outputting input
-	_output_input(clean_input);
+	output_input(clean_input);
 	
 	# Calling callback & outputting result
 	if commands.has(command_name):
-		var result: Variant = commands[command_name].callv(parts);
-		
+		var target_callable: Callable = commands[command_name];
+		var expected_args: int = target_callable.get_argument_count();
+		var provided_args: int = parts.size();
+
+		if provided_args != expected_args:
+			output_warning(
+				"WARNING: " + command_name 
+				+ " expects " + str(expected_args)
+				+ " arguments, but received " + str(provided_args)
+			);
+
+		var result: Variant = target_callable.callv(parts);
 		if result != null:
-			_output_callback(str(result));
+			output_callback(str(result));
 	else:
-		_output_error("Unknown command.");
+		output_error("ERROR: Unknown command " + command_name);
 	
 	%Input.clear();
 	%Input.grab_focus();
@@ -262,7 +262,7 @@ func _help_command() -> void:
 		command_list = command_list + command + "\n";
 		
 	command_list = command_list.trim_suffix("\n");
-	_output_callback(command_list);
+	output_callback(command_list);
 
 func clear_output() -> void:
 	%Output.clear();
@@ -274,16 +274,16 @@ func _quit_program() -> void:
 	self.get_tree().quit();
 
 # --------- Output ---------
-func _output_input(text: String) -> void:
+func output_input(text: String) -> void:
 	%Output.append_text("[font_size=14][color=gray] > " + _escape_bbcode(text) + "[/color][/font_size]\n");
 
-func _output_error(text: String) -> void:
+func output_error(text: String) -> void:
 	%Output.append_text("[color=red]" + _escape_bbcode(text) + "[/color]\n");
 
-func _output_warning(text: String) -> void:
+func output_warning(text: String) -> void:
 	%Output.append_text("[color=orange]" + _escape_bbcode(text) + "[/color]\n");
 
-func _output_callback(text: String) -> void:
+func output_callback(text: String) -> void:
 	var safe_text: String = _escape_bbcode(text);
 	if safe_text.ends_with("\n"):
 		%Output.append_text(safe_text);

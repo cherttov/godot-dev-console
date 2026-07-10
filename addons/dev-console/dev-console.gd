@@ -113,19 +113,19 @@ func get_alpha() -> float:
 # Printers
 func print_line(text: String) -> void:
 	if _console_ready:
-		_internal_console.print_line(text);
+		_internal_console.output_callback(text);
 	else:
 		_pending_calls.append(print_line.bind(text));
 
 func print_error(text: String) -> void:
 	if _console_ready:
-		_internal_console.print_error(text);
+		_internal_console.output_error(text);
 	else:
 		_pending_calls.append(print_error.bind(text));
 
 func print_warning(text: String) -> void:
 	if _console_ready:
-		_internal_console.print_warning(text);
+		_internal_console.output_warning(text);
 	else:
 		_pending_calls.append(print_warning.bind(text));
 
