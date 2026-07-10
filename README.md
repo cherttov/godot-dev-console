@@ -122,6 +122,8 @@ public partial class Main : Node
 > **Note:** DevConsole doesn't support "...args" (params) in C#
 
 ### Adding signals ###
+For more information, please visit official [documentation](https://docs.godotengine.org/en/stable/tutorials/scripting/c_sharp/c_sharp_signals.html)
+
 ```csharp
 public partial class Main : Node
 {
