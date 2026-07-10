@@ -96,23 +96,38 @@ func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("dev_console_toggle"):
 		toggle_console();
 		get_viewport().set_input_as_handled();
+		return;
 	
 	# Arrow up/down (history)
-	if self.visible and console_use_history and !command_history.is_empty():
-		if event.is_action_pressed("dev_console_arrow_up"):
-			_navigate_history(1);
-			get_viewport().set_input_as_handled();
-		elif event.is_action_pressed("dev_console_arrow_down"):
-			_navigate_history(-1);
-			get_viewport().set_input_as_handled();
+	if self.visible: 
+		if console_use_history and !command_history.is_empty():
+			if event.is_action_pressed("dev_console_arrow_up"):
+				_navigate_history(1);
+				get_viewport().set_input_as_handled();
+				return;
+			elif event.is_action_pressed("dev_console_arrow_down"):
+				_navigate_history(-1);
+				get_viewport().set_input_as_handled();
+				return;
 	
-	# Close on Escape (ESC)
-	if self.visible and console_close_on_escape and event.is_action_pressed("dev_console_escape"):
-		hide_console();
-		get_viewport().set_input_as_handled();
+		# Close on Escape (ESC)
+		if console_close_on_escape and event.is_action_pressed("dev_console_escape"):
+			hide_console();
+			get_viewport().set_input_as_handled();
+			return;
 	
-	if is_resizing:
-		_resize_console_window(event);
+		if is_resizing:
+			_resize_console_window(event);
+			return;
+		
+		# This while testing had no impact on input
+		#if %Input.has_focus():
+			#if event is InputEventKey and not event.is_echo():
+				#if event.as_text().length() == 1:
+					#pass;
+		#else:
+			#if event is InputEventKey or event is InputEventMouseButton:
+				#get_viewport().set_input_as_handled();
 
 # --------- Command adding ---------
 func add_command(command_name: String, callback: Callable) -> void:
@@ -229,6 +244,7 @@ func hide_console() -> void:
 	if not self.visible:
 		return;
 	self.visible = false;
+	
 	%Input.release_focus();
 
 func toggle_console() -> void:
