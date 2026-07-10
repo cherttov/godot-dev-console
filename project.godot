@@ -11,24 +11,12 @@ config_version=5
 [application]
 
 config/name="dev-console"
-config/features=PackedStringArray("4.7", "GL Compatibility")
+config/features=PackedStringArray("4.7", "C#", "GL Compatibility")
 config/icon="uid://ch2hwjikuonif"
 
 [autoload]
 
 DevConsole="*uid://5t75e6fsg3w7"
-
-[dev_console]
-
-configuration/title_label="CONSOLE"
-configuration/use_default_commands=true
-configuration/view_default_commands=true
-configuration/use_command_history=true
-configuration/background_transparency=0.9
-configuration/keep_size_after_closing=false
-configuration/keep_position_after_closing=false
-configuration/keep_topmost=true
-configuration/debug_only=true
 
 [display]
 

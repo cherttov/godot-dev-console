@@ -23,17 +23,19 @@ var drag_offset: Vector2 = Vector2.ZERO;
 # For console resizing
 var is_resizing: bool = false;
 
-# Custom user properties
-var settings_path: String = "dev_console/configuration/";
-@onready var console_title_label: String = ProjectSettings.get_setting(settings_path + "title_label", "CONSOLE");
-@onready var console_use_default_commands: bool = ProjectSettings.get_setting(settings_path + "use_default_commands", true);
-@onready var console_use_history: bool = ProjectSettings.get_setting(settings_path + "use_command_history", true);
-@onready var console_background_transparency: float = ProjectSettings.get_setting(settings_path + "background_transparency", 0.9);
-@onready var console_view_default_commands: bool = ProjectSettings.get_setting(settings_path + "view_default_commands", true);
-@onready var console_keep_size_after_closing: bool = ProjectSettings.get_setting(settings_path + "keep_size_after_closing", false);
-@onready var console_keep_position_after_closing: bool = ProjectSettings.get_setting(settings_path + "keep_position_after_closing", false);
-@onready var console_keep_topmost: bool = ProjectSettings.get_setting(settings_path + "keep_topmost", true);
-@export var console_toggle_keybind: Key = KEY_QUOTELEFT;
+# Custom user settings
+const CONFIG_PATH: String = "dev_console/configuration/";
+const THEME_PATH: String = "dev_console/theme/";
+@onready var console_title_label: String = ProjectSettings.get_setting(CONFIG_PATH + "title_label", "CONSOLE");
+@onready var console_use_default_commands: bool = ProjectSettings.get_setting(CONFIG_PATH + "use_default_commands", true);
+@onready var console_use_history: bool = ProjectSettings.get_setting(CONFIG_PATH + "use_command_history", true);
+@onready var console_view_default_commands: bool = ProjectSettings.get_setting(CONFIG_PATH + "view_default_commands", true);
+@onready var console_keep_size_after_closing: bool = ProjectSettings.get_setting(CONFIG_PATH + "keep_size_after_closing", false);
+@onready var console_keep_position_after_closing: bool = ProjectSettings.get_setting(CONFIG_PATH + "keep_position_after_closing", false);
+@onready var console_keep_topmost: bool = ProjectSettings.get_setting(CONFIG_PATH + "keep_topmost", true);
+@onready var console_toggle_keybind: String = ProjectSettings.get_setting(CONFIG_PATH + "toggle_keybind", "QuoteLeft");
+@onready var console_close_on_escape: bool = ProjectSettings.get_setting(CONFIG_PATH + "close_on_escape", true);
+@onready var console_background_transparency: float = ProjectSettings.get_setting(THEME_PATH + "background_transparency", 0.9);
 
 # --------- Init ---------
 func _ready() -> void:
@@ -105,7 +107,7 @@ func _input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled();
 	
 	# Close on Escape (ESC)
-	if self.visible and event.is_action_pressed("ui_cancel"):
+	if self.visible and console_close_on_escape and event.is_action_pressed("dev_console_escape"):
 		hide_console();
 		get_viewport().set_input_as_handled();
 	
@@ -159,16 +161,6 @@ func get_commands() -> Dictionary[String, Callable]:
 func get_signals() -> Dictionary[String, Dictionary]:
 	return signals.duplicate();
 
-# --------- Printers ---------
-func print_line(text: String) -> void:
-	_output_callback(text);
-
-func print_error(text: String) -> void:
-	_output_error(text);
-
-func print_warning(text: String) -> void:
-	_output_warning(text);
-
 # --------- Input submitted ---------
 func _on_input_submitted(input: String) -> void:
 	var clean_input: String = input.strip_edges();
@@ -189,16 +181,26 @@ func _on_input_submitted(input: String) -> void:
 	parts.remove_at(0);
 	
 	# Outputting input
-	_output_input(clean_input);
+	output_input(clean_input);
 	
 	# Calling callback & outputting result
 	if commands.has(command_name):
-		var result: Variant = commands[command_name].callv(parts);
-		
+		var target_callable: Callable = commands[command_name];
+		var expected_args: int = target_callable.get_argument_count();
+		var provided_args: int = parts.size();
+
+		if provided_args != expected_args:
+			output_warning(
+				"WARNING: " + command_name 
+				+ " expects " + str(expected_args)
+				+ " arguments, but received " + str(provided_args)
+			);
+
+		var result: Variant = target_callable.callv(parts);
 		if result != null:
-			_output_callback(str(result));
+			output_callback(str(result));
 	else:
-		_output_error("Unknown command.");
+		output_error("ERROR: Unknown command " + command_name);
 	
 	%Input.clear();
 	%Input.grab_focus();
@@ -260,7 +262,7 @@ func _help_command() -> void:
 		command_list = command_list + command + "\n";
 		
 	command_list = command_list.trim_suffix("\n");
-	_output_callback(command_list);
+	output_callback(command_list);
 
 func clear_output() -> void:
 	%Output.clear();
@@ -272,16 +274,16 @@ func _quit_program() -> void:
 	self.get_tree().quit();
 
 # --------- Output ---------
-func _output_input(text: String) -> void:
+func output_input(text: String) -> void:
 	%Output.append_text("[font_size=14][color=gray] > " + _escape_bbcode(text) + "[/color][/font_size]\n");
 
-func _output_error(text: String) -> void:
+func output_error(text: String) -> void:
 	%Output.append_text("[color=red]" + _escape_bbcode(text) + "[/color]\n");
 
-func _output_warning(text: String) -> void:
+func output_warning(text: String) -> void:
 	%Output.append_text("[color=orange]" + _escape_bbcode(text) + "[/color]\n");
 
-func _output_callback(text: String) -> void:
+func output_callback(text: String) -> void:
 	var safe_text: String = _escape_bbcode(text);
 	if safe_text.ends_with("\n"):
 		%Output.append_text(safe_text);
@@ -358,14 +360,26 @@ func _navigate_history(direction: int) -> void:
 	%Input.caret_column = %Input.text.length();
 
 # --------- Keybinds mapping ---------
+func _resolve_toggle_keybind(option: String) -> Key:
+	match option:
+		"QuoteLeft": return KEY_QUOTELEFT;
+		"Tab": return KEY_TAB;
+		"F1": return KEY_F1;
+		"F2": return KEY_F2;
+		"F3": return KEY_F3;
+		"F4": return KEY_F4;
+		"F5": return KEY_F5
+		_: return KEY_QUOTELEFT;
+
 func _ensure_keybinds() -> void:
+	# --- Toggle keybind ---
 	if !InputMap.has_action("dev_console_toggle"):
 		InputMap.add_action("dev_console_toggle");
-		
-		var event_key: InputEventKey = InputEventKey.new();
-		event_key.physical_keycode = console_toggle_keybind;
-		InputMap.action_add_event("dev_console_toggle", event_key);
+	var toggle_keybind: InputEventKey = InputEventKey.new();
+	toggle_keybind.physical_keycode = _resolve_toggle_keybind(console_toggle_keybind);
+	InputMap.action_add_event("dev_console_toggle", toggle_keybind);
 	
+	# --- Arrows for history ---
 	if console_use_history:
 		# Arrow up
 		if !InputMap.has_action("dev_console_arrow_up"):
@@ -382,6 +396,15 @@ func _ensure_keybinds() -> void:
 			var event_key: InputEventKey = InputEventKey.new();
 			event_key.physical_keycode = KEY_DOWN;
 			InputMap.action_add_event("dev_console_arrow_down", event_key);
+	
+	# --- Escape key to close ---
+	if console_close_on_escape:
+		if !InputMap.has_action("dev_console_escape"):
+			InputMap.add_action("dev_console_escape");
+			
+			var event_key: InputEventKey = InputEventKey.new();
+			event_key.physical_keycode = KEY_ESCAPE;
+			InputMap.action_add_event("dev_console_escape", event_key);
 
 # --------- Helpers ---------
 func _escape_bbcode(text: String) -> String:
