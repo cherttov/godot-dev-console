@@ -5,6 +5,7 @@ After installation turn `ON` and `OFF` the plugin (if the plugin is already `OFF
 > **Note:** Before updating or deleting the asset, turn it `OFF` in the **ProjectSettings > Plugins**
 
 By openning the `ProjectSettings` **(Project > Project Settings > General)** and scrolling down you can find the `Dev Console/Configuration` tab.  
+
 There will be the following parameters:
 |Parameter                        |Value Type           |
 |---------------------------------|---------------------|
@@ -12,20 +13,20 @@ There will be the following parameters:
 |`Default Commands`               | Boolean             |
 |`View Default Commands`          | Boolean             |
 |`Use History`                    | Boolean             |
-|`Background Transparency`        | Float *(0.5 to 1.0)*|
 |`Keep Size After Closing`        | Boolean             |
 |`Keep Position After Closing`    | Boolean             |
 |`Keep Topmost`                   | Boolean             |
 |`Debug Only`                     | Boolean             |
+|`Toggle Keybind`                 | String              |
+|`Close On Escape`                | Boolean             |
+|---------------------------------|---------------------|
+|`Background Transparency`        | Float *(0.5 to 1.0)*|
 
 > **Note:** To reset the settings just turn `OFF` and `ON` the plugin
 
-By default the keybind for openning/closing the console is `KEY_QUOTELEFT`. 
+By default the keybind for openning/closing the console is `KEY_QUOTELEFT`.
 
-To rebind the key, navigate to `res://addons/dev-console` directory, open (double-click) the `dev-console.tscn` scene, click once on the root `CanvasLayer` node (DevConsole),  
-By default on the right side of the screen there will be an `Inspector` tab, at the top there is a `Console Toggle Keybind` parameter with a drop down menu of all the [Keys](https://docs.godotengine.org/en/4.6/classes/class_@globalscope.html#enum-globalscope-key) available.
-
-## Usage ##
+## Usage (GDscript) ##
 Do not use the `DevConsoleInternal` class, intead use the `DevConsole` singleton as shown below
 
 ### Adding commands ###
@@ -98,6 +99,44 @@ DevConsole.is_visible(); # returns bool
 DevConsole.set_alpha(0.5) # Sets the console opacity to float value (0.5 to 1.0)
 DevConsole.get_alpha(); # returns float
 ```
+
+## Usage (C#) ##
+Read the `GDscript` usage first, as this section of **README.md** doesn't go deep into the logic of `DevConsole` methods
+
+### Adding commands ###
+```csharp
+public partial class Main : Node
+{
+  public override void _Ready()
+  {
+    DevConsole.AddCommand("heal", Callable.From<int, string>(Heal));
+  }
+
+  // It is recommended to make all parameters a 'string' to avoid crashes in the DevConsoleInternal
+  private string Heal(int amount)
+  {
+    return $"Healed player for {amount} HP!";
+  }
+}
+```
+> **Note:** DevConsole doesn't support "...args" (params) in C#
+
+### Adding signals ###
+```csharp
+public partial class Main : Node
+{
+  [Signal]
+  public delegate void TestSignalEventHandler();
+  
+  public override void _Ready()
+  {
+    DevConsole.AddSignal("test_signal", new Signal(this, SignalName.TestSignal));
+  }
+}
+```
+
+### Other functions ###
+Almost identical to GDscript functions, but use `CamelCase` instead of `snake_case`
 
 ## Requirements ##
 **Language:** GDscript  
