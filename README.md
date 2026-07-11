@@ -158,7 +158,7 @@ Almost identical to GDScript functions, but use `CamelCase` instead of `snake_ca
 ## Requirements ##
 **Language:** GDScript/C#  
 **Minimum version:** Godot 4.6.x  
-**Maximum version:** Godot 4.7.x  
+**Maximum version:** Godot 4.x.x  
 
 ## Example output ##
 <img width="640" height="360" alt="example_1" src="https://github.com/user-attachments/assets/105d0f49-1eeb-431f-95c0-8eb4e93faceb" />   
