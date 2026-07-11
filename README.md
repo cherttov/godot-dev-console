@@ -26,7 +26,7 @@ There will be the following parameters:
 
 By default the keybind for openning/closing the console is `KEY_QUOTELEFT`.
 
-## Usage (GDscript) ##
+## Usage (GDScript) ##
 Do not use the `DevConsoleInternal` class, intead use the `DevConsole` singleton as shown below
 
 ### Adding commands ###
@@ -149,10 +149,10 @@ public partial class Main : Node
 ```
 
 ### Other functions ###
-Almost identical to GDscript functions, but use `CamelCase` instead of `snake_case`
+Almost identical to GDScript functions, but use `CamelCase` instead of `snake_case`
 
 ## Requirements ##
-**Language:** GDscript  
+**Language:** GDScript/C#  
 **Minimum version:** Godot 4.6.x  
 **Maximum version:** Godot 4.7.x  
 
