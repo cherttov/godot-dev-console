@@ -64,6 +64,7 @@ func _input(event: InputEvent) -> void:
 
 ### Using lambdas ###
 Here is my personal example of how to use lambdas with `Dev Console`
+- Documentation regarding Godot/GDScript [Lambdas](https://docs.godotengine.org/en/latest/tutorials/scripting/gdscript/gdscript_basics.html#lambda-functions)
 ```gdscript
 DevConsole.add_command("sync_stats", func() -> String:
   return "RPCs sent: %d, Last size: %d bytes" % [
@@ -104,6 +105,8 @@ DevConsole.get_alpha(); # returns float
 Read the `GDscript` usage first, as this section of **README.md** doesn't go deep into the logic of `DevConsole` methods
 
 ### Adding commands ###
+- Documentation regarding Godot/C# [Callables](https://docs.godotengine.org/en/stable/classes/class_callable.html#)
+
 ```csharp
 public partial class Main : Node
 {
@@ -122,7 +125,7 @@ public partial class Main : Node
 > **Note:** DevConsole doesn't support "...args" (params) in C#
 
 ### Adding signals ###
-For more information, please visit official [documentation](https://docs.godotengine.org/en/stable/tutorials/scripting/c_sharp/c_sharp_signals.html)
+- Documentation regarding Godot/C# [Signals](https://docs.godotengine.org/en/stable/tutorials/scripting/c_sharp/c_sharp_signals.html)
 
 ```csharp
 public partial class Main : Node
