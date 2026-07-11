@@ -7,7 +7,7 @@ Godot addon that adds an in-game developer console to run and output in-game com
 After installation turn `ON` and `OFF` the plugin (if the plugin is already `OFF`, just turn it `ON`), this ensures the configuration settings load properly.
 > **Note:** Before updating or deleting the asset, turn it `OFF` in the **ProjectSettings > Plugins**
 
-By openning the `ProjectSettings` **(Project > Project Settings > General)** and scrolling down you can find the `Dev Console/Configuration` tab.  
+By openning the `ProjectSettings` **(Project > Project Settings > General)** and scrolling down you can find the `DevConsole/Configuration` tab.  
 
 There will be the following parameters:
 |Parameter                        |Value Type           |
@@ -46,7 +46,8 @@ func _print(first_word: String, ...others) -> String:
     output += " " + word;
   return output;
 ```
-> **Note:** By returning a string you pass an output to the console, which will be displayed in it. (Anything other than String will be converted to String)
+> **Note:** By returning a string you pass an output to the console, which will be displayed in it.  
+(Anything other than String will be converted to String)
 
 ### Adding signals ###
 Add a signal for console to listen to like this:
@@ -63,10 +64,10 @@ func _input(event: InputEvent) -> void:
   if event.is_action_pressed("ui_cancel"):
     emit_signal("test", "Hello World!");
 ```
-> **Note:** Signal doesn't have to return any value, but if it does, it is shown as a regular output in the OutputBox once the signal is emitted.
+> **Note:** If a signal has parameters (like in the example), they are shown as a regular output in the OutputBox once the signal is emitted.
 
 ### Using lambdas ###
-Here is my personal example of how to use lambdas with `Dev Console`
+Here is my personal example of how to use lambdas with `DevConsole`
 - Documentation regarding Godot/GDScript [Lambdas](https://docs.godotengine.org/en/latest/tutorials/scripting/gdscript/gdscript_basics.html#lambda-functions)
 ```gdscript
 DevConsole.add_command("sync_stats", func() -> String:
