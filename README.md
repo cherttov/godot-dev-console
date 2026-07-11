@@ -112,7 +112,7 @@ public partial class Main : Node
     DevConsole.AddCommand("heal", Callable.From<int, string>(Heal));
   }
 
-  // It is recommended to make all parameters a 'string' to avoid crashes in the DevConsoleInternal
+  // It is recommended to make all parameters a 'string' to avoid unexpected behavior
   private string Heal(int amount)
   {
     return $"Healed player for {amount} HP!";
@@ -128,11 +128,19 @@ For more information, please visit official [documentation](https://docs.godoten
 public partial class Main : Node
 {
   [Signal]
-  public delegate void TestSignalEventHandler();
+  public delegate void TestSignalEventHandler(string message);
   
   public override void _Ready()
   {
     DevConsole.AddSignal("test_signal", new Signal(this, SignalName.TestSignal));
+  }
+
+  public override void _Input(InputEvent @event)
+  {
+    if (@event.IsActionPressed("ui_accept")
+    {
+      EmitSignal(SignalName.TestSignal, "Hello World!");
+    }
   }
 }
 ```
