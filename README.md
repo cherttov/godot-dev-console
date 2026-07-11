@@ -1,5 +1,8 @@
 # Godot Developer Console #
 Godot addon that adds an in-game developer console to run and output in-game commands.
+
+> **Note:** All of the documentation below is written based on the newest [Release](https://github.com/cherttov/godot-dev-console/releases/latest)
+
 ## Configuration ##
 After installation turn `ON` and `OFF` the plugin (if the plugin is already `OFF`, just turn it `ON`), this ensures the configuration settings load properly.
 > **Note:** Before updating or deleting the asset, turn it `OFF` in the **ProjectSettings > Plugins**
