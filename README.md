@@ -77,7 +77,7 @@ DevConsole.add_command("sync_stats", func() -> String:
   ];
 );
 ```
-> **Note:** While passing parameters to a lambda function it is recommended to pass everything as a **String** (e.g. `str(id = 5)`)
+> **Note:** While passing parameters to a lambda function, you must pass everything as a **String** (e.g. `str(id = 5)`)
 
 ### Other functions ###
 ```gdscript
@@ -116,13 +116,14 @@ public partial class Main : Node
 {
   public override void _Ready()
   {
-    DevConsole.AddCommand("heal", Callable.From<int, string>(Heal));
+    DevConsole.AddCommand("heal", Callable.From<string, string>(Heal));
   }
 
   // It is recommended to make all parameters a 'string' to avoid unexpected behavior
-  private string Heal(int amount)
+  private string Heal(string amount)
   {
-    return $"Healed player for {amount} HP!";
+    int parsedAmount = (int)amount;
+    return $"Healed player for {parsedAmount} HP!";
   }
 }
 ```
