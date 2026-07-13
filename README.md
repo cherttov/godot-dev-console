@@ -176,7 +176,7 @@ AI was used to refactor the code, improve overall code structure and test edge c
 Distributed under the MIT License. See [LICENSE](https://github.com/cherttov/godot-dev-console/blob/main/LICENSE) for more information.
 
 ## Example output ##
-<img width="640" height="360" alt="example_1" src="https://github.com/user-attachments/assets/105d0f49-1eeb-431f-95c0-8eb4e93faceb" />   
+<img width="694" height="403" alt="example_1" src="https://github.com/cherttov/godot-dev-console/blob/main/example_1.png" />   
 
 
 *Open to suggestions for improvement. For suggestions, issues, or bugs, please use the [Issues](https://github.com/cherttov/godot-dev-console/issues) tab*
