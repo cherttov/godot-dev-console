@@ -176,6 +176,9 @@ func get_commands() -> Dictionary[String, Callable]:
 func get_signals() -> Dictionary[String, Dictionary]:
 	return signals.duplicate();
 
+func is_visible() -> bool:
+	return self.visible;
+
 # --------- Input submitted ---------
 func _on_input_submitted(input: String) -> void:
 	var clean_input: String = input.strip_edges();

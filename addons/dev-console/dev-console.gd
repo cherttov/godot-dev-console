@@ -65,12 +65,12 @@ func has_signal_connected(signal_name: String) -> bool:
 # Getters
 func get_commands() -> Dictionary[String, Callable]:
 	if _console_ready:
-		return _internal_console.commands;
+		return _internal_console.get_commands();
 	return { };
 
 func get_signals() -> Dictionary[String, Dictionary]:
 	if _console_ready:
-		return _internal_console.signals;
+		return _internal_console.get_signals();
 	return { };
 
 # Visibility
@@ -94,7 +94,7 @@ func toggle_visibility() -> void:
 
 func is_visible() -> bool:
 	if _console_ready:
-		return _internal_console.visible;
+		return _internal_console.is_visible();
 	return false;
 
 # Opacity
