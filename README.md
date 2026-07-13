@@ -3,6 +3,11 @@ Godot addon that adds an in-game developer console to run and output in-game com
 
 > **Note:** All of the documentation below is written based on the newest [Release](https://github.com/cherttov/godot-dev-console/releases/latest)
 
+## Installation ##
+1. Download the [latest release](https://github.com/cherttov/godot-dev-console/releases/latest) from the repository.
+2. Extract the `addons/dev-console` folder into your Godot project's `addons` directory.
+3. Enable the plugin in your Project Settings and restart the Godot Engine.
+
 ## Configuration ##
 After installation turn `ON` and `OFF` the plugin (if the plugin is already `OFF`, just turn it `ON`), this ensures the configuration settings load properly.
 > **Note:** Before updating or deleting the asset, turn it `OFF` in the **ProjectSettings > Plugins**
@@ -22,7 +27,7 @@ There will be the following parameters:
 |`Debug Only`                     | Boolean             |
 |`Toggle Keybind`                 | String              |
 |`Close On Escape`                | Boolean             |
-|---------------------------------|---------------------|
+|-                                |-                    |
 |`Background Transparency`        | Float *(0.5 to 1.0)*|
 
 > **Note:** To reset the settings just turn `OFF` and `ON` the plugin
@@ -33,6 +38,9 @@ By default the keybind for openning/closing the console is `KEY_QUOTELEFT`.
 Do not use the `DevConsoleInternal` class, intead use the `DevConsole` singleton as shown below
 
 ### Adding commands ###
+**IMPORTANT:** All the parameters passed into a command must be [strings](https://docs.godotengine.org/en/stable/classes/class_string.html).  
+If you need other types, you must parse them manually inside your function (e.g. `int(amount)`)
+
 In order to use, add commands with reference to a coresponding function in `_ready` function like this:
 ```gdscript
 func _ready() -> void:
@@ -160,6 +168,12 @@ Almost identical to GDScript functions, but use `CamelCase` instead of `snake_ca
 **Language:** GDScript/C#  
 **Minimum version:** Godot 4.6.x  
 **Maximum version:** Godot 4.x.x  
+
+## AI Usage ##
+AI was used to refactor the code, improve overall code structure and test edge cases.
+
+## License ##
+Distributed under the MIT License. See [LICENSE](https://github.com/cherttov/godot-dev-console/blob/main/LICENSE) for more information.
 
 ## Example output ##
 <img width="640" height="360" alt="example_1" src="https://github.com/user-attachments/assets/105d0f49-1eeb-431f-95c0-8eb4e93faceb" />   
