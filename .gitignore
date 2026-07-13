@@ -6,13 +6,16 @@ export_presets.cfg
 *.tmp
 *.translation
 
-# Personal testing ignore
+# Testing specific ignores
 /testing
 
-# Macos metadata ignore
+# Macos specifig ignores
 .DS_Store
 **.DS_Store
 __MACOSX/
 
-# Vscode directory ignore
+# Vscode specific ignores
 .vscode/
+
+# VisualStudio specific ignores
+.vs/

@@ -27,9 +27,9 @@ var is_resizing := false
 const CFG := "dev_console/configuration/"
 const THM := "dev_console/theme/"
 @onready var c_title_label := ProjectSettings.get_setting(CFG + "title_label", "CONSOLE")
-@onready var c_use_default_commands := ProjectSettings.get_setting(CFG + "use_default_commands", true)
+@onready var c_use_def_commands := ProjectSettings.get_setting(CFG + "use_default_commands", true)
 @onready var c_use_history := ProjectSettings.get_setting(CFG + "use_command_history", true)
-@onready var c_view_default_commands := ProjectSettings.get_setting(CFG + "view_default_commands", true)
+@onready var c_view_def_commands := ProjectSettings.get_setting(CFG + "view_default_commands", true)
 @onready var c_keep_size_after_closing := ProjectSettings.get_setting(CFG + "keep_size_after_closing", false)
 @onready var c_keep_position_after_closing := ProjectSettings.get_setting(CFG + "keep_position_after_closing", false)
 @onready var c_keep_topmost := ProjectSettings.get_setting(CFG + "keep_topmost", true)
@@ -43,28 +43,21 @@ func _ready() -> void:
 	_ensure_keybinds()
 	
 	# Some clearing
-	self.visible = false
+	visible = false
 	%Input.release_focus()
 	%Input.clear()
 	
 	# Connecting signals
-	if !%CloseButton.pressed.is_connected(_on_close_button_pressed):
-		%CloseButton.pressed.connect(_on_close_button_pressed)
-	if !%Input.text_submitted.is_connected(_on_input_submitted):
-		%Input.text_submitted.connect(_on_input_submitted)
-	if !$Control/VBoxContainer/Panel.gui_input.is_connected(_on_panel_gui_input):
-		$Control/VBoxContainer/Panel.gui_input.connect(_on_panel_gui_input)
-	if !%ResizeAnchor.gui_input.is_connected(_on_anchor_gui_input):
-		%ResizeAnchor.gui_input.connect(_on_anchor_gui_input)
-	if !%ResizeAnchor.mouse_entered.is_connected(func(): %ResizeAnchor.self_modulate.a = 1.0):
-		%ResizeAnchor.mouse_entered.connect(func(): %ResizeAnchor.self_modulate.a = 1.0)
-	if !%ResizeAnchor.mouse_exited.is_connected(func(): %ResizeAnchor.self_modulate.a = 0.7):
-		%ResizeAnchor.mouse_exited.connect(func(): %ResizeAnchor.self_modulate.a = 0.7)
-	if !get_viewport().size_changed.is_connected(_on_viewport_size_changed):
-		get_viewport().size_changed.connect(_on_viewport_size_changed)
+	%CloseButton.pressed.connect(_on_close_button_pressed)
+	%Input.text_submitted.connect(_on_input_submitted)
+	$Control/VBoxContainer/Panel.gui_input.connect(_on_panel_gui_input)
+	%ResizeAnchor.gui_input.connect(_on_anchor_gui_input)
+	%ResizeAnchor.mouse_entered.connect(func(): %ResizeAnchor.self_modulate.a = 1.0)
+	%ResizeAnchor.mouse_exited.connect(func(): %ResizeAnchor.self_modulate.a = 0.7)
+	get_viewport().size_changed.connect(_on_viewport_size_changed)
 	
 	# Load default commands
-	if c_use_default_commands: _load_default_commands()
+	if c_use_def_commands: _load_default_commands()
 	
 	# Set label & transparency
 	%TitleLabel.text = c_title_label
@@ -72,7 +65,7 @@ func _ready() -> void:
 	%ResizeAnchor.self_modulate.a = 0.7
 	
 	# Set rendering layer & disable focus
-	if c_keep_topmost: self.layer = RenderingServer.CANVAS_LAYER_MAX
+	if c_keep_topmost: layer = RenderingServer.CANVAS_LAYER_MAX
 	%CloseButton.focus_mode = Control.FOCUS_NONE
 	%Output.focus_mode = Control.FOCUS_NONE
 	
@@ -92,7 +85,7 @@ func _input(event: InputEvent) -> void:
 		return
 	
 	# Return if hidden
-	if not self.visible: return
+	if not visible: return
 	
 	# Arrow up/down (history)
 	if c_use_history and !command_history.is_empty():
@@ -188,7 +181,7 @@ func _on_input_submitted(input: String) -> void:
 			)
 		
 		# Call & output callback/result
-		var result: Variant = target.callv(parts)
+		var result := target.callv(parts)
 		if result != null: output_callback(str(result))
 	else:
 		output_error("ERROR: Unknown command " + command_name)
@@ -197,8 +190,8 @@ func _on_input_submitted(input: String) -> void:
 
 # --------- Visibility & Opacity ---------
 func show_console() -> void:
-	if self.visible: return
-	self.visible = true
+	if visible: return
+	visible = true
 	
 	if !c_keep_position_after_closing: console_viewport.position = Vector2(0.0, 0.0)
 	if !c_keep_size_after_closing: console_viewport.size = default_window_size
@@ -206,17 +199,17 @@ func show_console() -> void:
 	_focus_input(true)
 
 func hide_console() -> void:
-	if not self.visible: return
-	self.visible = false
+	if not visible: return
+	visible = false
 	%Input.release_focus()
 
 func toggle_console() -> void:
-	if self.visible: hide_console()
+	if visible: hide_console()
 	else: show_console()
 
 func get_alpha() -> float: return float($Control.modulate.a)
 func set_alpha(value: String) -> void: $Control.modulate.a = clampf(value.to_float(), 0.5, 1.0)
-func is_visible() -> bool: return self.visible
+func is_visible() -> bool: return visible
 func _on_close_button_pressed() -> void: hide_console()
 
 # --------- Default commands ---------
@@ -229,9 +222,9 @@ func _load_default_commands() -> void:
 	add_command("quit", _quit_program)
 
 func _help_command() -> void:
-	var list: Array = []
+	var list := []
 	for cmd in commands.keys():
-		if !c_view_default_commands and cmd in DEF_COMMANDS: continue
+		if !c_view_def_commands and cmd in DEF_COMMANDS: continue
 		list.append(cmd)
 	output_callback("\n".join(list))
 
@@ -239,11 +232,11 @@ func clear_output() -> void:
 	%Output.clear()
 
 func _quit_program() -> void:
-	self.get_tree().quit()
+	get_tree().quit()
 
 # --------- Output ---------
 func _append_formatted(text: String, format: String) -> void:
-	var clean: String = text.replace("[", "[lb]")
+	var clean := text.replace("[", "[lb]")
 	%Output.append_text(format % clean + ("" if clean.ends_with("\n") else "\n"))
 
 func output_input(text: String) -> void: _append_formatted(text, "[font_size=14][color=gray] > %s[/color][/font_size]")
@@ -252,7 +245,7 @@ func output_warning(text: String) -> void: _append_formatted(text, "[color=orang
 func output_callback(text: String) -> void: _append_formatted(text, "%s")
 
 func _output_signal(name: String, args: Array) -> void:
-	var arg_text: String = ", ".join(args.map(func(a): return str(a)))
+	var arg_text := ", ".join(args.map(func(a): return str(a)))
 	%Output.append_text("[font_size=14][color=cyan] > Signal emitted: " + name.replace("[", "[lb]") + "[/color][/font_size]\n");
 	%Output.append_text(arg_text.replace("[", "[lb]") + "\n");
 
@@ -271,7 +264,7 @@ func _on_anchor_gui_input(event: InputEvent) -> void:
 		is_resizing = event.pressed
 		if visible and is_resizing:
 			current_resizing_size = console_viewport.size
-			drag_offset = self.get_viewport().get_mouse_position()
+			drag_offset = get_viewport().get_mouse_position()
 			_focus_input()
 
 func _resize_console_window(event: InputEvent) -> void:
@@ -329,23 +322,14 @@ func _ensure_keybinds() -> void:
 		_add_keybind("dev_console_escape", KEY_ESCAPE)
 
 func _clamp_size(size: Vector2, position: Vector2) -> Vector2:
-	var viewport_size: Vector2 = get_viewport().get_visible_rect().size
-	
-	var max_size: Vector2 = Vector2(
-		max(minimum_window_size.x, viewport_size.x - position.x),
-		max(minimum_window_size.y, viewport_size.y - position.y)
-	)
-	return Vector2(
-		clampf(size.x, minimum_window_size.x, max_size.x),
-		clampf(size.y, minimum_window_size.y, max_size.y)
-	)
+	var viewport_size := get_viewport().get_visible_rect().size
+	var max_size := (viewport_size - position).max(minimum_window_size)
+	return size.clamp(minimum_window_size, max_size)
 
 func _clamp_pos(position: Vector2, size: Vector2) -> Vector2:
-	var viewport_size: Vector2 = get_viewport().get_visible_rect().size
-	return Vector2(
-		clampf(position.x, 0.0, max(0.0, viewport_size.x - size.x)),
-		clampf(position.y, 0.0, max(0.0, viewport_size.y - size.y))
-	)
+	var viewport_size := get_viewport().get_visible_rect().size
+	var max_pos := (viewport_size - size).max(Vector2.ZERO)
+	return position.clamp(Vector2.ZERO, max_pos)
 
 func _compute_default_window_size() -> Vector2:
 	return get_viewport().get_visible_rect().size * 0.5

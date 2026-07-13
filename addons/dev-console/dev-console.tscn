@@ -108,10 +108,3 @@ grow_horizontal = 0
 grow_vertical = 0
 mouse_default_cursor_shape = 12
 theme_override_styles/panel = SubResource("StyleBoxFlat_ujw41")
-
-[connection signal="gui_input" from="Control/VBoxContainer/Panel" to="." method="_on_panel_gui_input"]
-[connection signal="pressed" from="Control/VBoxContainer/Panel/HBoxContainer/CloseButton" to="." method="_on_close_button_pressed"]
-[connection signal="text_submitted" from="Control/VBoxContainer/Input" to="." method="_on_input_submitted"]
-[connection signal="gui_input" from="Control/ResizeAnchor" to="." method="_on_anchor_gui_input"]
-[connection signal="mouse_entered" from="Control/ResizeAnchor" to="." method="_on_anchor_mouse_entered"]
-[connection signal="mouse_exited" from="Control/ResizeAnchor" to="." method="_on_anchor_mouse_exited"]
