@@ -228,9 +228,6 @@ func _help_command() -> void:
 		list.append(cmd)
 	output_callback("\n".join(list))
 
-func clear_output() -> void:
-	%Output.clear()
-
 func _quit_program() -> void:
 	get_tree().quit()
 
@@ -243,11 +240,12 @@ func output_input(text: String) -> void: _append_formatted(text, "[font_size=14]
 func output_error(text: String) -> void: _append_formatted(text, "[color=red]%s[/color]")
 func output_warning(text: String) -> void: _append_formatted(text, "[color=orange]%s[/color]")
 func output_callback(text: String) -> void: _append_formatted(text, "%s")
-
 func _output_signal(name: String, args: Array) -> void:
 	var arg_text := ", ".join(args.map(func(a): return str(a)))
 	%Output.append_text("[font_size=14][color=cyan] > Signal emitted: " + name.replace("[", "[lb]") + "[/color][/font_size]\n");
 	%Output.append_text(arg_text.replace("[", "[lb]") + "\n");
+
+func clear_output() -> void: %Output.clear()
 
 # --------- Movement & Resizing ---------
 func _on_panel_gui_input(event: InputEvent) -> void:
