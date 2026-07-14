@@ -13,6 +13,12 @@ func _ready() -> void:
 	_console = CONSOLE_SCENE.instantiate()
 	_console.ready.connect(func():
 		_console_ready = true
+		
+		if _console.has_command("set_alpha"):
+			_console.add_command("set_alpha", func(val: String) -> void:
+				alpha = val.to_float()
+			)
+		
 		for call in _pending_calls: call.call()
 		_pending_calls.clear()
 	, CONNECT_ONE_SHOT)
