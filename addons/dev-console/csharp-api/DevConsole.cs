@@ -26,8 +26,9 @@ public static class DevConsole
 		return _gdConsole;
 	}
 
-	// Adders
-	public static void AddCommand(string commandName, Callable callback)
+    #region Public methods
+    // Command & Signal Registration
+    public static void AddCommand(string commandName, Callable callback)
 	{
 		GetConsole()?.Call("add_command", commandName, callback);
 	}
@@ -37,7 +38,6 @@ public static class DevConsole
 		GetConsole()?.Call("add_signal", signalName, targetSignal);
 	}
 
-	// Deleters
 	public static void DeleteCommand(string commandName)
 	{
 		GetConsole()?.Call("delete_command", commandName);
@@ -48,8 +48,8 @@ public static class DevConsole
 		GetConsole()?.Call("delete_signal", signalName);
 	}
 
-	// Has checks
-	public static bool HasCommand(string commandName)
+    // Command & Signal Registry Getters
+    public static bool HasCommand(string commandName)
 	{
 		var console = GetConsole();
 		if (console == null) { return false; }
@@ -63,7 +63,6 @@ public static class DevConsole
 		return console.Call("has_signal_connected", signalName).AsBool();
 	}
 
-	// Getters
 	public static Dictionary<string, Callable> GetCommands()
 	{
 		var console = GetConsole();
@@ -78,8 +77,8 @@ public static class DevConsole
 		return console.Call("get_signals").AsGodotDictionary<string, Dictionary<string, Variant>>();
 	}
 
-	// Visibility
-	public static void Show() 
+    // Visibility & Opacity
+    public static void Show() 
 	{
 		GetConsole()?.Call("show");
 	}
@@ -101,20 +100,7 @@ public static class DevConsole
 		return console.Call("is_visible").AsBool();
 	}
 
-	// Opacity
-	public static void SetAlpha(float value) 
-	{
-		GetConsole()?.Call("set_alpha", value);
-	}
-
-	public static float GetAlpha() 
-	{
-		var console = GetConsole();
-		if (console == null) { return 0f; }
-		return console.Call("get_alpha").AsSingle();
-	}
-
-	// Printers
+	// Output
 	public static void PrintLine(string text) 
 	{
 		GetConsole()?.Call("print_line", text);
@@ -130,9 +116,25 @@ public static class DevConsole
 		GetConsole()?.Call("print_warning", text);
 	}
 
-	// Clearers
 	public static void ClearOutput() 
 	{
 		GetConsole()?.Call("clear_output");
 	}
+	#endregion
+
+	#region Properties
+	public static float Alpha
+	{
+		get
+		{
+			var console = GetConsole();
+			if (console != null) { return console.Get("alpha").AsSingle(); }
+			return 0.9f;
+		}
+		set
+		{
+			GetConsole()?.Set("alpha", value);
+		}
+	}
+	#endregion
 }
