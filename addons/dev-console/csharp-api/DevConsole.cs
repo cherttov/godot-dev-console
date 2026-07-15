@@ -123,6 +123,20 @@ public static class DevConsole
 	#endregion
 
 	#region Properties
+	public static string TitleLabel
+	{
+		get
+		{
+			var console = GetConsole();
+			if (console != null) { return console.Get("title_label").AsString(); }
+			return "CONSOLE";
+		}
+		set
+		{
+			GetConsole()?.Set("title_label", value);
+		}
+	}
+
 	public static float Alpha
 	{
 		get

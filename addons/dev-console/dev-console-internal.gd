@@ -26,10 +26,10 @@ var is_resizing := false
 # Custom user settings
 const CFG := "dev_console/configuration/"
 const THM := "dev_console/theme/"
-@onready var c_title_label := ProjectSettings.get_setting(CFG + "title_label", "CONSOLE")
-@onready var c_use_def_commands := ProjectSettings.get_setting(CFG + "use_default_commands", true)
+var c_title_label := "CONSOLE"
+@onready var c_use_def_cmds := ProjectSettings.get_setting(CFG + "use_default_commands", true)
 @onready var c_use_history := ProjectSettings.get_setting(CFG + "use_command_history", true)
-@onready var c_view_def_commands := ProjectSettings.get_setting(CFG + "view_default_commands", true)
+@onready var c_view_def_cmds := ProjectSettings.get_setting(CFG + "view_default_commands", true)
 @onready var c_keep_size_after_closing := ProjectSettings.get_setting(CFG + "keep_size_after_closing", false)
 @onready var c_keep_position_after_closing := ProjectSettings.get_setting(CFG + "keep_position_after_closing", false)
 @onready var c_keep_topmost := ProjectSettings.get_setting(CFG + "keep_topmost", true)
@@ -57,7 +57,7 @@ func _ready() -> void:
 	get_viewport().size_changed.connect(_on_viewport_size_changed)
 	
 	# Load default commands
-	if c_use_def_commands: _load_default_commands()
+	if c_use_def_cmds: _load_def_commands()
 	
 	# Set label & transparency
 	%TitleLabel.text = c_title_label
@@ -213,7 +213,7 @@ func is_visible() -> bool: return visible
 func _on_close_button_pressed() -> void: hide_console()
 
 # --------- Default commands ---------
-func _load_default_commands() -> void:
+func _load_def_commands() -> void:
 	add_command("help", _help_command)
 	add_command("cls", clear_output)
 	add_command("set_alpha", set_alpha)
@@ -221,10 +221,18 @@ func _load_default_commands() -> void:
 	add_command("close", hide_console)
 	add_command("quit", _quit_program)
 
+func _unload_def_commands() -> void:
+	delete_command("help")
+	delete_command("cls")
+	delete_command("set_alpha")
+	delete_command("get_alpha")
+	delete_command("close")
+	delete_command("quit")
+
 func _help_command() -> void:
 	var list := []
 	for cmd in commands.keys():
-		if !c_view_def_commands and cmd in DEF_COMMANDS: continue
+		if !c_view_def_cmds and cmd in DEF_COMMANDS: continue
 		list.append(cmd)
 	output_callback("\n".join(list))
 
@@ -278,6 +286,13 @@ func _on_viewport_size_changed() -> void:
 	default_window_size = _compute_default_window_size()
 	console_viewport.size = _clamp_size(console_viewport.size, console_viewport.position)
 	console_viewport.position = _clamp_pos(console_viewport.position, console_viewport.size)
+
+# --------- Property Setters/Getters ---------
+func set_title_label(value: String) -> void:
+	c_title_label = value
+	if is_node_ready():
+		%TitleLabel.text = c_title_label
+func get_title_label() -> String: return c_title_label
 
 # --------- Helpers ---------
 func _focus_input(clear: bool = false) -> void:

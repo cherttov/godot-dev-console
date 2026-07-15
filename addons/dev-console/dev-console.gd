@@ -95,9 +95,18 @@ func clear_output() -> void:
 	else: _pending_calls.append(clear_output)
 
 # --------- PROPERTIES ---------
-var alpha: float = 0.9:
+var title_label := ProjectSettings.get_setting("dev_console/configuration/title_label", "CONSOLE"):
 	set(value):
-		alpha = clampf(value, 0.5, 1.0)
+		title_label = str(value)
+		if _console_ready: _console.set_title_label(value)
+		else: _pending_calls.append(func(): _console.set_title_label(value))
+	get:
+		if _console_ready: return _console.get_title_label()
+		return title_label
+
+var alpha: float = ProjectSettings.get_setting("dev_console/theme/background_transparency", 0.9):
+	set(value):
+		alpha = clampf(float(value), 0.5, 1.0)
 		if _console_ready: _console.set_alpha(str(value))
 		else: _pending_calls.append(func(): _console.set_alpha(str(value)))
 	get:
