@@ -23,24 +23,34 @@ var drag_offset := Vector2.ZERO
 # For console resizing
 var is_resizing := false
 
-# Custom user settings
-const CFG := "dev_console/configuration/"
-const THM := "dev_console/theme/"
+# Cached config (initial values pulled from DevConsole in _ready)
+const TOGGLE_KEYS := {
+	"QuoteLeft": KEY_QUOTELEFT, "Tab": KEY_TAB,
+	"F1": KEY_F1, "F2": KEY_F2, "F3": KEY_F3, "F4": KEY_F4, "F5": KEY_F5
+}
 var c_title_label := "CONSOLE"
-@onready var c_use_def_cmds := ProjectSettings.get_setting(CFG + "use_default_commands", true)
-@onready var c_use_history := ProjectSettings.get_setting(CFG + "use_command_history", true)
-@onready var c_view_def_cmds := ProjectSettings.get_setting(CFG + "view_default_commands", true)
-@onready var c_keep_size_after_closing := ProjectSettings.get_setting(CFG + "keep_size_after_closing", false)
-@onready var c_keep_position_after_closing := ProjectSettings.get_setting(CFG + "keep_position_after_closing", false)
-@onready var c_keep_topmost := ProjectSettings.get_setting(CFG + "keep_topmost", true)
-@onready var c_toggle_keybind := ProjectSettings.get_setting(CFG + "toggle_keybind", "QuoteLeft")
-@onready var c_close_on_escape := ProjectSettings.get_setting(CFG + "close_on_escape", true)
-@onready var c_background_transparency := ProjectSettings.get_setting(THM + "background_transparency", 0.9)
+var c_use_def_cmds := true
+var c_use_history := true
+var c_view_def_cmds := true
+var c_keep_size_after_closing := false
+var c_keep_position_after_closing := false
+var c_keep_topmost := true
+var c_toggle_keybind := "QuoteLeft"
+var c_close_on_escape := true
 
 # --------- Init ---------
 func _ready() -> void:
-	# Bind keybinds
-	_ensure_keybinds()
+	# Pull initial config from the singleton
+	set_title_label(DevConsole.title_label)
+	set_alpha(str(DevConsole.alpha))
+	set_use_default_commands(DevConsole.use_default_commands)
+	set_use_history(DevConsole.use_command_history)
+	set_view_default_commands(DevConsole.view_default_commands)
+	set_keep_size_after_closing(DevConsole.keep_size_after_closing)
+	set_keep_position_after_closing(DevConsole.keep_position_after_closing)
+	set_keep_topmost(DevConsole.keep_topmost)
+	set_toggle_keybind(DevConsole.toggle_keybind)
+	set_close_on_escape(DevConsole.close_on_escape)
 	
 	# Some clearing
 	visible = false
@@ -56,19 +66,10 @@ func _ready() -> void:
 	%ResizeAnchor.mouse_exited.connect(func(): %ResizeAnchor.self_modulate.a = 0.7)
 	get_viewport().size_changed.connect(_on_viewport_size_changed)
 	
-	# Load default commands
-	if c_use_def_cmds: _load_def_commands()
-	
-	# Set label & transparency
-	%TitleLabel.text = c_title_label
-	$Control.modulate.a = c_background_transparency
+	# Some more setup for UI
 	%ResizeAnchor.self_modulate.a = 0.7
-	
-	# Set rendering layer & disable focus
-	if c_keep_topmost: layer = RenderingServer.CANVAS_LAYER_MAX
 	%CloseButton.focus_mode = Control.FOCUS_NONE
 	%Output.focus_mode = Control.FOCUS_NONE
-	
 	%Output.scroll_following = true;
 	
 	# Set size
@@ -222,12 +223,8 @@ func _load_def_commands() -> void:
 	add_command("quit", _quit_program)
 
 func _unload_def_commands() -> void:
-	delete_command("help")
-	delete_command("cls")
-	delete_command("set_alpha")
-	delete_command("get_alpha")
-	delete_command("close")
-	delete_command("quit")
+	for cmd in DEF_COMMANDS:
+		commands.erase(cmd)
 
 func _help_command() -> void:
 	var list := []
@@ -290,9 +287,52 @@ func _on_viewport_size_changed() -> void:
 # --------- Property Setters/Getters ---------
 func set_title_label(value: String) -> void:
 	c_title_label = value
-	if is_node_ready():
-		%TitleLabel.text = c_title_label
+	if is_node_ready(): %TitleLabel.text = c_title_label
 func get_title_label() -> String: return c_title_label
+
+func set_use_default_commands(value: bool) -> void:
+	c_use_def_cmds = value
+	_unload_def_commands()
+	if value: _load_def_commands()
+func get_use_default_commands() -> bool: return c_use_def_cmds
+
+func set_use_history(value: bool) -> void:
+	c_use_history = value
+	if InputMap.has_action("dev_console_arrow_up"): InputMap.action_erase_events("dev_console_arrow_up")
+	if InputMap.has_action("dev_console_arrow_down"): InputMap.action_erase_events("dev_console_arrow_down")
+	if value:
+		_add_keybind("dev_console_arrow_up", KEY_UP)
+		_add_keybind("dev_console_arrow_down", KEY_DOWN)
+	else:
+		command_history.clear()
+		history_index = -1
+func get_use_history() -> bool: return c_use_history
+
+func set_view_default_commands(value: bool) -> void: c_view_def_cmds = value
+func get_view_default_commands() -> bool: return c_view_def_cmds
+
+func set_keep_size_after_closing(value: bool) -> void: c_keep_size_after_closing = value
+func get_keep_size_after_closing() -> bool: return c_keep_size_after_closing
+
+func set_keep_position_after_closing(value: bool) -> void: c_keep_position_after_closing = value
+func get_keep_position_after_closing() -> bool: return c_keep_position_after_closing
+
+func set_keep_topmost(value: bool) -> void:
+	c_keep_topmost = value
+	layer = RenderingServer.CANVAS_LAYER_MAX if value else 0
+func get_keep_topmost() -> bool: return c_keep_topmost
+
+func set_toggle_keybind(value: String) -> void:
+	c_toggle_keybind = value
+	if InputMap.has_action("dev_console_toggle"): InputMap.action_erase_events("dev_console_toggle")
+	_add_keybind("dev_console_toggle", TOGGLE_KEYS.get(value, KEY_QUOTELEFT))
+func get_toggle_keybind() -> String: return c_toggle_keybind
+
+func set_close_on_escape(value: bool) -> void:
+	c_close_on_escape = value
+	if InputMap.has_action("dev_console_escape"): InputMap.action_erase_events("dev_console_escape")
+	if value: _add_keybind("dev_console_escape", KEY_ESCAPE)
+func get_close_on_escape() -> bool: return c_close_on_escape
 
 # --------- Helpers ---------
 func _focus_input(clear: bool = false) -> void:
@@ -315,24 +355,6 @@ func _add_keybind(action: String, keycode: Key) -> void:
 	var event_key := InputEventKey.new()
 	event_key.physical_keycode = keycode
 	InputMap.action_add_event(action, event_key)
-
-func _ensure_keybinds() -> void:
-	var toggle_keys := { 
-		"QuoteLeft": KEY_QUOTELEFT, 
-		"Tab": KEY_TAB, 
-		"F1": KEY_F1,
-		"F2": KEY_F2,
-		"F3": KEY_F3,
-		"F4": KEY_F4,
-		"F5": KEY_F5
-	}
-	_add_keybind("dev_console_toggle", toggle_keys.get(c_toggle_keybind, KEY_QUOTELEFT))
-	
-	if c_use_history:
-		_add_keybind("dev_console_arrow_up", KEY_UP)
-		_add_keybind("dev_console_arrow_down", KEY_DOWN)
-	if c_close_on_escape:
-		_add_keybind("dev_console_escape", KEY_ESCAPE)
 
 func _clamp_size(size: Vector2, position: Vector2) -> Vector2:
 	var viewport_size := get_viewport().get_visible_rect().size

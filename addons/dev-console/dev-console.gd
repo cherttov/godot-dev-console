@@ -97,18 +97,48 @@ func clear_output() -> void:
 # --------- PROPERTIES ---------
 var title_label := ProjectSettings.get_setting("dev_console/configuration/title_label", "CONSOLE"):
 	set(value):
-		title_label = str(value)
+		title_label = value
 		if _console_ready: _console.set_title_label(value)
 		else: _pending_calls.append(func(): _console.set_title_label(value))
-	get:
-		if _console_ready: return _console.get_title_label()
-		return title_label
 
-var alpha: float = ProjectSettings.get_setting("dev_console/theme/background_transparency", 0.9):
+var use_default_commands := ProjectSettings.get_setting("dev_console/configuration/use_default_commands", true):
+	set(value):
+		use_default_commands = value
+		if _console_ready: _console.set_use_default_commands(value)
+		else: _pending_calls.append(func(): _console.set_use_default_commands(value))
+
+var use_command_history := ProjectSettings.get_setting("dev_console/configuration/use_command_history", true):
+	set(value):
+		use_default_commands = value
+		if _console_ready: _console.set_use_default_commands(value)
+		else: _pending_calls.append(func(): _console.set_use_command_history(value))
+
+var view_default_commands := ProjectSettings.get_setting("dev_console/configuration/view_default_commands", true)
+
+var keep_size_after_closing := ProjectSettings.get_setting("dev_console/configuration/keep_size_after_closing", false)
+
+var keep_position_after_closing := ProjectSettings.get_setting("dev_console/configuration/keep_position_after_closing", false)
+
+var keep_topmost := ProjectSettings.get_setting("dev_console/configuration/keep_topmost", true):
+	set(value):
+		use_default_commands = value
+		if _console_ready: _console.set_use_default_commands(value)
+		else: _pending_calls.append(func(): _console.set_keep_topmost(value))
+
+var toggle_keybind := ProjectSettings.get_setting("dev_console/configuration/toggle_keybind", "QuoteLeft"):
+	set(value):
+		use_default_commands = value
+		if _console_ready: _console.set_use_default_commands(value)
+		else: _pending_calls.append(func(): _console.set_toggle_keybind(value))
+
+var close_on_escape := ProjectSettings.get_setting("dev_console/configuration/close_on_escape", true):
+	set(value):
+		use_default_commands = value
+		if _console_ready: _console.set_use_default_commands(value)
+		else: _pending_calls.append(func(): _console.set_close_on_escape(value))
+
+var alpha: float = ProjectSettings.get_setting("dev_console/theme/console_transparency", 0.9):
 	set(value):
 		alpha = clampf(float(value), 0.5, 1.0)
 		if _console_ready: _console.set_alpha(str(value))
 		else: _pending_calls.append(func(): _console.set_alpha(str(value)))
-	get:
-		if _console_ready: return _console.get_alpha()
-		return alpha
