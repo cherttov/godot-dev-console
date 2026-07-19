@@ -166,7 +166,7 @@ Almost identical to GDScript functions, but use `CamelCase` instead of `snake_ca
 
 ## Requirements ##
 **Language:** GDScript/C#  
-**Minimum version:** Godot 4.6.x  
+**Minimum version:** Godot 4.5.x  
 **Maximum version:** Godot 4.x.x  
 
 ## AI Usage ##
