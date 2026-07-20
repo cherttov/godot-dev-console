@@ -139,6 +139,6 @@ var close_on_escape := ProjectSettings.get_setting("dev_console/configuration/cl
 
 var alpha: float = ProjectSettings.get_setting("dev_console/theme/console_transparency", 0.9):
 	set(value):
-		alpha = clampf(float(value), 0.5, 1.0)
-		if _console_ready: _console.set_alpha(str(value))
-		else: _pending_calls.append(func(): _console.set_alpha(str(value)))
+		alpha = clampf(value, 0.5, 1.0)
+		if _console_ready: _console.set_alpha(value)
+		else: _pending_calls.append(func(): _console.set_alpha(value))

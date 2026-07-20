@@ -30,7 +30,7 @@ const TOGGLE_KEYS := {
 }
 var c_title_label := "CONSOLE"
 var c_use_def_cmds := true
-var c_use_history := true
+var c_use_command_history := true
 var c_view_def_cmds := true
 var c_keep_size_after_closing := false
 var c_keep_position_after_closing := false
@@ -42,7 +42,7 @@ var c_close_on_escape := true
 func _ready() -> void:
 	# Pull initial config from the singleton
 	set_title_label(DevConsole.title_label)
-	set_alpha(str(DevConsole.alpha))
+	set_alpha(DevConsole.alpha)
 	set_use_default_commands(DevConsole.use_default_commands)
 	set_use_command_history(DevConsole.use_command_history)
 	set_view_default_commands(DevConsole.view_default_commands)
@@ -89,7 +89,7 @@ func _input(event: InputEvent) -> void:
 	if not visible: return
 	
 	# Arrow up/down (history)
-	if c_use_history and !command_history.is_empty():
+	if c_use_command_history and !command_history.is_empty():
 		if event.is_action_pressed("dev_console_arrow_up"):
 			_navigate_history(1)
 		elif event.is_action_pressed("dev_console_arrow_down"):
@@ -215,7 +215,7 @@ func _on_close_button_pressed() -> void: hide_console()
 func _load_def_commands() -> void:
 	add_command("help", _help_command)
 	add_command("cls", clear_output)
-	add_command("set_alpha", set_alpha)
+	add_command("set_alpha", func(val: String) -> void: set_alpha(val.to_float()))
 	add_command("get_alpha", get_alpha)
 	add_command("close", hide_console)
 	add_command("quit", _quit_program)
@@ -295,7 +295,7 @@ func set_use_default_commands(value: bool) -> void:
 func get_use_default_commands() -> bool: return c_use_def_cmds
 
 func set_use_command_history(value: bool) -> void:
-	c_use_history = value
+	c_use_command_history = value
 	if InputMap.has_action("dev_console_arrow_up"): InputMap.action_erase_events("dev_console_arrow_up")
 	if InputMap.has_action("dev_console_arrow_down"): InputMap.action_erase_events("dev_console_arrow_down")
 	if value:
@@ -304,7 +304,7 @@ func set_use_command_history(value: bool) -> void:
 	else:
 		command_history.clear()
 		history_index = -1
-func get_use_history() -> bool: return c_use_history
+func get_use_history() -> bool: return c_use_command_history
 
 func set_view_default_commands(value: bool) -> void: c_view_def_cmds = value
 func get_view_default_commands() -> bool: return c_view_def_cmds
@@ -332,8 +332,8 @@ func set_close_on_escape(value: bool) -> void:
 	if value: _add_keybind("dev_console_escape", KEY_ESCAPE)
 func get_close_on_escape() -> bool: return c_close_on_escape
 
-func set_alpha(value: String) -> void:
-	$Control.modulate.a = clampf(value.to_float(), 0.5, 1.0)
+func set_alpha(value: float) -> void:
+	$Control.modulate.a = clampf(value, 0.5, 1.0)
 func get_alpha() -> float: return float($Control.modulate.a)
 
 # --------- Helpers ---------
