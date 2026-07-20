@@ -108,9 +108,20 @@ DevConsole.show(); # Opens the console in player
 DevConsole.hide(); # Closes the console in player
 DevConsole.toggle(); # Opens/closes the console in player based on previous state
 DevConsole.is_visible(); # returns bool
+```
 
-DevConsole.set_alpha(0.5) # Sets the console opacity to float value (0.5 to 1.0)
-DevConsole.get_alpha(); # returns float
+### Properties ###
+```gdscript
+DevConsole.title_label # String (default: "CONSOLE")
+DevConsole.use_default_commands # bool (default: true)
+DevConsole.use_command_history # bool (default: true)
+DevConsole.view_default_commands # bool (default: true)
+DevConsole.keep_size_after_closing # bool (default: false)
+DevConsole.keep_position_after_closing # bool (default: false)
+DevConsole.keep_topmost # bool (default: true)
+DevConsole.toggle_keybind # String (default: "QuoteLeft") ... available QuoteLeft, Tab, F1 to F5
+DevConsole.close_on_escape # bool (default: true)
+DevConsole.alpha # float (default: 0.9)
 ```
 
 ## Usage (C#) ##
