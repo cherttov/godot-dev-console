@@ -26,9 +26,9 @@ public static class DevConsole
 		return _gdConsole;
 	}
 
-    #region Public methods
-    // Command & Signal Registration
-    public static void AddCommand(string commandName, Callable callback)
+	#region Public methods
+	// Command & Signal Registration
+	public static void AddCommand(string commandName, Callable callback)
 	{
 		GetConsole()?.Call("add_command", commandName, callback);
 	}
@@ -48,8 +48,8 @@ public static class DevConsole
 		GetConsole()?.Call("delete_signal", signalName);
 	}
 
-    // Command & Signal Registry Getters
-    public static bool HasCommand(string commandName)
+	// Command & Signal Registry Getters
+	public static bool HasCommand(string commandName)
 	{
 		var console = GetConsole();
 		if (console == null) { return false; }
@@ -77,8 +77,8 @@ public static class DevConsole
 		return console.Call("get_signals").AsGodotDictionary<string, Dictionary<string, Variant>>();
 	}
 
-    // Visibility & Opacity
-    public static void Show() 
+	// Visibility & Opacity
+	public static void Show() 
 	{
 		GetConsole()?.Call("show");
 	}
@@ -129,7 +129,7 @@ public static class DevConsole
 		{
 			var console = GetConsole();
 			if (console != null) { return console.Get("title_label").AsString(); }
-			return "CONSOLE";
+			return ProjectSettings.GetSetting("dev_console/configuration/title_label", "CONSOLE").AsString();
 		}
 		set
 		{
@@ -141,121 +141,121 @@ public static class DevConsole
 	{
 		get
 		{
-            var console = GetConsole();
-            if (console != null) { return console.Get("use_default_commands").AsBool(); }
-            return true;
-        }
+			var console = GetConsole();
+			if (console != null) { return console.Get("use_default_commands").AsBool(); }
+			return ProjectSettings.GetSetting("dev_console/configuration/use_default_commands", true).AsBool();
+		}
 		set
 		{
 			GetConsole()?.Set("use_default_commands", value);
 		}
 	}
 
-    public static bool UseCommandHistory
-    {
-        get
-        {
-            var console = GetConsole();
-            if (console != null) { return console.Get("use_command_history").AsBool(); }
-            return true;
-        }
-        set
-        {
-            GetConsole()?.Set("use_command_history", value);
-        }
-    }
+	public static bool UseCommandHistory
+	{
+		get
+		{
+			var console = GetConsole();
+			if (console != null) { return console.Get("use_command_history").AsBool(); }
+			return ProjectSettings.GetSetting("dev_console/configuration/use_command_history", true).AsBool();
+		}
+		set
+		{
+			GetConsole()?.Set("use_command_history", value);
+		}
+	}
 
-    public static bool ViewDefaultCommands
-    {
-        get
-        {
-            var console = GetConsole();
-            if (console != null) { return console.Get("view_default_commands").AsBool(); }
-            return true;
-        }
-        set
-        {
-            GetConsole()?.Set("view_default_commands", value);
-        }
-    }
+	public static bool ViewDefaultCommands
+	{
+		get
+		{
+			var console = GetConsole();
+			if (console != null) { return console.Get("view_default_commands").AsBool(); }
+			return ProjectSettings.GetSetting("dev_console/configuration/view_default_commands", true).AsBool();
+		}
+		set
+		{
+			GetConsole()?.Set("view_default_commands", value);
+		}
+	}
 
-    public static bool KeepSizeAfterClosing
-    {
-        get
-        {
-            var console = GetConsole();
-            if (console != null) { return console.Get("keep_size_after_closing").AsBool(); }
-            return false;
-        }
-        set
-        {
-            GetConsole()?.Set("keep_size_after_closing", value);
-        }
-    }
+	public static bool KeepSizeAfterClosing
+	{
+		get
+		{
+			var console = GetConsole();
+			if (console != null) { return console.Get("keep_size_after_closing").AsBool(); }
+			return ProjectSettings.GetSetting("dev_console/configuration/keep_size_after_closing", false).AsBool();
+		}
+		set
+		{
+			GetConsole()?.Set("keep_size_after_closing", value);
+		}
+	}
 
-    public static bool KeepPositionAfterClosing
-    {
-        get
-        {
-            var console = GetConsole();
-            if (console != null) { return console.Get("keep_position_after_closing").AsBool(); }
-            return false;
-        }
-        set
-        {
-            GetConsole()?.Set("keep_position_after_closing", value);
-        }
-    }
+	public static bool KeepPositionAfterClosing
+	{
+		get
+		{
+			var console = GetConsole();
+			if (console != null) { return console.Get("keep_position_after_closing").AsBool(); }
+			return ProjectSettings.GetSetting("dev_console/configuration/keep_position_after_closing", false).AsBool();
+		}
+		set
+		{
+			GetConsole()?.Set("keep_position_after_closing", value);
+		}
+	}
 
-    public static bool KeepTopmost
-    {
-        get
-        {
-            var console = GetConsole();
-            if (console != null) { return console.Get("keep_topmost").AsBool(); }
-            return true;
-        }
-        set
-        {
-            GetConsole()?.Set("keep_topmost", value);
-        }
-    }
+	public static bool KeepTopmost
+	{
+		get
+		{
+			var console = GetConsole();
+			if (console != null) { return console.Get("keep_topmost").AsBool(); }
+			return ProjectSettings.GetSetting("dev_console/configuration/keep_topmost", true).AsBool();
+		}
+		set
+		{
+			GetConsole()?.Set("keep_topmost", value);
+		}
+	}
 
-    public static string ToggleKeybind
-    {
-        get
-        {
-            var console = GetConsole();
-            if (console != null) { return console.Get("toggle_keybind").AsString(); }
-            return "QuoteLeft";
-        }
-        set
-        {
-            GetConsole()?.Set("toggle_keybind", value);
-        }
-    }
+	public static string ToggleKeybind
+	{
+		get
+		{
+			var console = GetConsole();
+			if (console != null) { return console.Get("toggle_keybind").AsString(); }
+			return ProjectSettings.GetSetting("dev_console/configuration/toggle_keybind", "QuoteLeft").AsString();
+		}
+		set
+		{
+			GetConsole()?.Set("toggle_keybind", value);
+		}
+	}
 
-    public static bool CloseOnEscape
-    {
-        get
-        {
-            var console = GetConsole();
-            if (console != null) { return console.Get("close_on_escape").AsBool(); }
-            return true;
-        }
-        set
-        {
-            GetConsole()?.Set("close_on_escape", value);
-        }
-    }
+	public static bool CloseOnEscape
+	{
+		get
+		{
+			var console = GetConsole();
+			if (console != null) { return console.Get("close_on_escape").AsBool(); }
+			return ProjectSettings.GetSetting("dev_console/configuration/close_on_escape", true).AsBool();
+		}
+		set
+		{
+			GetConsole()?.Set("close_on_escape", value);
+		}
+	}
 
-    public static float Alpha
+	public static float Alpha
 	{
 		get
 		{
 			var console = GetConsole();
 			if (console != null) { return console.Get("alpha").AsSingle(); }
-			return 0.9f;
+			return ProjectSettings.GetSetting("dev_console/theme/background_transparency", 0.9).AsSingle();
 		}
 		set
 		{
