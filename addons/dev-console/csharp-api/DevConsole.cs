@@ -137,7 +137,119 @@ public static class DevConsole
 		}
 	}
 
-	public static float Alpha
+	public static bool UseDefaultCommands
+	{
+		get
+		{
+            var console = GetConsole();
+            if (console != null) { return console.Get("use_default_commands").AsBool(); }
+            return true;
+        }
+		set
+		{
+			GetConsole()?.Set("use_default_commands", value);
+		}
+	}
+
+    public static bool UseCommandHistory
+    {
+        get
+        {
+            var console = GetConsole();
+            if (console != null) { return console.Get("use_command_history").AsBool(); }
+            return true;
+        }
+        set
+        {
+            GetConsole()?.Set("use_command_history", value);
+        }
+    }
+
+    public static bool ViewDefaultCommands
+    {
+        get
+        {
+            var console = GetConsole();
+            if (console != null) { return console.Get("view_default_commands").AsBool(); }
+            return true;
+        }
+        set
+        {
+            GetConsole()?.Set("view_default_commands", value);
+        }
+    }
+
+    public static bool KeepSizeAfterClosing
+    {
+        get
+        {
+            var console = GetConsole();
+            if (console != null) { return console.Get("keep_size_after_closing").AsBool(); }
+            return false;
+        }
+        set
+        {
+            GetConsole()?.Set("keep_size_after_closing", value);
+        }
+    }
+
+    public static bool KeepPositionAfterClosing
+    {
+        get
+        {
+            var console = GetConsole();
+            if (console != null) { return console.Get("keep_position_after_closing").AsBool(); }
+            return false;
+        }
+        set
+        {
+            GetConsole()?.Set("keep_position_after_closing", value);
+        }
+    }
+
+    public static bool KeepTopmost
+    {
+        get
+        {
+            var console = GetConsole();
+            if (console != null) { return console.Get("keep_topmost").AsBool(); }
+            return true;
+        }
+        set
+        {
+            GetConsole()?.Set("keep_topmost", value);
+        }
+    }
+
+    public static string ToggleKeybind
+    {
+        get
+        {
+            var console = GetConsole();
+            if (console != null) { return console.Get("toggle_keybind").AsString(); }
+            return "QuoteLeft";
+        }
+        set
+        {
+            GetConsole()?.Set("toggle_keybind", value);
+        }
+    }
+
+    public static bool CloseOnEscape
+    {
+        get
+        {
+            var console = GetConsole();
+            if (console != null) { return console.Get("close_on_escape").AsBool(); }
+            return true;
+        }
+        set
+        {
+            GetConsole()?.Set("close_on_escape", value);
+        }
+    }
+
+    public static float Alpha
 	{
 		get
 		{
