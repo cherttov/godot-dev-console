@@ -109,8 +109,8 @@ var use_default_commands := ProjectSettings.get_setting("dev_console/configurati
 
 var use_command_history := ProjectSettings.get_setting("dev_console/configuration/use_command_history", true):
 	set(value):
-		use_default_commands = value
-		if _console_ready: _console.set_use_default_commands(value)
+		use_command_history = value
+		if _console_ready: _console.set_use_command_history(value)
 		else: _pending_calls.append(func(): _console.set_use_command_history(value))
 
 var view_default_commands := ProjectSettings.get_setting("dev_console/configuration/view_default_commands", true)
@@ -121,20 +121,20 @@ var keep_position_after_closing := ProjectSettings.get_setting("dev_console/conf
 
 var keep_topmost := ProjectSettings.get_setting("dev_console/configuration/keep_topmost", true):
 	set(value):
-		use_default_commands = value
-		if _console_ready: _console.set_use_default_commands(value)
+		keep_topmost = value
+		if _console_ready: _console.set_keep_topmost(value)
 		else: _pending_calls.append(func(): _console.set_keep_topmost(value))
 
 var toggle_keybind := ProjectSettings.get_setting("dev_console/configuration/toggle_keybind", "QuoteLeft"):
 	set(value):
-		use_default_commands = value
-		if _console_ready: _console.set_use_default_commands(value)
+		toggle_keybind = value
+		if _console_ready: _console.set_toggle_keybind(value)
 		else: _pending_calls.append(func(): _console.set_toggle_keybind(value))
 
 var close_on_escape := ProjectSettings.get_setting("dev_console/configuration/close_on_escape", true):
 	set(value):
-		use_default_commands = value
-		if _console_ready: _console.set_use_default_commands(value)
+		close_on_escape = value
+		if _console_ready: _console.set_close_on_escape(value)
 		else: _pending_calls.append(func(): _console.set_close_on_escape(value))
 
 var alpha: float = ProjectSettings.get_setting("dev_console/theme/console_transparency", 0.9):

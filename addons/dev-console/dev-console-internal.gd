@@ -44,7 +44,7 @@ func _ready() -> void:
 	set_title_label(DevConsole.title_label)
 	set_alpha(str(DevConsole.alpha))
 	set_use_default_commands(DevConsole.use_default_commands)
-	set_use_history(DevConsole.use_command_history)
+	set_use_command_history(DevConsole.use_command_history)
 	set_view_default_commands(DevConsole.view_default_commands)
 	set_keep_size_after_closing(DevConsole.keep_size_after_closing)
 	set_keep_position_after_closing(DevConsole.keep_position_after_closing)
@@ -208,8 +208,6 @@ func toggle_console() -> void:
 	if visible: hide_console()
 	else: show_console()
 
-func get_alpha() -> float: return float($Control.modulate.a)
-func set_alpha(value: String) -> void: $Control.modulate.a = clampf(value.to_float(), 0.5, 1.0)
 func is_visible() -> bool: return visible
 func _on_close_button_pressed() -> void: hide_console()
 
@@ -296,7 +294,7 @@ func set_use_default_commands(value: bool) -> void:
 	if value: _load_def_commands()
 func get_use_default_commands() -> bool: return c_use_def_cmds
 
-func set_use_history(value: bool) -> void:
+func set_use_command_history(value: bool) -> void:
 	c_use_history = value
 	if InputMap.has_action("dev_console_arrow_up"): InputMap.action_erase_events("dev_console_arrow_up")
 	if InputMap.has_action("dev_console_arrow_down"): InputMap.action_erase_events("dev_console_arrow_down")
@@ -333,6 +331,10 @@ func set_close_on_escape(value: bool) -> void:
 	if InputMap.has_action("dev_console_escape"): InputMap.action_erase_events("dev_console_escape")
 	if value: _add_keybind("dev_console_escape", KEY_ESCAPE)
 func get_close_on_escape() -> bool: return c_close_on_escape
+
+func set_alpha(value: String) -> void:
+	$Control.modulate.a = clampf(value.to_float(), 0.5, 1.0)
+func get_alpha() -> float: return float($Control.modulate.a)
 
 # --------- Helpers ---------
 func _focus_input(clear: bool = false) -> void:
