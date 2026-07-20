@@ -119,7 +119,7 @@ DevConsole.view_default_commands # bool (default: true)
 DevConsole.keep_size_after_closing # bool (default: false)
 DevConsole.keep_position_after_closing # bool (default: false)
 DevConsole.keep_topmost # bool (default: true)
-DevConsole.toggle_keybind # String (default: "QuoteLeft") ... available QuoteLeft, Tab, F1 to F5
+DevConsole.toggle_keybind # String (default: "QuoteLeft") ... available: QuoteLeft, Tab, F1 to F5
 DevConsole.close_on_escape # bool (default: true)
 DevConsole.alpha # float (default: 0.9)
 ```
