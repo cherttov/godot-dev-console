@@ -13,12 +13,6 @@ func _ready() -> void:
 	_console = CONSOLE_SCENE.instantiate()
 	_console.ready.connect(func():
 		_console_ready = true
-		
-		if _console.has_command("set_alpha"):
-			_console.add_command("set_alpha", func(val: String) -> void:
-				alpha = val.to_float()
-			)
-		
 		for call in _pending_calls: call.call()
 		_pending_calls.clear()
 	, CONNECT_ONE_SHOT)
@@ -137,8 +131,8 @@ var close_on_escape := ProjectSettings.get_setting("dev_console/configuration/cl
 		if _console_ready: _console.set_close_on_escape(value)
 		else: _pending_calls.append(func(): _console.set_close_on_escape(value))
 
-var alpha: float = ProjectSettings.get_setting("dev_console/theme/console_transparency", 0.9):
+var alpha: float = ProjectSettings.get_setting("dev_console/theme/background_transparency", 0.9):
 	set(value):
 		alpha = clampf(value, 0.5, 1.0)
-		if _console_ready: _console.set_alpha(value)
-		else: _pending_calls.append(func(): _console.set_alpha(value))
+		if _console_ready: _console.set_alpha(alpha)
+		else: _pending_calls.append(func(): _console.set_alpha(alpha))
