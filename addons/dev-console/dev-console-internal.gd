@@ -70,7 +70,7 @@ func _ready() -> void:
 	%ResizeAnchor.self_modulate.a = 0.7
 	%CloseButton.focus_mode = Control.FOCUS_NONE
 	%Output.focus_mode = Control.FOCUS_NONE
-	%Output.scroll_following = true;
+	%Output.scroll_following = true
 	
 	# Set size
 	console_viewport.custom_minimum_size = minimum_window_size
@@ -245,8 +245,8 @@ func output_warning(text: String) -> void: _append_formatted(text, "[color=orang
 func output_callback(text: String) -> void: _append_formatted(text, "%s")
 func _output_signal(name: String, args: Array) -> void:
 	var arg_text := ", ".join(args.map(func(a): return str(a)))
-	%Output.append_text("[font_size=14][color=cyan] > Signal emitted: " + name.replace("[", "[lb]") + "[/color][/font_size]\n");
-	%Output.append_text(arg_text.replace("[", "[lb]") + "\n");
+	%Output.append_text("[font_size=14][color=cyan] > Signal emitted: " + name.replace("[", "[lb]") + "[/color][/font_size]\n")
+	%Output.append_text(arg_text.replace("[", "[lb]") + "\n")
 
 func clear_output() -> void: %Output.clear()
 
@@ -304,7 +304,7 @@ func set_use_command_history(value: bool) -> void:
 	else:
 		command_history.clear()
 		history_index = -1
-func get_use_history() -> bool: return c_use_command_history
+func get_use_command_history() -> bool: return c_use_command_history
 
 func set_view_default_commands(value: bool) -> void: c_view_def_cmds = value
 func get_view_default_commands() -> bool: return c_view_def_cmds
