@@ -532,10 +532,6 @@ func _generate_theme() -> Theme:
 	theme.set_color("selection_color", "LineEdit", selection_color)
 	var sb_line_edit := StyleBoxFlat.new()
 	sb_line_edit.bg_color = Color(0.114, 0.114, 0.114, 1.0)
-	sb_line_edit.content_margin_left = 4.0
-	sb_line_edit.content_margin_right = 12.0
-	sb_line_edit.content_margin_top = 4.0
-	sb_line_edit.content_margin_bottom = 4.0
 	theme.set_stylebox("focus", "LineEdit", sb_line_edit)
 	theme.set_stylebox("normal", "LineEdit", sb_line_edit)
 	
