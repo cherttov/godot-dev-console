@@ -390,14 +390,14 @@ func _generate_ui() -> void:
 	add_child(control)
 	
 	# Background panel
-	var bg_panel = Panel.new()
+	var bg_panel := Panel.new()
 	bg_panel.name = "Panel"
 	bg_panel.theme_type_variation = &"BackgroundPanel"
 	bg_panel.set_anchors_preset(Control.PRESET_FULL_RECT)
 	control.add_child(bg_panel)
 	
 	# Main vertical box
-	var vbox = VBoxContainer.new()
+	var vbox := VBoxContainer.new()
 	vbox.name = "VBoxContainer"
 	vbox.set_anchors_preset(Control.PRESET_FULL_RECT)
 	vbox.add_theme_constant_override("separation", 0)
@@ -410,14 +410,14 @@ func _generate_ui() -> void:
 	vbox.add_child(header_panel)
 	
 	# Header horizontal box
-	var hbox = HBoxContainer.new()
+	var hbox := HBoxContainer.new()
 	hbox.name = "HBoxContainer"
 	hbox.set_anchors_preset(Control.PRESET_FULL_RECT)
 	hbox.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 	header_panel.add_child(hbox)
 	
 	# Title margin container
-	var title_margin = MarginContainer.new()
+	var title_margin := MarginContainer.new()
 	title_margin.name = "MarginContainer"
 	title_margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	title_margin.add_theme_constant_override("margin_left", 6)
@@ -442,7 +442,7 @@ func _generate_ui() -> void:
 	hbox.add_child(close_btn)
 	
 	# Output MarginContainer
-	var output_margin = MarginContainer.new()
+	var output_margin := MarginContainer.new()
 	output_margin.name = "MarginContainer"
 	output_margin.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	output_margin.add_theme_constant_override("margin_left", 3)
@@ -482,14 +482,14 @@ func _generate_ui() -> void:
 	resize_anchor.mouse_default_cursor_shape = Control.CURSOR_FDIAGSIZE
 	resize_anchor.self_modulate = Color(1, 1, 1, 0.7)
 	var sb_anchor := StyleBoxFlat.new()
-	sb_anchor.bg_color = Color(0, 0, 0, 0) # Completely transparent background
+	sb_anchor.bg_color = Color(0, 0, 0, 0)
 	sb_anchor.border_width_right = 2
 	sb_anchor.border_width_bottom = 2
 	resize_anchor.add_theme_stylebox_override("panel", sb_anchor)
 	control.add_child(resize_anchor)
 
 func _generate_theme() -> Theme:
-	var theme = Theme.new()
+	var theme := Theme.new()
 	
 	# BackgroundPanel Style (Custom Type Variation of Panel)
 	theme.add_type("BackgroundPanel")
