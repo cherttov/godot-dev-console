@@ -439,6 +439,8 @@ func _generate_ui() -> void:
 	close_btn.size_flags_horizontal = Control.SIZE_SHRINK_END | Control.SIZE_EXPAND
 	close_btn.focus_mode = Control.FOCUS_NONE
 	close_btn.text = "✕"
+	close_btn.expand_icon = true
+	close_btn.add_theme_font_size_override("font_size", 16)
 	hbox.add_child(close_btn)
 	
 	# Output MarginContainer
@@ -530,8 +532,8 @@ func _generate_theme() -> Theme:
 	theme.set_color("selection_color", "LineEdit", selection_color)
 	var sb_line_edit := StyleBoxFlat.new()
 	sb_line_edit.bg_color = Color(0.114, 0.114, 0.114, 1.0)
-	sb_line_edit.content_margin_left = 6.0
-	sb_line_edit.content_margin_right = 6.0
+	sb_line_edit.content_margin_left = 4.0
+	sb_line_edit.content_margin_right = 12.0
 	sb_line_edit.content_margin_top = 4.0
 	sb_line_edit.content_margin_bottom = 4.0
 	theme.set_stylebox("focus", "LineEdit", sb_line_edit)
