@@ -481,6 +481,11 @@ func _generate_ui() -> void:
 	resize_anchor.grow_vertical = Control.GROW_DIRECTION_BEGIN
 	resize_anchor.mouse_default_cursor_shape = Control.CURSOR_FDIAGSIZE
 	resize_anchor.self_modulate = Color(1, 1, 1, 0.7)
+	var sb_anchor := StyleBoxFlat.new()
+	sb_anchor.bg_color = Color(0, 0, 0, 0) # Completely transparent background
+	sb_anchor.border_width_right = 2
+	sb_anchor.border_width_bottom = 2
+	resize_anchor.add_theme_stylebox_override("panel", sb_anchor)
 	control.add_child(resize_anchor)
 
 func _generate_theme() -> Theme:
@@ -525,6 +530,10 @@ func _generate_theme() -> Theme:
 	theme.set_color("selection_color", "LineEdit", selection_color)
 	var sb_line_edit := StyleBoxFlat.new()
 	sb_line_edit.bg_color = Color(0.114, 0.114, 0.114, 1.0)
+	sb_line_edit.content_margin_left = 6.0
+	sb_line_edit.content_margin_right = 6.0
+	sb_line_edit.content_margin_top = 4.0
+	sb_line_edit.content_margin_bottom = 4.0
 	theme.set_stylebox("focus", "LineEdit", sb_line_edit)
 	theme.set_stylebox("normal", "LineEdit", sb_line_edit)
 	
