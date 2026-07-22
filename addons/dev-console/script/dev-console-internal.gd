@@ -386,11 +386,13 @@ func _generate_ui() -> void:
 	control = Control.new()
 	control.name = "Control"
 	control.size = Vector2(600, 300)
+	control.theme = _generate_theme()
 	add_child(control)
 	
 	# Background panel
 	var bg_panel = Panel.new()
 	bg_panel.name = "Panel"
+	bg_panel.theme_type_variation = &"BackgroundPanel"
 	bg_panel.set_anchors_preset(Control.PRESET_FULL_RECT)
 	control.add_child(bg_panel)
 	
@@ -480,3 +482,62 @@ func _generate_ui() -> void:
 	resize_anchor.mouse_default_cursor_shape = Control.CURSOR_FDIAGSIZE
 	resize_anchor.self_modulate = Color(1, 1, 1, 0.7)
 	control.add_child(resize_anchor)
+
+func _generate_theme() -> Theme:
+	var theme = Theme.new()
+	
+	# BackgroundPanel Style (Custom Type Variation of Panel)
+	theme.add_type("BackgroundPanel")
+	theme.set_type_variation("BackgroundPanel", "Panel")
+	var sb_bg_panel := StyleBoxFlat.new()
+	sb_bg_panel.bg_color = Color(0.137, 0.137, 0.137, 1.0)
+	theme.set_stylebox("panel", "BackgroundPanel", sb_bg_panel)
+	
+	# Button Style
+	var sb_btn_hover := StyleBoxFlat.new()
+	sb_btn_hover.content_margin_left = 2.0
+	sb_btn_hover.content_margin_top = 2.0
+	sb_btn_hover.content_margin_right = 0.0
+	sb_btn_hover.content_margin_bottom = 0.0
+	sb_btn_hover.bg_color = Color(1.0, 1.0, 1.0, 0.094)
+	theme.set_stylebox("hover", "Button", sb_btn_hover)
+	
+	var sb_btn_normal := StyleBoxFlat.new()
+	sb_btn_normal.content_margin_left = 2.0
+	sb_btn_normal.content_margin_top = 2.0
+	sb_btn_normal.content_margin_right = 0.0
+	sb_btn_normal.content_margin_bottom = 0.0
+	sb_btn_normal.bg_color = Color(0.6, 0.6, 0.6, 0.0)
+	theme.set_stylebox("normal", "Button", sb_btn_normal)
+	
+	var sb_btn_pressed := StyleBoxFlat.new()
+	sb_btn_pressed.content_margin_left = 2.0
+	sb_btn_pressed.content_margin_top = 2.0
+	sb_btn_pressed.content_margin_right = 0.0
+	sb_btn_pressed.content_margin_bottom = 0.0
+	sb_btn_pressed.bg_color = Color(1.0, 1.0, 1.0, 0.047)
+	theme.set_stylebox("pressed", "Button", sb_btn_pressed)
+	
+	# Shared Selection Color Style
+	var selection_color := Color(0.204, 0.204, 0.204, 0.878)
+	
+	# LineEdit Style
+	theme.set_color("selection_color", "LineEdit", selection_color)
+	var sb_line_edit := StyleBoxFlat.new()
+	sb_line_edit.bg_color = Color(0.114, 0.114, 0.114, 1.0)
+	theme.set_stylebox("focus", "LineEdit", sb_line_edit)
+	theme.set_stylebox("normal", "LineEdit", sb_line_edit)
+	
+	# Panel Style
+	var sb_panel := StyleBoxFlat.new()
+	sb_panel.bg_color = Color(0.204, 0.204, 0.204, 1.0)
+	theme.set_stylebox("panel", "Panel", sb_panel)
+	
+	# RichTextLabel Style
+	theme.set_color("selection_color", "RichTextLabel", selection_color)
+	theme.set_constant("paragraph_separation", "RichTextLabel", -2)
+	var sb_rtl_normal := StyleBoxEmpty.new()
+	sb_rtl_normal.content_margin_bottom = 2.0
+	theme.set_stylebox("normal", "RichTextLabel", sb_rtl_normal)
+	
+	return theme
