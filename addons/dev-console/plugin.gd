@@ -2,7 +2,7 @@
 extends EditorPlugin
 
 const AUTOLOAD_NAME := "DevConsole"
-const AUTOLOAD_PATH := "res://addons/dev-console/dev-console.gd"
+const AUTOLOAD_PATH := "res://addons/dev-console/script/dev-console.gd"
 var PLUGIN_SETTINGS := {
 	"dev_console/configuration/title_label": { "default": "CONSOLE" },
 	"dev_console/configuration/use_default_commands": { "default": true },

@@ -1,6 +1,15 @@
 class_name DevConsoleInternal
 extends CanvasLayer
 
+# UI References
+var control: Control
+var header_panel: Panel
+var title_label: Label
+var close_btn: Button
+var output_rtl: RichTextLabel
+var input_line: LineEdit
+var resize_anchor: Panel
+
 # Window sizes
 var default_window_size := Vector2.ZERO
 var minimum_window_size := Vector2(200, 150)
@@ -12,9 +21,6 @@ var commands: Dictionary[String, Callable] = {}
 var signals: Dictionary[String, Dictionary] = {} # { "signal": Signal, "callback": Callable }
 var command_history: Array[String] = []
 var history_index := -1
-
-# Console root
-@onready var console_viewport := $Control
 
 # For console dragging
 var dragging := false
@@ -40,6 +46,9 @@ var c_close_on_escape := true
 
 # --------- Init ---------
 func _ready() -> void:
+	# Generate UI
+	_generate_ui()
+	
 	# Pull initial config from the singleton
 	set_title_label(DevConsole.title_label)
 	set_alpha(DevConsole.alpha)
@@ -54,28 +63,28 @@ func _ready() -> void:
 	
 	# Some clearing
 	visible = false
-	%Input.release_focus()
-	%Input.clear()
+	input_line.release_focus()
+	input_line.clear()
 	
 	# Connecting signals
-	%CloseButton.pressed.connect(_on_close_button_pressed)
-	%Input.text_submitted.connect(_on_input_submitted)
-	$Control/VBoxContainer/Panel.gui_input.connect(_on_panel_gui_input)
-	%ResizeAnchor.gui_input.connect(_on_anchor_gui_input)
-	%ResizeAnchor.mouse_entered.connect(func(): %ResizeAnchor.self_modulate.a = 1.0)
-	%ResizeAnchor.mouse_exited.connect(func(): %ResizeAnchor.self_modulate.a = 0.7)
+	close_btn.pressed.connect(_on_close_button_pressed)
+	input_line.text_submitted.connect(_on_input_submitted)
+	header_panel.gui_input.connect(_on_panel_gui_input)
+	resize_anchor.gui_input.connect(_on_anchor_gui_input)
+	resize_anchor.mouse_entered.connect(func(): resize_anchor.self_modulate.a = 1.0)
+	resize_anchor.mouse_exited.connect(func(): resize_anchor.self_modulate.a = 0.7)
 	get_viewport().size_changed.connect(_on_viewport_size_changed)
 	
 	# Some more setup for UI
-	%ResizeAnchor.self_modulate.a = 0.7
-	%CloseButton.focus_mode = Control.FOCUS_NONE
-	%Output.focus_mode = Control.FOCUS_NONE
-	%Output.scroll_following = true
+	resize_anchor.self_modulate.a = 0.7
+	close_btn.focus_mode = Control.FOCUS_NONE
+	output_rtl.focus_mode = Control.FOCUS_NONE
+	output_rtl.scroll_following = true
 	
 	# Set size
-	console_viewport.custom_minimum_size = minimum_window_size
+	control.custom_minimum_size = minimum_window_size
 	default_window_size = _compute_default_window_size()
-	console_viewport.size = default_window_size
+	control.size = default_window_size
 
 # --------- Input ---------
 func _input(event: InputEvent) -> void:
@@ -106,7 +115,7 @@ func _input(event: InputEvent) -> void:
 		return
 	
 	# This while testing had no impact on input
-	#if %Input.has_focus():
+	#if input_line.has_focus():
 		#if event is InputEventKey and not event.is_echo():
 			#if event.as_text().length() == 1:
 				#pass
@@ -194,15 +203,15 @@ func show_console() -> void:
 	if visible: return
 	visible = true
 	
-	if !c_keep_position_after_closing: console_viewport.position = Vector2(0.0, 0.0)
-	if !c_keep_size_after_closing: console_viewport.size = default_window_size
+	if !c_keep_position_after_closing: control.position = Vector2(0.0, 0.0)
+	if !c_keep_size_after_closing: control.size = default_window_size
 	
 	_focus_input(true)
 
 func hide_console() -> void:
 	if not visible: return
 	visible = false
-	%Input.release_focus()
+	input_line.release_focus()
 
 func toggle_console() -> void:
 	if visible: hide_console()
@@ -237,7 +246,7 @@ func _quit_program() -> void:
 # --------- Output ---------
 func _append_formatted(text: String, format: String) -> void:
 	var clean := text.replace("[", "[lb]")
-	%Output.append_text(format % clean + ("" if clean.ends_with("\n") else "\n"))
+	output_rtl.append_text(format % clean + ("" if clean.ends_with("\n") else "\n"))
 
 func output_input(text: String) -> void: _append_formatted(text, "[font_size=14][color=gray] > %s[/color][/font_size]")
 func output_error(text: String) -> void: _append_formatted(text, "[color=red]%s[/color]")
@@ -245,33 +254,33 @@ func output_warning(text: String) -> void: _append_formatted(text, "[color=orang
 func output_callback(text: String) -> void: _append_formatted(text, "%s")
 func _output_signal(name: String, args: Array) -> void:
 	var arg_text := ", ".join(args.map(func(a): return str(a)))
-	%Output.append_text("[font_size=14][color=cyan] > Signal emitted: " + name.replace("[", "[lb]") + "[/color][/font_size]\n")
-	%Output.append_text(arg_text.replace("[", "[lb]") + "\n")
+	output_rtl.append_text("[font_size=14][color=cyan] > Signal emitted: " + name.replace("[", "[lb]") + "[/color][/font_size]\n")
+	output_rtl.append_text(arg_text.replace("[", "[lb]") + "\n")
 
-func clear_output() -> void: %Output.clear()
+func clear_output() -> void: output_rtl.clear()
 
 # --------- Movement & Resizing ---------
 func _on_panel_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		dragging = event.pressed
 		if visible and dragging: _focus_input()
-		drag_offset = console_viewport.get_global_mouse_position() - console_viewport.position
+		drag_offset = control.get_global_mouse_position() - control.position
 	elif event is InputEventMouseMotion and dragging:
-		var new_position: Vector2 = console_viewport.get_global_mouse_position() - drag_offset
-		console_viewport.position = _clamp_pos(new_position, console_viewport.size)
+		var new_position: Vector2 = control.get_global_mouse_position() - drag_offset
+		control.position = _clamp_pos(new_position, control.size)
 
 func _on_anchor_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		is_resizing = event.pressed
 		if visible and is_resizing:
-			current_resizing_size = console_viewport.size
+			current_resizing_size = control.size
 			drag_offset = get_viewport().get_mouse_position()
 			_focus_input()
 
 func _resize_console_window(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
 		var diff: Vector2 = get_viewport().get_mouse_position() - drag_offset
-		console_viewport.size = _clamp_size(current_resizing_size + diff, console_viewport.position)
+		control.size = _clamp_size(current_resizing_size + diff, control.position)
 		get_viewport().set_input_as_handled()
 	elif event is InputEventMouseButton and not event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		is_resizing = false
@@ -279,13 +288,13 @@ func _resize_console_window(event: InputEvent) -> void:
 
 func _on_viewport_size_changed() -> void:
 	default_window_size = _compute_default_window_size()
-	console_viewport.size = _clamp_size(console_viewport.size, console_viewport.position)
-	console_viewport.position = _clamp_pos(console_viewport.position, console_viewport.size)
+	control.size = _clamp_size(control.size, control.position)
+	control.position = _clamp_pos(control.position, control.size)
 
 # --------- Property Setters/Getters ---------
 func set_title_label(value: String) -> void:
 	c_title_label = value
-	if is_node_ready(): %TitleLabel.text = c_title_label
+	if is_node_ready(): title_label.text = c_title_label
 func get_title_label() -> String: return c_title_label
 
 func set_use_default_commands(value: bool) -> void:
@@ -333,14 +342,14 @@ func set_close_on_escape(value: bool) -> void:
 func get_close_on_escape() -> bool: return c_close_on_escape
 
 func set_alpha(value: float) -> void:
-	$Control.modulate.a = clampf(value, 0.5, 1.0)
-func get_alpha() -> float: return float($Control.modulate.a)
+	control.modulate.a = clampf(value, 0.5, 1.0)
+func get_alpha() -> float: return float(control.modulate.a)
 
 # --------- Helpers ---------
 func _focus_input(clear: bool = false) -> void:
-	if clear: %Input.clear()
-	%Input.grab_focus()
-	%Input.caret_column = %Input.text.length()
+	if clear: input_line.clear()
+	input_line.grab_focus()
+	input_line.caret_column = input_line.text.length()
 
 func _navigate_history(direction: int) -> void:
 	history_index += direction
@@ -348,7 +357,7 @@ func _navigate_history(direction: int) -> void:
 		history_index = -1
 		_focus_input(true)
 		return
-	%Input.text = command_history[(command_history.size() - 1) - history_index]
+	input_line.text = command_history[(command_history.size() - 1) - history_index]
 	_focus_input()
 	get_viewport().set_input_as_handled()
 
@@ -370,3 +379,104 @@ func _clamp_pos(position: Vector2, size: Vector2) -> Vector2:
 
 func _compute_default_window_size() -> Vector2:
 	return get_viewport().get_visible_rect().size * 0.5
+
+# --------- UI Setup ---------
+func _generate_ui() -> void:
+	# Main control
+	control = Control.new()
+	control.name = "Control"
+	control.size = Vector2(600, 300)
+	add_child(control)
+	
+	# Background panel
+	var bg_panel = Panel.new()
+	bg_panel.name = "Panel"
+	bg_panel.set_anchors_preset(Control.PRESET_FULL_RECT)
+	control.add_child(bg_panel)
+	
+	# Main vertical box
+	var vbox = VBoxContainer.new()
+	vbox.name = "VBoxContainer"
+	vbox.set_anchors_preset(Control.PRESET_FULL_RECT)
+	vbox.add_theme_constant_override("separation", 0)
+	control.add_child(vbox)
+	
+	# Header panel
+	header_panel = Panel.new()
+	header_panel.name = "Panel"
+	header_panel.custom_minimum_size = Vector2(0, 26)
+	vbox.add_child(header_panel)
+	
+	# Header horizontal box
+	var hbox = HBoxContainer.new()
+	hbox.name = "HBoxContainer"
+	hbox.set_anchors_preset(Control.PRESET_FULL_RECT)
+	hbox.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	header_panel.add_child(hbox)
+	
+	# Title margin container
+	var title_margin = MarginContainer.new()
+	title_margin.name = "MarginContainer"
+	title_margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	title_margin.add_theme_constant_override("margin_left", 6)
+	hbox.add_child(title_margin)
+	
+	# Title Label
+	title_label = Label.new()
+	title_label.name = "TitleLabel"
+	title_label.unique_name_in_owner = true
+	title_label.text = "CONSOLE"
+	title_label.add_theme_font_size_override("font_size", 12)
+	title_margin.add_child(title_label)
+	
+	# Close button
+	close_btn = Button.new()
+	close_btn.name = "CloseButton"
+	close_btn.unique_name_in_owner = true
+	close_btn.custom_minimum_size = Vector2(26, 0)
+	close_btn.size_flags_horizontal = Control.SIZE_SHRINK_END | Control.SIZE_EXPAND
+	close_btn.focus_mode = Control.FOCUS_NONE
+	close_btn.text = "✕"
+	hbox.add_child(close_btn)
+	
+	# Output MarginContainer
+	var output_margin = MarginContainer.new()
+	output_margin.name = "MarginContainer"
+	output_margin.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	output_margin.add_theme_constant_override("margin_left", 3)
+	output_margin.add_theme_constant_override("margin_right", 3)
+	vbox.add_child(output_margin)
+
+	# Output RichTextLabel
+	output_rtl = RichTextLabel.new()
+	output_rtl.name = "Output"
+	output_rtl.unique_name_in_owner = true
+	output_rtl.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	output_rtl.focus_mode = Control.FOCUS_ALL
+	output_rtl.bbcode_enabled = true
+	output_rtl.scroll_following = true
+	output_rtl.selection_enabled = true
+	output_margin.add_child(output_rtl)
+
+	# Input LineEdit 
+	input_line = LineEdit.new()
+	input_line.name = "Input"
+	input_line.unique_name_in_owner = true
+	input_line.size_flags_vertical = Control.SIZE_SHRINK_END
+	input_line.keep_editing_on_text_submit = true
+	input_line.virtual_keyboard_enabled = false
+	vbox.add_child(input_line)
+
+	# Resize Anchor
+	resize_anchor = Panel.new()
+	resize_anchor.name = "ResizeAnchor"
+	resize_anchor.unique_name_in_owner = true
+	resize_anchor.custom_minimum_size = Vector2(10, 10)
+	resize_anchor.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
+	resize_anchor.offset_left = -8
+	resize_anchor.offset_top = -8
+	resize_anchor.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	resize_anchor.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	resize_anchor.mouse_default_cursor_shape = Control.CURSOR_FDIAGSIZE
+	resize_anchor.self_modulate = Color(1, 1, 1, 0.7)
+	control.add_child(resize_anchor)

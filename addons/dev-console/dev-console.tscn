@@ -1,6 +1,5 @@
-[gd_scene format=3 uid="uid://ccoijpiv8l45j"]
+[gd_scene format=3 uid="uid://6yyw3s6jymac"]
 
-[ext_resource type="Script" uid="uid://ps6c54gym1kf" path="res://addons/dev-console/dev-console-internal.gd" id="1_ujw41"]
 [ext_resource type="Theme" uid="uid://dhref3s1cl5vq" path="res://addons/dev-console/themes/dev-console-theme.tres" id="2_u37vs"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ujw41"]
@@ -9,7 +8,6 @@ border_width_right = 2
 border_width_bottom = 2
 
 [node name="DevConsole" type="CanvasLayer" unique_id=303449653]
-script = ExtResource("1_ujw41")
 
 [node name="Control" type="Control" parent="." unique_id=1906291707]
 layout_mode = 3
@@ -55,13 +53,11 @@ size_flags_horizontal = 3
 theme_override_constants/margin_left = 6
 
 [node name="TitleLabel" type="Label" parent="Control/VBoxContainer/Panel/HBoxContainer/MarginContainer" unique_id=2088292545]
-unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
 text = "CONSOLE"
 
 [node name="CloseButton" type="Button" parent="Control/VBoxContainer/Panel/HBoxContainer" unique_id=1133550126]
-unique_name_in_owner = true
 custom_minimum_size = Vector2(26, 0)
 layout_mode = 2
 size_flags_horizontal = 10
@@ -77,7 +73,6 @@ theme_override_constants/margin_left = 3
 theme_override_constants/margin_right = 3
 
 [node name="Output" type="RichTextLabel" parent="Control/VBoxContainer/MarginContainer" unique_id=1913245085]
-unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 focus_mode = 2
@@ -86,14 +81,12 @@ scroll_following = true
 selection_enabled = true
 
 [node name="Input" type="LineEdit" parent="Control/VBoxContainer" unique_id=511806828]
-unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 8
 keep_editing_on_text_submit = true
 virtual_keyboard_enabled = false
 
 [node name="ResizeAnchor" type="Panel" parent="Control" unique_id=1190159452]
-unique_name_in_owner = true
 self_modulate = Color(1, 1, 1, 0.70000005)
 custom_minimum_size = Vector2(10, 10)
 layout_mode = 1

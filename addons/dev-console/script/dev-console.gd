@@ -1,6 +1,5 @@
 extends Node
 
-const CONSOLE_SCENE: PackedScene = preload("dev-console.tscn")
 var _console: DevConsoleInternal = null
 var _console_ready := false
 var _pending_calls: Array[Callable] = []
@@ -10,7 +9,7 @@ func _ready() -> void:
 	# Don't complete initialization if debug_only in release
 	if ProjectSettings.get_setting("dev_console/configuration/debug_only", true) and not OS.is_debug_build(): return
 	
-	_console = CONSOLE_SCENE.instantiate()
+	_console = DevConsoleInternal.new()
 	_console.ready.connect(func():
 		_console_ready = true
 		for call in _pending_calls: call.call()
