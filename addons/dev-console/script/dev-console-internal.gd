@@ -56,7 +56,6 @@ func _ready() -> void:
 	
 	# Pull initial config from the singleton
 	set_title_label(DevConsole.title_label)
-	set_alpha(DevConsole.alpha)
 	set_use_default_commands(DevConsole.use_default_commands)
 	set_use_command_history(DevConsole.use_command_history)
 	set_view_default_commands(DevConsole.view_default_commands)
@@ -65,6 +64,9 @@ func _ready() -> void:
 	set_keep_topmost(DevConsole.keep_topmost)
 	set_toggle_keybind(DevConsole.toggle_keybind)
 	set_close_on_escape(DevConsole.close_on_escape)
+	
+	# Pull initial theme from the singleton
+	set_alpha(DevConsole.alpha)
 	
 	# Some clearing
 	visible = false

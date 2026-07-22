@@ -140,8 +140,50 @@ var close_on_escape := ProjectSettings.get_setting("dev_console/configuration/cl
 		if _console_ready: _console.set_close_on_escape(value)
 		else: _pending_calls.append(func(): _console.set_close_on_escape(value))
 
-var alpha: float = ProjectSettings.get_setting("dev_console/theme/background_transparency", 0.9):
+var alpha: float = ProjectSettings.get_setting("dev_console/theme/console_transparency", 0.9):
 	set(value):
 		alpha = clampf(value, 0.5, 1.0)
 		if _console_ready: _console.set_alpha(alpha)
 		else: _pending_calls.append(func(): _console.set_alpha(alpha))
+
+#var header_background: Color = ProjectSettings.get_setting("dev_console/theme/header_background", Color(0.204, 0.204, 0.204, 1.0)):
+	#set(value):
+		#header_background = value
+		#if _console_ready: _console.set_header_background(value)
+		#else: _pending_calls.append(func(): _console.set_header_background(value))
+ #
+#var header_foreground: Color = ProjectSettings.get_setting("dev_console/theme/header_foreground", Color(1.0, 1.0, 1.0, 1.0)):
+	#set(value):
+		#header_foreground = value
+		#if _console_ready: _console.set_header_foreground(value)
+		#else: _pending_calls.append(func(): _console.set_header_foreground(value))
+ #
+#var output_background: Color = ProjectSettings.get_setting("dev_console/theme/output_background", Color(0.137, 0.137, 0.137, 1.0)):
+	#set(value):
+		#output_background = value
+		#if _console_ready: _console.set_output_background(value)
+		#else: _pending_calls.append(func(): _console.set_output_background(value))
+ #
+#var output_text: Color = ProjectSettings.get_setting("dev_console/theme/output_text", Color(1.0, 1.0, 1.0, 1.0)):
+	#set(value):
+		#output_text = value
+		#if _console_ready: _console.set_output_text(value)
+		#else: _pending_calls.append(func(): _console.set_output_text(value))
+ #
+#var selection_highlight: Color = ProjectSettings.get_setting("dev_console/theme/selection_highlight", Color(0.204, 0.204, 0.204, 0.878)):
+	#set(value):
+		#selection_highlight = value
+		#if _console_ready: _console.set_selection_highlight(value)
+		#else: _pending_calls.append(func(): _console.set_selection_highlight(value))
+ #
+#var input_background: Color = ProjectSettings.get_setting("dev_console/theme/input_background", Color(0.114, 0.114, 0.114, 1.0)):
+	#set(value):
+		#input_background = value
+		#if _console_ready: _console.set_input_background(value)
+		#else: _pending_calls.append(func(): _console.set_input_background(value))
+ #
+#var input_foreground: Color = ProjectSettings.get_setting("dev_console/theme/input_foreground", Color(1.0, 1.0, 1.0, 1.0)):
+	#set(value):
+		#input_foreground = value
+		#if _console_ready: _console.set_input_foreground(value)
+		#else: _pending_calls.append(func(): _console.set_input_foreground(value))
