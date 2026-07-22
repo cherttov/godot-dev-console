@@ -3,6 +3,17 @@ using Godot.Collections;
 
 public static class DevConsole
 {
+	public enum ToggleKey
+	{
+		QuoteLeft = 0,
+		Tab = 1,
+		F1 = 2,
+		F2 = 3,
+		F3 = 4,
+		F4 = 5,
+		F5 = 6
+	}
+
 	private static Node _gdConsole;
 
 	// Console init method
@@ -221,17 +232,17 @@ public static class DevConsole
 		}
 	}
 
-	public static string ToggleKeybind
+	public static ToggleKey ToggleKeybind
 	{
 		get
 		{
 			var console = GetConsole();
-			if (console != null) { return console.Get("toggle_keybind").AsString(); }
-			return ProjectSettings.GetSetting("dev_console/configuration/toggle_keybind", "QuoteLeft").AsString();
+			if (console != null) { return (ToggleKey)console.Get("toggle_keybind").AsInt32(); }
+			return (ToggleKey)ProjectSettings.GetSetting("dev_console/configuration/toggle_keybind", (int)ToggleKey.QuoteLeft).AsInt32();
 		}
 		set
 		{
-			GetConsole()?.Set("toggle_keybind", value);
+			GetConsole()?.Set("toggle_keybind", (int)value);
 		}
 	}
 
