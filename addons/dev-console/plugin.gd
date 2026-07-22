@@ -14,8 +14,8 @@ var PLUGIN_SETTINGS := {
 	"dev_console/configuration/debug_only": { "default": true },
 	"dev_console/configuration/close_on_escape": { "default": true },
 	"dev_console/configuration/toggle_keybind": { 
-		"default": "QuoteLeft", 
-		"info": { "type": TYPE_STRING, "hint": PROPERTY_HINT_ENUM, "hint_string": "QuoteLeft,Tab,F1,F2,F3,F4,F5" } 
+		"default": 0, # QuoteLeft
+		"info": { "type": TYPE_INT, "hint": PROPERTY_HINT_ENUM, "hint_string": "QuoteLeft,Tab,F1,F2,F3,F4,F5" } 
 	},
 	"dev_console/theme/background_transparency": { 
 		"default": 0.9, 

@@ -1,5 +1,15 @@
 extends Node
 
+enum ToggleKey {
+	QUOTE_LEFT,
+	TAB,
+	F1,
+	F2,
+	F3,
+	F4,
+	F5
+}
+
 var _console: DevConsoleInternal = null
 var _console_ready := false
 var _pending_calls: Array[Callable] = []
@@ -118,7 +128,7 @@ var keep_topmost := ProjectSettings.get_setting("dev_console/configuration/keep_
 		if _console_ready: _console.set_keep_topmost(value)
 		else: _pending_calls.append(func(): _console.set_keep_topmost(value))
 
-var toggle_keybind := ProjectSettings.get_setting("dev_console/configuration/toggle_keybind", "QuoteLeft"):
+var toggle_keybind: ToggleKey = ProjectSettings.get_setting("dev_console/configuration/toggle_keybind", ToggleKey.QUOTE_LEFT):
 	set(value):
 		toggle_keybind = value
 		if _console_ready: _console.set_toggle_keybind(value)

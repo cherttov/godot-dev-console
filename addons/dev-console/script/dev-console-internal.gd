@@ -31,8 +31,13 @@ var is_resizing := false
 
 # Cached config (initial values pulled from DevConsole in _ready)
 const TOGGLE_KEYS := {
-	"QuoteLeft": KEY_QUOTELEFT, "Tab": KEY_TAB,
-	"F1": KEY_F1, "F2": KEY_F2, "F3": KEY_F3, "F4": KEY_F4, "F5": KEY_F5
+	DevConsole.ToggleKey.QUOTE_LEFT: KEY_QUOTELEFT,
+	DevConsole.ToggleKey.TAB: KEY_TAB,
+	DevConsole.ToggleKey.F1: KEY_F1,
+	DevConsole.ToggleKey.F2: KEY_F2,
+	DevConsole.ToggleKey.F3: KEY_F3,
+	DevConsole.ToggleKey.F4: KEY_F4,
+	DevConsole.ToggleKey.F5: KEY_F5
 }
 var c_title_label := "CONSOLE"
 var c_use_def_cmds := true
@@ -41,7 +46,7 @@ var c_view_def_cmds := true
 var c_keep_size_after_closing := false
 var c_keep_position_after_closing := false
 var c_keep_topmost := true
-var c_toggle_keybind := "QuoteLeft"
+var c_toggle_keybind: int = DevConsole.ToggleKey.QUOTE_LEFT
 var c_close_on_escape := true
 
 # --------- Init ---------
@@ -329,11 +334,11 @@ func set_keep_topmost(value: bool) -> void:
 	layer = RenderingServer.CANVAS_LAYER_MAX if value else 0
 func get_keep_topmost() -> bool: return c_keep_topmost
 
-func set_toggle_keybind(value: String) -> void:
+func set_toggle_keybind(value: int) -> void:
 	c_toggle_keybind = value
 	if InputMap.has_action("dev_console_toggle"): InputMap.action_erase_events("dev_console_toggle")
 	_add_keybind("dev_console_toggle", TOGGLE_KEYS.get(value, KEY_QUOTELEFT))
-func get_toggle_keybind() -> String: return c_toggle_keybind
+func get_toggle_keybind() -> int: return c_toggle_keybind
 
 func set_close_on_escape(value: bool) -> void:
 	c_close_on_escape = value
