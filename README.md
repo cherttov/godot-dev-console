@@ -25,10 +25,14 @@ There will be the following parameters:
 |`Keep Position After Closing`    | Boolean             |
 |`Keep Topmost`                   | Boolean             |
 |`Debug Only`                     | Boolean             |
-|`Toggle Keybind`                 | String              |
+|`Toggle Keybind`                 | Integer             |
 |`Close On Escape`                | Boolean             |
 |-                                |-                    |
-|`Background Transparency`        | Float *(0.5 to 1.0)*|
+|`Console Transparency`           | Float *(0.5 to 1.0)*|
+|`Header Background`              | Color               |
+|`Output Background`              | Color               |
+|`Selection Highlight`            | Color               |
+|`Input Background`               | Color               |
 
 > **Note:** To reset the settings just turn `OFF` and `ON` the plugin
 
@@ -103,15 +107,12 @@ DevConsole.print_warning("Hello, World?"); # Outputs to console orange text
 DevConsole.print_error("Goodbye World!"); # Outputs to console red text
 
 DevConsole.clear_output(); # Clears the console
-
-DevConsole.show(); # Opens the console in player
-DevConsole.hide(); # Closes the console in player
-DevConsole.toggle(); # Opens/closes the console in player based on previous state
-DevConsole.is_visible(); # returns bool
 ```
 
 ### Properties ###
 ```gdscript
+DevConsole.visible # bool
+
 DevConsole.title_label # String (default: "CONSOLE")
 DevConsole.use_default_commands # bool (default: true)
 DevConsole.use_command_history # bool (default: true)
@@ -121,7 +122,12 @@ DevConsole.keep_position_after_closing # bool (default: false)
 DevConsole.keep_topmost # bool (default: true)
 DevConsole.toggle_keybind # String (default: "QuoteLeft") ... available: QuoteLeft, Tab, F1 to F5
 DevConsole.close_on_escape # bool (default: true)
+
 DevConsole.alpha # float (default: 0.9)
+DevConsole.header_background # Color (default: Color(0.204, 0.204, 0.204, 1.0))
+DevConsole.output_background # Color (default: Color(0.137, 0.137, 0.137, 1.0))
+DevConsole.selection_highlight # Color (default: Color(0.204, 0.204, 0.204, 0.878))
+DevConsole.input_background # Color (default: Color(0.114, 0.114, 0.114, 1.0))
 ```
 
 ## Usage (C#) ##
