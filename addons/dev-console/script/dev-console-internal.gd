@@ -542,7 +542,6 @@ func _generate_theme() -> Theme:
 	theme.set_type_variation("BackgroundPanel", "Panel")
 	sb_output_bg = StyleBoxFlat.new()
 	sb_output_bg.bg_color = c_output_bg
-	sb_output_bg.anti_aliasing = false
 	theme.set_stylebox("panel", "BackgroundPanel", sb_output_bg)
 	
 	# HeaderPanel Style (Custom Type Variation of Panel)

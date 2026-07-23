@@ -273,5 +273,61 @@ public static class DevConsole
 			GetConsole()?.Set("alpha", value);
 		}
 	}
+
+	public static Color HeaderBackground
+	{
+		get
+		{
+			var console = GetConsole();
+			if (console != null) { return console.Get("header_background").AsColor(); }
+			return ProjectSettings.GetSetting("dev_console/theme/header_background", new Color(0.204f, 0.204f, 0.204f, 1.0f)).AsColor();
+		}
+		set
+		{
+			GetConsole()?.Set("header_background", value);
+		}
+	}
+
+	public static Color OutputBackground
+	{
+		get
+		{
+			var console = GetConsole();
+			if (console != null) { return console.Get("output_background").AsColor(); }
+			return ProjectSettings.GetSetting("dev_console/theme/output_background", new Color(0.137f, 0.137f, 0.137f, 1.0f)).AsColor();
+		}
+		set
+		{
+			GetConsole()?.Set("output_background", value);
+		}
+	}
+
+	public static Color SelectionHighlight
+	{
+		get
+		{
+			var console = GetConsole();
+			if (console != null) { return console.Get("selection_highlight").AsColor(); }
+			return ProjectSettings.GetSetting("dev_console/theme/selection_highlight", new Color(0.204f, 0.204f, 0.204f, 0.878f)).AsColor();
+		}
+		set
+		{
+			GetConsole()?.Set("selection_highlight", value);
+		}
+	}
+
+	public static Color InputBackground
+	{
+		get
+		{
+			var console = GetConsole();
+			if (console != null) { return console.Get("input_background").AsColor(); }
+			return ProjectSettings.GetSetting("dev_console/theme/input_background", new Color(0.114f, 0.114f, 0.114f, 1.0f)).AsColor();
+		}
+		set
+		{
+			GetConsole()?.Set("input_background", value);
+		}
+	}
 	#endregion
 }
