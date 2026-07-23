@@ -49,6 +49,16 @@ var c_keep_topmost := true
 var c_toggle_keybind: int = DevConsole.ToggleKey.QUOTE_LEFT
 var c_close_on_escape := true
 
+# Cached theme
+var c_header_bg: Color = Color(0.204, 0.204, 0.204, 1.0)
+var c_output_bg: Color = Color(0.137, 0.137, 0.137, 1.0)
+var c_selection_highlight: Color = Color(0.204, 0.204, 0.204, 0.878)
+var c_input_bg: Color = Color(0.114, 0.114, 0.114, 1.0)
+
+var sb_header_bg: StyleBoxFlat
+var sb_output_bg: StyleBoxFlat
+var sb_input_bg: StyleBoxFlat
+
 # --------- Init ---------
 func _ready() -> void:
 	# Generate UI
@@ -67,6 +77,10 @@ func _ready() -> void:
 	
 	# Pull initial theme from the singleton
 	set_alpha(DevConsole.alpha)
+	set_header_background(DevConsole.header_background)
+	set_output_background(DevConsole.output_background)
+	set_selection_highlight(DevConsole.selection_highlight)
+	set_input_background(DevConsole.input_background)
 	
 	# Some clearing
 	visible = false
@@ -352,6 +366,28 @@ func set_alpha(value: float) -> void:
 	control.modulate.a = clampf(value, 0.5, 1.0)
 func get_alpha() -> float: return float(control.modulate.a)
 
+func set_header_background(value: Color) -> void:
+	c_header_bg = value
+	if sb_header_bg: sb_header_bg.bg_color = value
+func get_header_background() -> Color: return c_header_bg
+
+func set_output_background(value: Color) -> void:
+	c_output_bg = value
+	if sb_output_bg: sb_output_bg.bg_color = value
+func get_output_background() -> Color: return c_output_bg
+
+func set_selection_highlight(value: Color) -> void:
+	c_selection_highlight = value
+	if is_instance_valid(control):
+		control.theme.set_color("selection_color", "LineEdit", value)
+		control.theme.set_color("selection_color", "RichTextLabel", value)
+func get_selection_highlight() -> Color: return c_selection_highlight
+
+func set_input_background(value: Color) -> void:
+	c_input_bg = value
+	if sb_input_bg: sb_input_bg.bg_color = value
+func get_input_background() -> Color: return c_input_bg
+
 # --------- Helpers ---------
 func _focus_input(clear: bool = false) -> void:
 	if clear: input_line.clear()
@@ -413,6 +449,7 @@ func _generate_ui() -> void:
 	# Header panel
 	header_panel = Panel.new()
 	header_panel.name = "Panel"
+	header_panel.theme_type_variation = &"HeaderPanel"
 	header_panel.custom_minimum_size = Vector2(0, 26)
 	vbox.add_child(header_panel)
 	
@@ -503,9 +540,17 @@ func _generate_theme() -> Theme:
 	# BackgroundPanel Style (Custom Type Variation of Panel)
 	theme.add_type("BackgroundPanel")
 	theme.set_type_variation("BackgroundPanel", "Panel")
-	var sb_bg_panel := StyleBoxFlat.new()
-	sb_bg_panel.bg_color = Color(0.137, 0.137, 0.137, 1.0)
-	theme.set_stylebox("panel", "BackgroundPanel", sb_bg_panel)
+	sb_output_bg = StyleBoxFlat.new()
+	sb_output_bg.bg_color = c_output_bg
+	sb_output_bg.anti_aliasing = false
+	theme.set_stylebox("panel", "BackgroundPanel", sb_output_bg)
+	
+	# HeaderPanel Style (Custom Type Variation of Panel)
+	theme.add_type("HeaderPanel")
+	theme.set_type_variation("HeaderPanel", "Panel")
+	sb_header_bg = StyleBoxFlat.new()
+	sb_header_bg.bg_color = c_header_bg
+	theme.set_stylebox("panel", "HeaderPanel", sb_header_bg)
 	
 	# Button Style
 	var sb_btn_hover := StyleBoxFlat.new()
@@ -532,23 +577,15 @@ func _generate_theme() -> Theme:
 	sb_btn_pressed.bg_color = Color(1.0, 1.0, 1.0, 0.047)
 	theme.set_stylebox("pressed", "Button", sb_btn_pressed)
 	
-	# Shared Selection Color Style
-	var selection_color := Color(0.204, 0.204, 0.204, 0.878)
-	
 	# LineEdit Style
-	theme.set_color("selection_color", "LineEdit", selection_color)
-	var sb_line_edit := StyleBoxFlat.new()
-	sb_line_edit.bg_color = Color(0.114, 0.114, 0.114, 1.0)
-	theme.set_stylebox("focus", "LineEdit", sb_line_edit)
-	theme.set_stylebox("normal", "LineEdit", sb_line_edit)
-	
-	# Panel Style
-	var sb_panel := StyleBoxFlat.new()
-	sb_panel.bg_color = Color(0.204, 0.204, 0.204, 1.0)
-	theme.set_stylebox("panel", "Panel", sb_panel)
+	theme.set_color("selection_color", "LineEdit", c_selection_highlight)
+	sb_input_bg = StyleBoxFlat.new()
+	sb_input_bg.bg_color = c_input_bg
+	theme.set_stylebox("focus", "LineEdit", sb_input_bg)
+	theme.set_stylebox("normal", "LineEdit", sb_input_bg)
 	
 	# RichTextLabel Style
-	theme.set_color("selection_color", "RichTextLabel", selection_color)
+	theme.set_color("selection_color", "RichTextLabel", c_selection_highlight)
 	theme.set_constant("paragraph_separation", "RichTextLabel", -2)
 	var sb_rtl_normal := StyleBoxEmpty.new()
 	sb_rtl_normal.content_margin_bottom = 2.0

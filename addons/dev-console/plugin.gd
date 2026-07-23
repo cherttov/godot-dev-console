@@ -25,16 +25,8 @@ var PLUGIN_SETTINGS := {
 		"default": Color(0.204, 0.204, 0.204, 1.0),
 		"info": { "type": TYPE_COLOR }
 	},
-	"dev_console/theme/header_foreground": {
-		"default": Color(1.0, 1.0, 1.0, 1.0),
-		"info": { "type": TYPE_COLOR }
-	},
 	"dev_console/theme/output_background": {
 		"default": Color(0.137, 0.137, 0.137, 1.0),
-		"info": { "type": TYPE_COLOR }
-	},
-	"dev_console/theme/output_text": {
-		"default": Color(1.0, 1.0, 1.0, 1.0), #?
 		"info": { "type": TYPE_COLOR }
 	},
 	"dev_console/theme/selection_highlight": {
@@ -43,10 +35,6 @@ var PLUGIN_SETTINGS := {
 	},
 	"dev_console/theme/input_background": {
 		"default": Color(0.114, 0.114, 0.114, 1.0),
-		"info": { "type": TYPE_COLOR }
-	},
-	"dev_console/theme/input_foreground": {
-		"default": Color(1.0, 1.0, 1.0, 1.0),
 		"info": { "type": TYPE_COLOR }
 	}
 }
