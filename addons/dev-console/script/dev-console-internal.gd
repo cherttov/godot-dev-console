@@ -16,7 +16,7 @@ var minimum_window_size := Vector2(200, 150)
 var current_resizing_size := Vector2.ZERO
 
 # Commands dictionary
-const DEF_COMMANDS := ["close", "help", "cls", "set_alpha", "get_alpha", "quit"]
+const DEF_COMMANDS := ["help", "cls", "set_alpha", "get_alpha", "quit"]
 var commands: Dictionary[String, Callable] = {}
 var signals: Dictionary[String, Dictionary] = {} # { "signal": Signal, "callback": Callable }
 var command_history: Array[String] = []
@@ -88,7 +88,8 @@ func _ready() -> void:
 	input_line.clear()
 	
 	# Connecting signals
-	close_btn.pressed.connect(_on_close_button_pressed)
+	visibility_changed.connect(_on_visibility_changed)
+	close_btn.pressed.connect(func(): visible = false)
 	input_line.text_submitted.connect(_on_input_submitted)
 	header_panel.gui_input.connect(_on_panel_gui_input)
 	resize_anchor.gui_input.connect(_on_anchor_gui_input)
@@ -111,7 +112,7 @@ func _ready() -> void:
 func _input(event: InputEvent) -> void:
 	# Toggle console
 	if event.is_action_pressed("dev_console_toggle"):
-		toggle_console()
+		visible = not visible
 		get_viewport().set_input_as_handled()
 		return
 	
@@ -127,22 +128,13 @@ func _input(event: InputEvent) -> void:
 
 	# Close on Escape (ESC)
 	if c_close_on_escape and event.is_action_pressed("dev_console_escape"):
-		hide_console()
+		visible = false
 		get_viewport().set_input_as_handled()
 		return
 
 	if is_resizing:
 		_resize_console_window(event)
 		return
-	
-	# This while testing had no impact on input
-	#if input_line.has_focus():
-		#if event is InputEventKey and not event.is_echo():
-			#if event.as_text().length() == 1:
-				#pass
-	#else:
-		#if event is InputEventKey or event is InputEventMouseButton:
-			#get_viewport().set_input_as_handled()
 
 # --------- Command & Signal Registration ---------
 func add_command(command_name: String, callback: Callable) -> void:
@@ -220,26 +212,13 @@ func _on_input_submitted(input: String) -> void:
 	_focus_input(true)
 
 # --------- Visibility & Opacity ---------
-func show_console() -> void:
-	if visible: return
-	visible = true
-	
-	if !c_keep_position_after_closing: control.position = Vector2(0.0, 0.0)
-	if !c_keep_size_after_closing: control.size = default_window_size
-	
-	_focus_input(true)
-
-func hide_console() -> void:
-	if not visible: return
-	visible = false
-	input_line.release_focus()
-
-func toggle_console() -> void:
-	if visible: hide_console()
-	else: show_console()
-
-func is_visible() -> bool: return visible
-func _on_close_button_pressed() -> void: hide_console()
+func _on_visibility_changed() -> void:
+	if visible:
+		if !c_keep_position_after_closing: control.position = Vector2(0.0, 0.0)
+		if !c_keep_size_after_closing: control.size = default_window_size
+		if is_node_ready(): _focus_input(true)
+	else:
+		if is_node_ready(): input_line.release_focus()
 
 # --------- Default commands ---------
 func _load_def_commands() -> void:
@@ -247,7 +226,6 @@ func _load_def_commands() -> void:
 	add_command("cls", clear_output)
 	add_command("set_alpha", func(val: String) -> void: set_alpha(val.to_float()))
 	add_command("get_alpha", get_alpha)
-	add_command("close", hide_console)
 	add_command("quit", _quit_program)
 
 func _unload_def_commands() -> void:

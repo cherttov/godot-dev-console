@@ -63,23 +63,6 @@ func get_signals() -> Dictionary[String, Dictionary]:
 	if _console_ready: return _console.get_signals()
 	return { }
 
-# Visibility & Opacity
-func show() -> void:
-	if _console_ready: _console.show_console()
-	else: _pending_calls.append(show)
-
-func hide() -> void:
-	if _console_ready: _console.hide_console()
-	else: _pending_calls.append(hide)
-
-func toggle_visibility() -> void:
-	if _console_ready: _console.toggle_console()
-	else: _pending_calls.append(toggle_visibility)
-
-func is_visible() -> bool:
-	if _console_ready: return _console.is_visible()
-	return false
-
 # Output
 func print_line(text: String) -> void:
 	if _console_ready: _console.output_callback(text)
@@ -98,6 +81,14 @@ func clear_output() -> void:
 	else: _pending_calls.append(clear_output)
 
 # --------- PROPERTIES ---------
+# Runtime 
+var visible := false:
+	set(value):
+		visible = value
+		if _console_ready: _console.visible = value
+		else: _pending_calls.append(func(): _console.visible = value)
+
+# Configuration
 var title_label := ProjectSettings.get_setting("dev_console/configuration/title_label", "CONSOLE"):
 	set(value):
 		title_label = value
@@ -140,6 +131,7 @@ var close_on_escape := ProjectSettings.get_setting("dev_console/configuration/cl
 		if _console_ready: _console.set_close_on_escape(value)
 		else: _pending_calls.append(func(): _console.set_close_on_escape(value))
 
+# Theme
 var alpha: float = ProjectSettings.get_setting("dev_console/theme/console_transparency", 0.9):
 	set(value):
 		alpha = clampf(value, 0.5, 1.0)
