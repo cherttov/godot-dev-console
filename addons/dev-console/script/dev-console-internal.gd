@@ -151,16 +151,13 @@ func add_signal(signal_name: String, target_signal: Signal) -> void:
 	target_signal.connect(callable)
 
 func delete_command(command_name: String) -> void:
-	if commands.has(command_name):
-		commands.erase(command_name)
-	else:
+	if not commands.erase(command_name):
 		push_warning("Command not found: " + command_name)
 
 func delete_signal(signal_name: String) -> void:
-	if signals.has(signal_name):
-		var sig = signals[signal_name]
-		if sig["signal"].is_connected(sig["callable"]):
-			sig["signal"].disconnect(sig["callable"])
+	var sig := signals.get(signal_name)
+	if sig:
+		if sig["signal"].is_connected(sig["callable"]): sig["signal"].disconnect(sig["callable"])
 		signals.erase(signal_name)
 	else:
 		push_warning("Signal not found: " + signal_name)
@@ -185,7 +182,7 @@ func _on_input_submitted(input: String) -> void:
 	
 	# Splitting input
 	var parts: PackedStringArray = clean_input.split(" ", false)
-	var command_name: String = parts[0].strip_edges()
+	var command_name: String = parts[0]
 	parts.remove_at(0)
 	
 	# Outputting input
@@ -530,14 +527,6 @@ func _generate_theme() -> Theme:
 	theme.set_stylebox("panel", "HeaderPanel", sb_header_bg)
 	
 	# Button Style
-	var sb_btn_hover := StyleBoxFlat.new()
-	sb_btn_hover.content_margin_left = 2.0
-	sb_btn_hover.content_margin_top = 2.0
-	sb_btn_hover.content_margin_right = 0.0
-	sb_btn_hover.content_margin_bottom = 0.0
-	sb_btn_hover.bg_color = Color(1.0, 1.0, 1.0, 0.094)
-	theme.set_stylebox("hover", "Button", sb_btn_hover)
-	
 	var sb_btn_normal := StyleBoxFlat.new()
 	sb_btn_normal.content_margin_left = 2.0
 	sb_btn_normal.content_margin_top = 2.0
@@ -546,11 +535,11 @@ func _generate_theme() -> Theme:
 	sb_btn_normal.bg_color = Color(0.6, 0.6, 0.6, 0.0)
 	theme.set_stylebox("normal", "Button", sb_btn_normal)
 	
-	var sb_btn_pressed := StyleBoxFlat.new()
-	sb_btn_pressed.content_margin_left = 2.0
-	sb_btn_pressed.content_margin_top = 2.0
-	sb_btn_pressed.content_margin_right = 0.0
-	sb_btn_pressed.content_margin_bottom = 0.0
+	var sb_btn_hover := sb_btn_normal.duplicate()
+	sb_btn_hover.bg_color = Color(1.0, 1.0, 1.0, 0.094)
+	theme.set_stylebox("hover", "Button", sb_btn_hover)
+	
+	var sb_btn_pressed := sb_btn_normal.duplicate()
 	sb_btn_pressed.bg_color = Color(1.0, 1.0, 1.0, 0.047)
 	theme.set_stylebox("pressed", "Button", sb_btn_pressed)
 	
