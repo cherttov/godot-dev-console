@@ -16,7 +16,7 @@ var _min_window_size := Vector2(200, 150)
 var _cur_resize_size := Vector2.ZERO
 
 # Commands dictionary
-const DEF_COMMANDS := ["help", "cls", "set_alpha", "get_alpha", "quit"]
+const DEF_COMMANDS := ["help", "cls", "alpha", "quit"]
 var _commands: Dictionary[String, Callable] = {}
 var _signals: Dictionary[String, Dictionary] = {} # { "signal": Signal, "callback": Callable }
 var _command_history: Array[String] = []
@@ -119,7 +119,7 @@ func _input(event: InputEvent) -> void:
 	# Return if hidden
 	if not visible: return
 	
-	# Arrow up/down (history)
+	# Arrow up/down (history) + _navigate_history() handles input and return
 	if _use_command_history and !_command_history.is_empty():
 		if event.is_action_pressed("dev_console_arrow_up"):
 			_navigate_history(1)
@@ -134,7 +134,6 @@ func _input(event: InputEvent) -> void:
 
 	if _is_resizing:
 		_resize_console_window(event)
-		return
 
 # --------- Command & Signal Registration ---------
 func add_command(cmd_name: String, callback: Callable) -> void:
@@ -191,13 +190,14 @@ func _on_input_submitted(input: String) -> void:
 	# Calling callback & outputting result
 	if _commands.has(cmd_name):
 		var target: Callable = _commands[cmd_name]
+		var expected_args := target.get_argument_count()
 		
 		# Check if args passed match the function args
-		if parts.size() != target.get_argument_count():
+		if parts.size() < expected_args:
 			output_warning(
 				"WARNING: " + cmd_name 
 				+ " expects " + str(parts.size())
-				+ " arguments, but received " + str(target.get_argument_count())
+				+ " arguments, but received " + str(expected_args)
 			)
 		
 		# Call & output callback/result
@@ -209,6 +209,13 @@ func _on_input_submitted(input: String) -> void:
 	_focus_input(true)
 
 # --------- Visibility & Opacity ---------
+func _handle_alpha_command(...args) -> Variant:
+	if args.size() > 0:
+		set_alpha(str(args[0]).to_float())
+		return null
+	else:
+		return get_alpha()
+
 func _on_visibility_changed() -> void:
 	if visible:
 		if !_keep_position_after_closing: control.position = Vector2(0.0, 0.0)
@@ -221,8 +228,9 @@ func _on_visibility_changed() -> void:
 func _load_def_commands() -> void:
 	add_command("help", _help_command)
 	add_command("cls", clear_output)
-	add_command("set_alpha", func(val: String) -> void: set_alpha(val.to_float()))
-	add_command("get_alpha", get_alpha)
+	#add_command("set_alpha", func(val: String) -> void: set_alpha(val.to_float()))
+	#add_command("get_alpha", get_alpha)
+	add_command("alpha", _handle_alpha_command)
 	add_command("quit", _quit_program)
 
 func _unload_def_commands() -> void:
