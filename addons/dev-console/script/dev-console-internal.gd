@@ -407,13 +407,6 @@ func _generate_ui() -> void:
 	control.theme = _generate_theme()
 	add_child(control)
 	
-	# Background panel
-	var bg_panel := Panel.new()
-	bg_panel.name = "Panel"
-	bg_panel.theme_type_variation = &"BackgroundPanel"
-	bg_panel.set_anchors_preset(Control.PRESET_FULL_RECT)
-	control.add_child(bg_panel)
-	
 	# Main vertical box
 	var vbox := VBoxContainer.new()
 	vbox.name = "VBoxContainer"
@@ -462,13 +455,20 @@ func _generate_ui() -> void:
 	close_btn.add_theme_font_size_override("font_size", 16)
 	hbox.add_child(close_btn)
 	
+	# Output Background Panel
+	var output_bg_panel := Panel.new()
+	output_bg_panel.name = "OutputBgPanel"
+	output_bg_panel.theme_type_variation = &"BackgroundPanel"
+	output_bg_panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	vbox.add_child(output_bg_panel)
+	
 	# Output MarginContainer
 	var output_margin := MarginContainer.new()
 	output_margin.name = "MarginContainer"
-	output_margin.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	output_margin.set_anchors_preset(Control.PRESET_FULL_RECT)
 	output_margin.add_theme_constant_override("margin_left", 3)
 	output_margin.add_theme_constant_override("margin_right", 3)
-	vbox.add_child(output_margin)
+	output_bg_panel.add_child(output_margin)
 
 	# Output RichTextLabel
 	output_rtl = RichTextLabel.new()
