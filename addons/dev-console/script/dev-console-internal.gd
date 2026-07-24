@@ -11,23 +11,23 @@ var input_line: LineEdit
 var resize_anchor: Panel
 
 # Window sizes
-var default_window_size := Vector2.ZERO
-var minimum_window_size := Vector2(200, 150)
-var current_resizing_size := Vector2.ZERO
+var _default_window_size := Vector2.ZERO
+var _minimum_window_size := Vector2(200, 150)
+var _current_resizing_size := Vector2.ZERO
 
 # Commands dictionary
 const DEF_COMMANDS := ["help", "cls", "set_alpha", "get_alpha", "quit"]
-var commands: Dictionary[String, Callable] = {}
-var signals: Dictionary[String, Dictionary] = {} # { "signal": Signal, "callback": Callable }
-var command_history: Array[String] = []
-var history_index := -1
+var _commands: Dictionary[String, Callable] = {}
+var _signals: Dictionary[String, Dictionary] = {} # { "signal": Signal, "callback": Callable }
+var _command_history: Array[String] = []
+var _history_index := -1
 
 # For console dragging
-var dragging := false
-var drag_offset := Vector2.ZERO
+var _dragging := false
+var _drag_offset := Vector2.ZERO
 
 # For console resizing
-var is_resizing := false
+var _is_resizing := false
 
 # Cached config (initial values pulled from DevConsole in _ready)
 const TOGGLE_KEYS := {
@@ -39,25 +39,25 @@ const TOGGLE_KEYS := {
 	DevConsole.ToggleKey.F4: KEY_F4,
 	DevConsole.ToggleKey.F5: KEY_F5
 }
-var c_title_label := "CONSOLE"
-var c_use_def_cmds := true
-var c_use_command_history := true
-var c_view_def_cmds := true
-var c_keep_size_after_closing := false
-var c_keep_position_after_closing := false
-var c_keep_topmost := true
-var c_toggle_keybind: int = DevConsole.ToggleKey.QUOTE_LEFT
-var c_close_on_escape := true
+var _title_label := "CONSOLE"
+var _use_def_cmds := true
+var _use_command_history := true
+var _view_def_cmds := true
+var _keep_size_after_closing := false
+var _keep_position_after_closing := false
+var _keep_topmost := true
+var _toggle_keybind: int = DevConsole.ToggleKey.QUOTE_LEFT
+var _close_on_escape := true
 
 # Cached theme
-var c_header_bg: Color = Color(0.204, 0.204, 0.204, 1.0)
-var c_output_bg: Color = Color(0.137, 0.137, 0.137, 1.0)
-var c_selection_highlight: Color = Color(0.204, 0.204, 0.204, 0.878)
-var c_input_bg: Color = Color(0.114, 0.114, 0.114, 1.0)
+var _header_bg: Color = Color(0.204, 0.204, 0.204, 1.0)
+var _output_bg: Color = Color(0.137, 0.137, 0.137, 1.0)
+var _selection_highlight: Color = Color(0.204, 0.204, 0.204, 0.878)
+var _input_bg: Color = Color(0.114, 0.114, 0.114, 1.0)
 
-var sb_header_bg: StyleBoxFlat
-var sb_output_bg: StyleBoxFlat
-var sb_input_bg: StyleBoxFlat
+var _sb_header_bg: StyleBoxFlat
+var _sb_output_bg: StyleBoxFlat
+var _sb_input_bg: StyleBoxFlat
 
 # --------- Init ---------
 func _ready() -> void:
@@ -104,9 +104,9 @@ func _ready() -> void:
 	output_rtl.scroll_following = true
 	
 	# Set size
-	control.custom_minimum_size = minimum_window_size
-	default_window_size = _compute_default_window_size()
-	control.size = default_window_size
+	control.custom_minimum_size = _minimum_window_size
+	_default_window_size = _compute_default_window_size()
+	control.size = _default_window_size
 
 # --------- Input ---------
 func _input(event: InputEvent) -> void:
@@ -120,53 +120,53 @@ func _input(event: InputEvent) -> void:
 	if not visible: return
 	
 	# Arrow up/down (history)
-	if c_use_command_history and !command_history.is_empty():
+	if _use_command_history and !_command_history.is_empty():
 		if event.is_action_pressed("dev_console_arrow_up"):
 			_navigate_history(1)
 		elif event.is_action_pressed("dev_console_arrow_down"):
 			_navigate_history(-1)
 
 	# Close on Escape (ESC)
-	if c_close_on_escape and event.is_action_pressed("dev_console_escape"):
+	if _close_on_escape and event.is_action_pressed("dev_console_escape"):
 		visible = false
 		get_viewport().set_input_as_handled()
 		return
 
-	if is_resizing:
+	if _is_resizing:
 		_resize_console_window(event)
 		return
 
 # --------- Command & Signal Registration ---------
 func add_command(command_name: String, callback: Callable) -> void:
-	commands[command_name] = callback
+	_commands[command_name] = callback
 
 func add_signal(signal_name: String, target_signal: Signal) -> void:
-	if signals.has(signal_name): delete_signal(signal_name)
+	if _signals.has(signal_name): delete_signal(signal_name)
 	
 	var callable: Callable = func(...args): _output_signal(signal_name, args)
-	signals[signal_name] = {
+	_signals[signal_name] = {
 		"signal": target_signal,
 		"callable": callable
 	}
 	target_signal.connect(callable)
 
 func delete_command(command_name: String) -> void:
-	if not commands.erase(command_name):
+	if not _commands.erase(command_name):
 		push_warning("Command not found: " + command_name)
 
 func delete_signal(signal_name: String) -> void:
-	var sig := signals.get(signal_name)
+	var sig := _signals.get(signal_name)
 	if sig:
 		if sig["signal"].is_connected(sig["callable"]): sig["signal"].disconnect(sig["callable"])
-		signals.erase(signal_name)
+		_signals.erase(signal_name)
 	else:
 		push_warning("Signal not found: " + signal_name)
 
 # --------- Command & Signal Registry Getters ---------
-func has_command(command_name: String) -> bool: return commands.has(command_name)
-func has_signal_connected(signal_name: String) -> bool: return signals.has(signal_name)
-func get_commands() -> Dictionary[String, Callable]: return commands.duplicate()
-func get_signals() -> Dictionary[String, Dictionary]: return signals.duplicate()
+func has_command(command_name: String) -> bool: return _commands.has(command_name)
+func has_signal_connected(signal_name: String) -> bool: return _signals.has(signal_name)
+func get_commands() -> Dictionary[String, Callable]: return _commands.duplicate()
+func get_signals() -> Dictionary[String, Dictionary]: return _signals.duplicate()
 
 # --------- Input processing ---------
 func _on_input_submitted(input: String) -> void:
@@ -176,9 +176,9 @@ func _on_input_submitted(input: String) -> void:
 		return
 	
 	# Command history
-	if command_history.is_empty() or command_history.back() != clean_input:
-		command_history.append(clean_input)
-	history_index = -1
+	if _command_history.is_empty() or _command_history.back() != clean_input:
+		_command_history.append(clean_input)
+	_history_index = -1
 	
 	# Splitting input
 	var parts: PackedStringArray = clean_input.split(" ", false)
@@ -189,8 +189,8 @@ func _on_input_submitted(input: String) -> void:
 	output_input(clean_input)
 	
 	# Calling callback & outputting result
-	if commands.has(command_name):
-		var target: Callable = commands[command_name]
+	if _commands.has(command_name):
+		var target: Callable = _commands[command_name]
 		
 		# Check if args passed match the function args
 		if parts.size() != target.get_argument_count():
@@ -211,8 +211,8 @@ func _on_input_submitted(input: String) -> void:
 # --------- Visibility & Opacity ---------
 func _on_visibility_changed() -> void:
 	if visible:
-		if !c_keep_position_after_closing: control.position = Vector2(0.0, 0.0)
-		if !c_keep_size_after_closing: control.size = default_window_size
+		if !_keep_position_after_closing: control.position = Vector2(0.0, 0.0)
+		if !_keep_size_after_closing: control.size = _default_window_size
 		_focus_input(true)
 	else:
 		input_line.release_focus()
@@ -227,12 +227,12 @@ func _load_def_commands() -> void:
 
 func _unload_def_commands() -> void:
 	for cmd in DEF_COMMANDS:
-		commands.erase(cmd)
+		_commands.erase(cmd)
 
 func _help_command() -> void:
 	var list := []
-	for cmd in commands.keys():
-		if !c_view_def_cmds and cmd in DEF_COMMANDS: continue
+	for cmd in _commands.keys():
+		if !_view_def_cmds and cmd in DEF_COMMANDS: continue
 		list.append(cmd)
 	output_callback("\n".join(list))
 
@@ -258,110 +258,110 @@ func clear_output() -> void: output_rtl.clear()
 # --------- Movement & Resizing ---------
 func _on_panel_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
-		dragging = event.pressed
-		if visible and dragging: _focus_input()
-		drag_offset = control.get_global_mouse_position() - control.position
-	elif event is InputEventMouseMotion and dragging:
-		var new_position: Vector2 = control.get_global_mouse_position() - drag_offset
+		_dragging = event.pressed
+		if visible and _dragging: _focus_input()
+		_drag_offset = control.get_global_mouse_position() - control.position
+	elif event is InputEventMouseMotion and _dragging:
+		var new_position: Vector2 = control.get_global_mouse_position() - _drag_offset
 		control.position = _clamp_pos(new_position, control.size)
 
 func _on_anchor_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
-		is_resizing = event.pressed
-		if visible and is_resizing:
-			current_resizing_size = control.size
-			drag_offset = get_viewport().get_mouse_position()
+		_is_resizing = event.pressed
+		if visible and _is_resizing:
+			_current_resizing_size = control.size
+			_drag_offset = get_viewport().get_mouse_position()
 			_focus_input()
 
 func _resize_console_window(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
-		var diff: Vector2 = get_viewport().get_mouse_position() - drag_offset
-		control.size = _clamp_size(current_resizing_size + diff, control.position)
+		var diff: Vector2 = get_viewport().get_mouse_position() - _drag_offset
+		control.size = _clamp_size(_current_resizing_size + diff, control.position)
 		get_viewport().set_input_as_handled()
 	elif event is InputEventMouseButton and not event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		is_resizing = false
+		_is_resizing = false
 		get_viewport().set_input_as_handled()
 
 func _on_viewport_size_changed() -> void:
-	default_window_size = _compute_default_window_size()
+	_default_window_size = _compute_default_window_size()
 	control.size = _clamp_size(control.size, control.position)
 	control.position = _clamp_pos(control.position, control.size)
 
 # --------- Property Setters/Getters ---------
 func set_title_label(value: String) -> void:
-	c_title_label = value
-	if is_node_ready(): title_label.text = c_title_label
-func get_title_label() -> String: return c_title_label
+	_title_label = value
+	if is_node_ready(): title_label.text = _title_label
+func get_title_label() -> String: return _title_label
 
 func set_use_default_commands(value: bool) -> void:
-	c_use_def_cmds = value
+	_use_def_cmds = value
 	_unload_def_commands()
 	if value: _load_def_commands()
-func get_use_default_commands() -> bool: return c_use_def_cmds
+func get_use_default_commands() -> bool: return _use_def_cmds
 
 func set_use_command_history(value: bool) -> void:
-	c_use_command_history = value
+	_use_command_history = value
 	if InputMap.has_action("dev_console_arrow_up"): InputMap.action_erase_events("dev_console_arrow_up")
 	if InputMap.has_action("dev_console_arrow_down"): InputMap.action_erase_events("dev_console_arrow_down")
 	if value:
 		_add_keybind("dev_console_arrow_up", KEY_UP)
 		_add_keybind("dev_console_arrow_down", KEY_DOWN)
 	else:
-		command_history.clear()
-		history_index = -1
-func get_use_command_history() -> bool: return c_use_command_history
+		_command_history.clear()
+		_history_index = -1
+func get_use_command_history() -> bool: return _use_command_history
 
-func set_view_default_commands(value: bool) -> void: c_view_def_cmds = value
-func get_view_default_commands() -> bool: return c_view_def_cmds
+func set_view_default_commands(value: bool) -> void: _view_def_cmds = value
+func get_view_default_commands() -> bool: return _view_def_cmds
 
-func set_keep_size_after_closing(value: bool) -> void: c_keep_size_after_closing = value
-func get_keep_size_after_closing() -> bool: return c_keep_size_after_closing
+func set_keep_size_after_closing(value: bool) -> void: _keep_size_after_closing = value
+func get_keep_size_after_closing() -> bool: return _keep_size_after_closing
 
-func set_keep_position_after_closing(value: bool) -> void: c_keep_position_after_closing = value
-func get_keep_position_after_closing() -> bool: return c_keep_position_after_closing
+func set_keep_position_after_closing(value: bool) -> void: _keep_position_after_closing = value
+func get_keep_position_after_closing() -> bool: return _keep_position_after_closing
 
 func set_keep_topmost(value: bool) -> void:
-	c_keep_topmost = value
+	_keep_topmost = value
 	layer = RenderingServer.CANVAS_LAYER_MAX if value else 0
-func get_keep_topmost() -> bool: return c_keep_topmost
+func get_keep_topmost() -> bool: return _keep_topmost
 
 func set_toggle_keybind(value: int) -> void:
-	c_toggle_keybind = value
+	_toggle_keybind = value
 	if InputMap.has_action("dev_console_toggle"): InputMap.action_erase_events("dev_console_toggle")
 	_add_keybind("dev_console_toggle", TOGGLE_KEYS.get(value, KEY_QUOTELEFT))
-func get_toggle_keybind() -> int: return c_toggle_keybind
+func get_toggle_keybind() -> int: return _toggle_keybind
 
 func set_close_on_escape(value: bool) -> void:
-	c_close_on_escape = value
+	_close_on_escape = value
 	if InputMap.has_action("dev_console_escape"): InputMap.action_erase_events("dev_console_escape")
 	if value: _add_keybind("dev_console_escape", KEY_ESCAPE)
-func get_close_on_escape() -> bool: return c_close_on_escape
+func get_close_on_escape() -> bool: return _close_on_escape
 
 func set_alpha(value: float) -> void:
 	control.modulate.a = clampf(value, 0.5, 1.0)
 func get_alpha() -> float: return float(control.modulate.a)
 
 func set_header_background(value: Color) -> void:
-	c_header_bg = value
-	if sb_header_bg: sb_header_bg.bg_color = value
-func get_header_background() -> Color: return c_header_bg
+	_header_bg = value
+	if _sb_header_bg: _sb_header_bg.bg_color = value
+func get_header_background() -> Color: return _header_bg
 
 func set_output_background(value: Color) -> void:
-	c_output_bg = value
-	if sb_output_bg: sb_output_bg.bg_color = value
-func get_output_background() -> Color: return c_output_bg
+	_output_bg = value
+	if _sb_output_bg: _sb_output_bg.bg_color = value
+func get_output_background() -> Color: return _output_bg
 
 func set_selection_highlight(value: Color) -> void:
-	c_selection_highlight = value
+	_selection_highlight = value
 	if is_instance_valid(control):
 		control.theme.set_color("selection_color", "LineEdit", value)
 		control.theme.set_color("selection_color", "RichTextLabel", value)
-func get_selection_highlight() -> Color: return c_selection_highlight
+func get_selection_highlight() -> Color: return _selection_highlight
 
 func set_input_background(value: Color) -> void:
-	c_input_bg = value
-	if sb_input_bg: sb_input_bg.bg_color = value
-func get_input_background() -> Color: return c_input_bg
+	_input_bg = value
+	if _sb_input_bg: _sb_input_bg.bg_color = value
+func get_input_background() -> Color: return _input_bg
 
 # --------- Helpers ---------
 func _focus_input(clear: bool = false) -> void:
@@ -370,12 +370,12 @@ func _focus_input(clear: bool = false) -> void:
 	input_line.caret_column = input_line.text.length()
 
 func _navigate_history(direction: int) -> void:
-	history_index += direction
-	if history_index >= command_history.size() or history_index < 0:
-		history_index = -1
+	_history_index += direction
+	if _history_index >= _command_history.size() or _history_index < 0:
+		_history_index = -1
 		_focus_input(true)
 		return
-	input_line.text = command_history[(command_history.size() - 1) - history_index]
+	input_line.text = _command_history[(_command_history.size() - 1) - _history_index]
 	_focus_input()
 	get_viewport().set_input_as_handled()
 
@@ -387,8 +387,8 @@ func _add_keybind(action: String, keycode: Key) -> void:
 
 func _clamp_size(size: Vector2, position: Vector2) -> Vector2:
 	var viewport_size := get_viewport().get_visible_rect().size
-	var max_size := (viewport_size - position).max(minimum_window_size)
-	return size.clamp(minimum_window_size, max_size)
+	var max_size := (viewport_size - position).max(_minimum_window_size)
+	return size.clamp(_minimum_window_size, max_size)
 
 func _clamp_pos(position: Vector2, size: Vector2) -> Vector2:
 	var viewport_size := get_viewport().get_visible_rect().size
@@ -515,16 +515,16 @@ func _generate_theme() -> Theme:
 	# BackgroundPanel Style (Custom Type Variation of Panel)
 	theme.add_type("BackgroundPanel")
 	theme.set_type_variation("BackgroundPanel", "Panel")
-	sb_output_bg = StyleBoxFlat.new()
-	sb_output_bg.bg_color = c_output_bg
-	theme.set_stylebox("panel", "BackgroundPanel", sb_output_bg)
+	_sb_output_bg = StyleBoxFlat.new()
+	_sb_output_bg.bg_color = _output_bg
+	theme.set_stylebox("panel", "BackgroundPanel", _sb_output_bg)
 	
 	# HeaderPanel Style (Custom Type Variation of Panel)
 	theme.add_type("HeaderPanel")
 	theme.set_type_variation("HeaderPanel", "Panel")
-	sb_header_bg = StyleBoxFlat.new()
-	sb_header_bg.bg_color = c_header_bg
-	theme.set_stylebox("panel", "HeaderPanel", sb_header_bg)
+	_sb_header_bg = StyleBoxFlat.new()
+	_sb_header_bg.bg_color = _header_bg
+	theme.set_stylebox("panel", "HeaderPanel", _sb_header_bg)
 	
 	# Button Style
 	var sb_btn_normal := StyleBoxFlat.new()
@@ -544,14 +544,14 @@ func _generate_theme() -> Theme:
 	theme.set_stylebox("pressed", "Button", sb_btn_pressed)
 	
 	# LineEdit Style
-	theme.set_color("selection_color", "LineEdit", c_selection_highlight)
-	sb_input_bg = StyleBoxFlat.new()
-	sb_input_bg.bg_color = c_input_bg
-	theme.set_stylebox("focus", "LineEdit", sb_input_bg)
-	theme.set_stylebox("normal", "LineEdit", sb_input_bg)
+	theme.set_color("selection_color", "LineEdit", _selection_highlight)
+	_sb_input_bg = StyleBoxFlat.new()
+	_sb_input_bg.bg_color = _input_bg
+	theme.set_stylebox("focus", "LineEdit", _sb_input_bg)
+	theme.set_stylebox("normal", "LineEdit", _sb_input_bg)
 	
 	# RichTextLabel Style
-	theme.set_color("selection_color", "RichTextLabel", c_selection_highlight)
+	theme.set_color("selection_color", "RichTextLabel", _selection_highlight)
 	theme.set_constant("paragraph_separation", "RichTextLabel", -2)
 	var sb_rtl_normal := StyleBoxEmpty.new()
 	sb_rtl_normal.content_margin_bottom = 2.0
