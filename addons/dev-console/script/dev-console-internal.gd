@@ -11,9 +11,9 @@ var input_line: LineEdit
 var resize_anchor: Panel
 
 # Window sizes
-var _default_window_size := Vector2.ZERO
-var _minimum_window_size := Vector2(200, 150)
-var _current_resizing_size := Vector2.ZERO
+var _def_window_size := Vector2.ZERO
+var _min_window_size := Vector2(200, 150)
+var _cur_resize_size := Vector2.ZERO
 
 # Commands dictionary
 const DEF_COMMANDS := ["help", "cls", "set_alpha", "get_alpha", "quit"]
@@ -104,9 +104,9 @@ func _ready() -> void:
 	output_rtl.scroll_following = true
 	
 	# Set size
-	control.custom_minimum_size = _minimum_window_size
-	_default_window_size = _compute_default_window_size()
-	control.size = _default_window_size
+	control.custom_minimum_size = _min_window_size
+	_def_window_size = _compute_default_window_size()
+	control.size = _def_window_size
 
 # --------- Input ---------
 func _input(event: InputEvent) -> void:
@@ -137,65 +137,65 @@ func _input(event: InputEvent) -> void:
 		return
 
 # --------- Command & Signal Registration ---------
-func add_command(command_name: String, callback: Callable) -> void:
-	_commands[command_name] = callback
+func add_command(cmd_name: String, callback: Callable) -> void:
+	_commands[cmd_name] = callback
 
-func add_signal(signal_name: String, target_signal: Signal) -> void:
-	if _signals.has(signal_name): delete_signal(signal_name)
+func add_signal(sig_name: String, target: Signal) -> void:
+	if _signals.has(sig_name): delete_signal(sig_name)
 	
-	var callable: Callable = func(...args): _output_signal(signal_name, args)
-	_signals[signal_name] = {
-		"signal": target_signal,
+	var callable: Callable = func(...args): _output_signal(sig_name, args)
+	_signals[sig_name] = {
+		"signal": target,
 		"callable": callable
 	}
-	target_signal.connect(callable)
+	target.connect(callable)
 
-func delete_command(command_name: String) -> void:
-	if not _commands.erase(command_name):
-		push_warning("Command not found: " + command_name)
+func delete_command(cmd_name: String) -> void:
+	if not _commands.erase(cmd_name):
+		push_warning("Command not found: " + cmd_name)
 
-func delete_signal(signal_name: String) -> void:
-	var sig := _signals.get(signal_name)
+func delete_signal(sig_name: String) -> void:
+	var sig := _signals.get(sig_name)
 	if sig:
 		if sig["signal"].is_connected(sig["callable"]): sig["signal"].disconnect(sig["callable"])
-		_signals.erase(signal_name)
+		_signals.erase(sig_name)
 	else:
-		push_warning("Signal not found: " + signal_name)
+		push_warning("Signal not found: " + sig_name)
 
 # --------- Command & Signal Registry Getters ---------
-func has_command(command_name: String) -> bool: return _commands.has(command_name)
-func has_signal_connected(signal_name: String) -> bool: return _signals.has(signal_name)
+func has_command(cmd_name: String) -> bool: return _commands.has(cmd_name)
+func has_signal_connected(sig_name: String) -> bool: return _signals.has(sig_name)
 func get_commands() -> Dictionary[String, Callable]: return _commands.duplicate()
 func get_signals() -> Dictionary[String, Dictionary]: return _signals.duplicate()
 
 # --------- Input processing ---------
 func _on_input_submitted(input: String) -> void:
-	var clean_input: String = input.strip_edges()
-	if clean_input.is_empty():
+	var clean: String = input.strip_edges()
+	if clean.is_empty():
 		_focus_input(true)
 		return
 	
 	# Command history
-	if _command_history.is_empty() or _command_history.back() != clean_input:
-		_command_history.append(clean_input)
+	if _command_history.is_empty() or _command_history.back() != clean:
+		_command_history.append(clean)
 	_history_index = -1
 	
 	# Splitting input
-	var parts: PackedStringArray = clean_input.split(" ", false)
-	var command_name: String = parts[0]
+	var parts: PackedStringArray = clean.split(" ", false)
+	var cmd_name: String = parts[0]
 	parts.remove_at(0)
 	
 	# Outputting input
-	output_input(clean_input)
+	output_input(clean)
 	
 	# Calling callback & outputting result
-	if _commands.has(command_name):
-		var target: Callable = _commands[command_name]
+	if _commands.has(cmd_name):
+		var target: Callable = _commands[cmd_name]
 		
 		# Check if args passed match the function args
 		if parts.size() != target.get_argument_count():
 			output_warning(
-				"WARNING: " + command_name 
+				"WARNING: " + cmd_name 
 				+ " expects " + str(parts.size())
 				+ " arguments, but received " + str(target.get_argument_count())
 			)
@@ -204,7 +204,7 @@ func _on_input_submitted(input: String) -> void:
 		var result := target.callv(parts)
 		if result != null: output_callback(str(result))
 	else:
-		output_error("ERROR: Unknown command " + command_name)
+		output_error("ERROR: Unknown command " + cmd_name)
 	
 	_focus_input(true)
 
@@ -212,7 +212,7 @@ func _on_input_submitted(input: String) -> void:
 func _on_visibility_changed() -> void:
 	if visible:
 		if !_keep_position_after_closing: control.position = Vector2(0.0, 0.0)
-		if !_keep_size_after_closing: control.size = _default_window_size
+		if !_keep_size_after_closing: control.size = _def_window_size
 		_focus_input(true)
 	else:
 		input_line.release_focus()
@@ -262,28 +262,28 @@ func _on_panel_gui_input(event: InputEvent) -> void:
 		if visible and _dragging: _focus_input()
 		_drag_offset = control.get_global_mouse_position() - control.position
 	elif event is InputEventMouseMotion and _dragging:
-		var new_position: Vector2 = control.get_global_mouse_position() - _drag_offset
-		control.position = _clamp_pos(new_position, control.size)
+		var new_pos: Vector2 = control.get_global_mouse_position() - _drag_offset
+		control.position = _clamp_pos(new_pos, control.size)
 
 func _on_anchor_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		_is_resizing = event.pressed
 		if visible and _is_resizing:
-			_current_resizing_size = control.size
+			_cur_resize_size = control.size
 			_drag_offset = get_viewport().get_mouse_position()
 			_focus_input()
 
 func _resize_console_window(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
 		var diff: Vector2 = get_viewport().get_mouse_position() - _drag_offset
-		control.size = _clamp_size(_current_resizing_size + diff, control.position)
+		control.size = _clamp_size(_cur_resize_size + diff, control.position)
 		get_viewport().set_input_as_handled()
 	elif event is InputEventMouseButton and not event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		_is_resizing = false
 		get_viewport().set_input_as_handled()
 
 func _on_viewport_size_changed() -> void:
-	_default_window_size = _compute_default_window_size()
+	_def_window_size = _compute_default_window_size()
 	control.size = _clamp_size(control.size, control.position)
 	control.position = _clamp_pos(control.position, control.size)
 
@@ -387,8 +387,8 @@ func _add_keybind(action: String, keycode: Key) -> void:
 
 func _clamp_size(size: Vector2, position: Vector2) -> Vector2:
 	var viewport_size := get_viewport().get_visible_rect().size
-	var max_size := (viewport_size - position).max(_minimum_window_size)
-	return size.clamp(_minimum_window_size, max_size)
+	var max_size := (viewport_size - position).max(_min_window_size)
+	return size.clamp(_min_window_size, max_size)
 
 func _clamp_pos(position: Vector2, size: Vector2) -> Vector2:
 	var viewport_size := get_viewport().get_visible_rect().size
