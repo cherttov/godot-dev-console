@@ -88,29 +88,6 @@ public static class DevConsole
 		return console.Call("get_signals").AsGodotDictionary<string, Dictionary<string, Variant>>();
 	}
 
-	// Visibility & Opacity
-	public static void Show() 
-	{
-		GetConsole()?.Call("show");
-	}
-
-	public static void Hide() 
-	{
-		GetConsole()?.Call("hide");
-	}
-
-	public static void ToggleVisibility() 
-	{
-		GetConsole()?.Call("toggle_visibility");
-	}
-
-	public static bool IsVisible() 
-	{
-		var console = GetConsole();
-		if (console == null) { return false; }
-		return console.Call("is_visible").AsBool();
-	}
-
 	// Output
 	public static void PrintLine(string text) 
 	{
@@ -134,6 +111,22 @@ public static class DevConsole
 	#endregion
 
 	#region Properties
+	// Runtime
+	public static bool Visible
+	{
+		get
+		{
+			var console = GetConsole();
+			if (console != null) { return console.Get("visible").AsBool(); }
+			return ProjectSettings.GetSetting("dev_console/configuration/visible", "CONSOLE").AsBool();
+		}
+		set
+		{
+			GetConsole()?.Set("visible", value);
+		}
+	}
+
+	// Configuration
 	public static string TitleLabel
 	{
 		get
@@ -260,6 +253,7 @@ public static class DevConsole
 		}
 	}
 
+	// Theme
 	public static float Alpha
 	{
 		get
