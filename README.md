@@ -1,5 +1,5 @@
 # Godot Developer Console #
-Godot addon that adds an in-game developer console to run and output in-game commands.
+An in-game developer console addon for Godot.
 
 > **Note:** All of the documentation below is written based on the newest [Release](https://github.com/cherttov/godot-dev-console/releases/latest)
 
