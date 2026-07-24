@@ -118,7 +118,7 @@ public static class DevConsole
 		{
 			var console = GetConsole();
 			if (console != null) { return console.Get("visible").AsBool(); }
-			return ProjectSettings.GetSetting("dev_console/configuration/visible", "CONSOLE").AsBool();
+			return false;
 		}
 		set
 		{
@@ -260,7 +260,7 @@ public static class DevConsole
 		{
 			var console = GetConsole();
 			if (console != null) { return console.Get("alpha").AsSingle(); }
-			return ProjectSettings.GetSetting("dev_console/theme/background_transparency", 0.9).AsSingle();
+			return ProjectSettings.GetSetting("dev_console/theme/console_transparency", 0.9).AsSingle();
 		}
 		set
 		{
