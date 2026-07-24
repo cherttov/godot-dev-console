@@ -213,9 +213,9 @@ func _on_visibility_changed() -> void:
 	if visible:
 		if !c_keep_position_after_closing: control.position = Vector2(0.0, 0.0)
 		if !c_keep_size_after_closing: control.size = default_window_size
-		if is_node_ready(): _focus_input(true)
+		_focus_input(true)
 	else:
-		if is_node_ready(): input_line.release_focus()
+		input_line.release_focus()
 
 # --------- Default commands ---------
 func _load_def_commands() -> void:
