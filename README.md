@@ -181,9 +181,17 @@ public partial class Main : Node
 ### Other functions ###
 Almost identical to GDScript functions, but use `CamelCase` instead of `snake_case`
 
+## Default Commands ##
+|Command           |Functionality           |
+|------------------|---------------------|
+|`help`            | Outputs all registered commands. Ignores default commands based on Console setup |
+|`cls`             | Clears the Console output |
+|`alpha {float}`   | If no float provided it acts as a getter. If a float value is provided it acts as a setter |
+|`quit`            | Exits the game |
+
 ## Requirements ##
 **Language:** GDScript/C#  
-**Minimum version:** Godot 4.5.x  
+**Minimum version:** Godot 4.5.0  
 **Maximum version:** Godot 4.x.x  
 
 ## AI Usage ##
