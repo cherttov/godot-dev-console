@@ -2,7 +2,7 @@
 extends EditorPlugin
 
 const AUTOLOAD_NAME := "DevConsole"
-const AUTOLOAD_PATH := "res://addons/dev-console/dev-console.gd"
+const AUTOLOAD_PATH := "res://addons/dev-console/script/dev-console.gd"
 var PLUGIN_SETTINGS := {
 	"dev_console/configuration/title_label": { "default": "CONSOLE" },
 	"dev_console/configuration/use_default_commands": { "default": true },
@@ -14,12 +14,28 @@ var PLUGIN_SETTINGS := {
 	"dev_console/configuration/debug_only": { "default": true },
 	"dev_console/configuration/close_on_escape": { "default": true },
 	"dev_console/configuration/toggle_keybind": { 
-		"default": "QuoteLeft", 
-		"info": { "type": TYPE_STRING, "hint": PROPERTY_HINT_ENUM, "hint_string": "QuoteLeft,Tab,F1,F2,F3,F4,F5" } 
+		"default": 0, # QuoteLeft
+		"info": { "type": TYPE_INT, "hint": PROPERTY_HINT_ENUM, "hint_string": "QuoteLeft,Tab,F1,F2,F3,F4,F5" } 
 	},
-	"dev_console/theme/background_transparency": { 
+	"dev_console/theme/console_transparency": { 
 		"default": 0.9, 
 		"info": { "type": TYPE_FLOAT, "hint": PROPERTY_HINT_RANGE, "hint_string": "0.5,1.0,0.1" } 
+	},
+	"dev_console/theme/header_background": {
+		"default": Color(0.204, 0.204, 0.204, 1.0),
+		"info": { "type": TYPE_COLOR }
+	},
+	"dev_console/theme/output_background": {
+		"default": Color(0.137, 0.137, 0.137, 1.0),
+		"info": { "type": TYPE_COLOR }
+	},
+	"dev_console/theme/selection_highlight": {
+		"default": Color(0.204, 0.204, 0.204, 0.878),
+		"info": { "type": TYPE_COLOR }
+	},
+	"dev_console/theme/input_background": {
+		"default": Color(0.114, 0.114, 0.114, 1.0),
+		"info": { "type": TYPE_COLOR }
 	}
 }
 

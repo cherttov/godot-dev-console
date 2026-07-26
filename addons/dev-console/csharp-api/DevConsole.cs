@@ -3,6 +3,17 @@ using Godot.Collections;
 
 public static class DevConsole
 {
+	public enum ToggleKey
+	{
+		QuoteLeft = 0,
+		Tab = 1,
+		F1 = 2,
+		F2 = 3,
+		F3 = 4,
+		F4 = 5,
+		F5 = 6
+	}
+
 	private static Node _gdConsole;
 
 	// Console init method
@@ -77,29 +88,6 @@ public static class DevConsole
 		return console.Call("get_signals").AsGodotDictionary<string, Dictionary<string, Variant>>();
 	}
 
-	// Visibility & Opacity
-	public static void Show() 
-	{
-		GetConsole()?.Call("show");
-	}
-
-	public static void Hide() 
-	{
-		GetConsole()?.Call("hide");
-	}
-
-	public static void ToggleVisibility() 
-	{
-		GetConsole()?.Call("toggle_visibility");
-	}
-
-	public static bool IsVisible() 
-	{
-		var console = GetConsole();
-		if (console == null) { return false; }
-		return console.Call("is_visible").AsBool();
-	}
-
 	// Output
 	public static void PrintLine(string text) 
 	{
@@ -123,6 +111,22 @@ public static class DevConsole
 	#endregion
 
 	#region Properties
+	// Runtime
+	public static bool Visible
+	{
+		get
+		{
+			var console = GetConsole();
+			if (console != null) { return console.Get("visible").AsBool(); }
+			return false;
+		}
+		set
+		{
+			GetConsole()?.Set("visible", value);
+		}
+	}
+
+	// Configuration
 	public static string TitleLabel
 	{
 		get
@@ -221,17 +225,17 @@ public static class DevConsole
 		}
 	}
 
-	public static string ToggleKeybind
+	public static ToggleKey ToggleKeybind
 	{
 		get
 		{
 			var console = GetConsole();
-			if (console != null) { return console.Get("toggle_keybind").AsString(); }
-			return ProjectSettings.GetSetting("dev_console/configuration/toggle_keybind", "QuoteLeft").AsString();
+			if (console != null) { return (ToggleKey)console.Get("toggle_keybind").AsInt32(); }
+			return (ToggleKey)ProjectSettings.GetSetting("dev_console/configuration/toggle_keybind", (int)ToggleKey.QuoteLeft).AsInt32();
 		}
 		set
 		{
-			GetConsole()?.Set("toggle_keybind", value);
+			GetConsole()?.Set("toggle_keybind", (int)value);
 		}
 	}
 
@@ -249,17 +253,74 @@ public static class DevConsole
 		}
 	}
 
+	// Theme
 	public static float Alpha
 	{
 		get
 		{
 			var console = GetConsole();
 			if (console != null) { return console.Get("alpha").AsSingle(); }
-			return ProjectSettings.GetSetting("dev_console/theme/background_transparency", 0.9).AsSingle();
+			return ProjectSettings.GetSetting("dev_console/theme/console_transparency", 0.9).AsSingle();
 		}
 		set
 		{
 			GetConsole()?.Set("alpha", value);
+		}
+	}
+
+	public static Color HeaderBackground
+	{
+		get
+		{
+			var console = GetConsole();
+			if (console != null) { return console.Get("header_background").AsColor(); }
+			return ProjectSettings.GetSetting("dev_console/theme/header_background", new Color(0.204f, 0.204f, 0.204f, 1.0f)).AsColor();
+		}
+		set
+		{
+			GetConsole()?.Set("header_background", value);
+		}
+	}
+
+	public static Color OutputBackground
+	{
+		get
+		{
+			var console = GetConsole();
+			if (console != null) { return console.Get("output_background").AsColor(); }
+			return ProjectSettings.GetSetting("dev_console/theme/output_background", new Color(0.137f, 0.137f, 0.137f, 1.0f)).AsColor();
+		}
+		set
+		{
+			GetConsole()?.Set("output_background", value);
+		}
+	}
+
+	public static Color SelectionHighlight
+	{
+		get
+		{
+			var console = GetConsole();
+			if (console != null) { return console.Get("selection_highlight").AsColor(); }
+			return ProjectSettings.GetSetting("dev_console/theme/selection_highlight", new Color(0.204f, 0.204f, 0.204f, 0.878f)).AsColor();
+		}
+		set
+		{
+			GetConsole()?.Set("selection_highlight", value);
+		}
+	}
+
+	public static Color InputBackground
+	{
+		get
+		{
+			var console = GetConsole();
+			if (console != null) { return console.Get("input_background").AsColor(); }
+			return ProjectSettings.GetSetting("dev_console/theme/input_background", new Color(0.114f, 0.114f, 0.114f, 1.0f)).AsColor();
+		}
+		set
+		{
+			GetConsole()?.Set("input_background", value);
 		}
 	}
 	#endregion
