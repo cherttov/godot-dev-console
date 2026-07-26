@@ -92,11 +92,20 @@ var use_command_history := ProjectSettings.get_setting("dev_console/configuratio
 		use_command_history = value
 		_defer_or_call(func(): _console.set_use_command_history(value))
 
-var view_default_commands := ProjectSettings.get_setting("dev_console/configuration/view_default_commands", true)
+var view_default_commands := ProjectSettings.get_setting("dev_console/configuration/view_default_commands", true):
+	set(value):
+		view_default_commands = value
+		_defer_or_call(func(): _console.set_view_default_commands(value))
 
-var keep_size_after_closing := ProjectSettings.get_setting("dev_console/configuration/keep_size_after_closing", false)
+var keep_size_after_closing := ProjectSettings.get_setting("dev_console/configuration/keep_size_after_closing", false):
+	set(value):
+		keep_size_after_closing = value
+		_defer_or_call(func(): _console.set_keep_size_after_closing(value))
 
-var keep_position_after_closing := ProjectSettings.get_setting("dev_console/configuration/keep_position_after_closing", false)
+var keep_position_after_closing := ProjectSettings.get_setting("dev_console/configuration/keep_position_after_closing", false):
+	set(value):
+		keep_position_after_closing = value
+		_defer_or_call(func(): _console.set_keep_position_after_closing(value))
 
 var keep_topmost := ProjectSettings.get_setting("dev_console/configuration/keep_topmost", true):
 	set(value):
