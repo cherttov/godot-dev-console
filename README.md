@@ -7,7 +7,6 @@ An in-game developer console addon for Godot.
 1. Download the [latest release](https://github.com/cherttov/godot-dev-console/releases/latest) from the repository.
 2. Extract the `addons/dev-console` folder into your Godot project's `addons` directory.
 3. Enable the plugin in your Project Settings and restart the Godot Engine.
-4. Errors will appear in the Godot `OUTPUT` due to having the addon turned `OFF`. Those do not affect anything and disappear once turned `ON`
 
 ## Configuration ##
 After installation turn `OFF` and `ON` the plugin, this ensures the configuration settings load properly.
