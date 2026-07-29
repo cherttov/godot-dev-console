@@ -1,6 +1,17 @@
 class_name DevConsoleInternal
 extends CanvasLayer
 
+# Toggle key enum
+enum ToggleKey {
+	QUOTE_LEFT,
+	TAB,
+	F1,
+	F2,
+	F3,
+	F4,
+	F5
+}
+
 # UI References
 var control: Control
 var header_panel: Panel
@@ -31,13 +42,13 @@ var _is_resizing := false
 
 # Cached config (initial values pulled from DevConsole in _ready)
 const TOGGLE_KEYS := {
-	DevConsole.ToggleKey.QUOTE_LEFT: KEY_QUOTELEFT,
-	DevConsole.ToggleKey.TAB: KEY_TAB,
-	DevConsole.ToggleKey.F1: KEY_F1,
-	DevConsole.ToggleKey.F2: KEY_F2,
-	DevConsole.ToggleKey.F3: KEY_F3,
-	DevConsole.ToggleKey.F4: KEY_F4,
-	DevConsole.ToggleKey.F5: KEY_F5
+	ToggleKey.QUOTE_LEFT: KEY_QUOTELEFT,
+	ToggleKey.TAB: KEY_TAB,
+	ToggleKey.F1: KEY_F1,
+	ToggleKey.F2: KEY_F2,
+	ToggleKey.F3: KEY_F3,
+	ToggleKey.F4: KEY_F4,
+	ToggleKey.F5: KEY_F5
 }
 var _title_label := "CONSOLE"
 var _use_def_cmds := true
@@ -46,7 +57,7 @@ var _view_def_cmds := true
 var _keep_size_after_closing := false
 var _keep_position_after_closing := false
 var _keep_topmost := true
-var _toggle_keybind: int = DevConsole.ToggleKey.QUOTE_LEFT
+var _toggle_keybind: int = ToggleKey.QUOTE_LEFT
 var _close_on_escape := true
 
 # Cached theme
@@ -63,24 +74,6 @@ var _sb_input_bg: StyleBoxFlat
 func _ready() -> void:
 	# Generate UI
 	_generate_ui()
-	
-	# Pull initial config from the singleton
-	set_title_label(DevConsole.title_label)
-	set_use_default_commands(DevConsole.use_default_commands)
-	set_use_command_history(DevConsole.use_command_history)
-	set_view_default_commands(DevConsole.view_default_commands)
-	set_keep_size_after_closing(DevConsole.keep_size_after_closing)
-	set_keep_position_after_closing(DevConsole.keep_position_after_closing)
-	set_keep_topmost(DevConsole.keep_topmost)
-	set_toggle_keybind(DevConsole.toggle_keybind)
-	set_close_on_escape(DevConsole.close_on_escape)
-	
-	# Pull initial theme from the singleton
-	set_alpha(DevConsole.alpha)
-	set_header_background(DevConsole.header_background)
-	set_output_background(DevConsole.output_background)
-	set_selection_highlight(DevConsole.selection_highlight)
-	set_input_background(DevConsole.input_background)
 	
 	# Some clearing
 	visible = false
@@ -196,8 +189,8 @@ func _on_input_submitted(input: String) -> void:
 		if parts.size() < expected_args:
 			output_warning(
 				"WARNING: " + cmd_name 
-				+ " expects " + str(parts.size())
-				+ " arguments, but received " + str(expected_args)
+				+ " expects " + str(expected_args)
+				+ " arguments, but received " + str(parts.size())
 			)
 		
 		# Call & output callback/result

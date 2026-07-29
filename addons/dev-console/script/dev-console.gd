@@ -1,14 +1,6 @@
 extends Node
 
-enum ToggleKey {
-	QUOTE_LEFT,
-	TAB,
-	F1,
-	F2,
-	F3,
-	F4,
-	F5
-}
+const ToggleKey := DevConsoleInternal.ToggleKey
 
 var _console: DevConsoleInternal = null
 var _console_ready := false
@@ -19,9 +11,27 @@ func _ready() -> void:
 	# Don't complete initialization if debug_only in release
 	if ProjectSettings.get_setting("dev_console/configuration/debug_only", true) and not OS.is_debug_build(): return
 	
+	# Initiate & call initial/pending calls
 	_console = DevConsoleInternal.new()
 	_console.ready.connect(func():
 		_console_ready = true
+		
+		# Pass initial config & theme to internals
+		_console.set_title_label(title_label)
+		_console.set_use_default_commands(use_default_commands)
+		_console.set_use_command_history(use_command_history)
+		_console.set_view_default_commands(view_default_commands)
+		_console.set_keep_size_after_closing(keep_size_after_closing)
+		_console.set_keep_position_after_closing(keep_position_after_closing)
+		_console.set_keep_topmost(keep_topmost)
+		_console.set_toggle_keybind(toggle_keybind)
+		_console.set_close_on_escape(close_on_escape)
+		_console.set_alpha(alpha)
+		_console.set_header_background(header_background)
+		_console.set_output_background(output_background)
+		_console.set_selection_highlight(selection_highlight)
+		_console.set_input_background(input_background)
+		
 		for call in _pending_calls: call.call()
 		_pending_calls.clear()
 	, CONNECT_ONE_SHOT)
