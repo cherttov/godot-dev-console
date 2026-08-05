@@ -6,7 +6,7 @@ var _console: DevConsoleInternal = null
 var _console_ready := false
 var _pending_calls: Array[Callable] = []
 
-# Onready
+# ========== Onready ==========
 func _ready() -> void:
 	# Don't complete initialization if debug_only in release
 	if ProjectSettings.get_setting("dev_console/configuration/debug_only", true) and not OS.is_debug_build(): return
@@ -38,12 +38,12 @@ func _ready() -> void:
 	
 	add_child(_console)
 
-# --------- PRIVATE METHODS ---------
+# ========== PRIVATE METHODS ==========
 func _defer_or_call(action: Callable) -> void:
 	if _console_ready: action.call()
 	else: _pending_calls.append(action)
 
-# --------- PUBLIC METHODS ---------
+# ========== PUBLIC METHODS ==========
 # Command & Signal Registration
 func add_command(command_name: String, callback: Callable) -> void: _defer_or_call(func(): _console.add_command(command_name, callback))
 
@@ -79,7 +79,7 @@ func print_warning(text: String) -> void: _defer_or_call(func(): _console.output
 
 func clear_output() -> void: _defer_or_call(func(): _console.clear_output())
 
-# --------- PROPERTIES ---------
+# ========== PROPERTIES ==========
 # Runtime 
 var visible := false:
 	set(value):
@@ -122,7 +122,7 @@ var keep_topmost := ProjectSettings.get_setting("dev_console/configuration/keep_
 		keep_topmost = value
 		_defer_or_call(func(): _console.set_keep_topmost(value))
 
-var toggle_keybind: ToggleKey = ProjectSettings.get_setting("dev_console/configuration/toggle_keybind", ToggleKey.QUOTE_LEFT):
+var toggle_keybind := ProjectSettings.get_setting("dev_console/configuration/toggle_keybind", ToggleKey.QUOTE_LEFT):
 	set(value):
 		toggle_keybind = value
 		_defer_or_call(func(): _console.set_toggle_keybind(value))
@@ -133,27 +133,27 @@ var close_on_escape := ProjectSettings.get_setting("dev_console/configuration/cl
 		_defer_or_call(func(): _console.set_close_on_escape(value))
 
 # Theme
-var alpha: float = ProjectSettings.get_setting("dev_console/theme/console_transparency", 0.9):
+var alpha := ProjectSettings.get_setting("dev_console/theme/console_transparency", 0.9):
 	set(value):
 		alpha = clampf(value, 0.5, 1.0)
 		_defer_or_call(func(): _console.set_alpha(value))
 
-var header_background: Color = ProjectSettings.get_setting("dev_console/theme/header_background", Color(0.204, 0.204, 0.204, 1.0)):
+var header_background := ProjectSettings.get_setting("dev_console/theme/header_background", Color(0.204, 0.204, 0.204, 1.0)):
 	set(value):
 		header_background = value
 		_defer_or_call(func(): _console.set_header_background(value))
 
-var output_background: Color = ProjectSettings.get_setting("dev_console/theme/output_background", Color(0.137, 0.137, 0.137, 1.0)):
+var output_background := ProjectSettings.get_setting("dev_console/theme/output_background", Color(0.137, 0.137, 0.137, 1.0)):
 	set(value):
 		output_background = value
 		_defer_or_call(func(): _console.set_output_background(value))
 
-var selection_highlight: Color = ProjectSettings.get_setting("dev_console/theme/selection_highlight", Color(0.204, 0.204, 0.204, 0.878)):
+var selection_highlight := ProjectSettings.get_setting("dev_console/theme/selection_highlight", Color(0.204, 0.204, 0.204, 0.878)):
 	set(value):
 		selection_highlight = value
 		_defer_or_call(func(): _console.set_selection_highlight(value))
 
-var input_background: Color = ProjectSettings.get_setting("dev_console/theme/input_background", Color(0.114, 0.114, 0.114, 1.0)):
+var input_background := ProjectSettings.get_setting("dev_console/theme/input_background", Color(0.114, 0.114, 0.114, 1.0)):
 	set(value):
 		input_background = value
 		_defer_or_call(func(): _console.set_input_background(value))

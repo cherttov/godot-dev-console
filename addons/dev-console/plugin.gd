@@ -39,7 +39,7 @@ var PLUGIN_SETTINGS := {
 	}
 }
 
-# ----------- Enable/Disable + On godot startup -----------
+# ========== Godot Startup & Enable/Disable ==========
 func _enter_tree() -> void:
 	for path in PLUGIN_SETTINGS:
 		var data: Dictionary = PLUGIN_SETTINGS[path]

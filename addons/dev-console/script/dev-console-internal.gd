@@ -57,20 +57,20 @@ var _view_def_cmds := true
 var _keep_size_after_closing := false
 var _keep_position_after_closing := false
 var _keep_topmost := true
-var _toggle_keybind: int = ToggleKey.QUOTE_LEFT
+var _toggle_keybind := ToggleKey.QUOTE_LEFT
 var _close_on_escape := true
 
 # Cached theme
-var _header_bg: Color = Color(0.204, 0.204, 0.204, 1.0)
-var _output_bg: Color = Color(0.137, 0.137, 0.137, 1.0)
-var _selection_highlight: Color = Color(0.204, 0.204, 0.204, 0.878)
-var _input_bg: Color = Color(0.114, 0.114, 0.114, 1.0)
+var _header_bg := Color(0.204, 0.204, 0.204, 1.0)
+var _output_bg := Color(0.137, 0.137, 0.137, 1.0)
+var _selection_highlight := Color(0.204, 0.204, 0.204, 0.878)
+var _input_bg := Color(0.114, 0.114, 0.114, 1.0)
 
 var _sb_header_bg: StyleBoxFlat
 var _sb_output_bg: StyleBoxFlat
 var _sb_input_bg: StyleBoxFlat
 
-# --------- Init ---------
+# ============ Init ============
 func _ready() -> void:
 	# Generate UI
 	_generate_ui()
@@ -101,7 +101,7 @@ func _ready() -> void:
 	_def_window_size = _compute_default_window_size()
 	control.size = _def_window_size
 
-# --------- Input ---------
+# ============ Input ============
 func _input(event: InputEvent) -> void:
 	# Toggle console
 	if event.is_action_pressed("dev_console_toggle"):
@@ -128,14 +128,14 @@ func _input(event: InputEvent) -> void:
 	if _is_resizing:
 		_resize_console_window(event)
 
-# --------- Command & Signal Registration ---------
+# ============ Command & Signal Registration ============
 func add_command(cmd_name: String, callback: Callable) -> void:
 	_commands[cmd_name] = callback
 
 func add_signal(sig_name: String, target: Signal) -> void:
 	if _signals.has(sig_name): delete_signal(sig_name)
 	
-	var callable: Callable = func(...args): _output_signal(sig_name, args)
+	var callable := func(...args): _output_signal(sig_name, args)
 	_signals[sig_name] = {
 		"signal": target,
 		"callable": callable
@@ -154,15 +154,15 @@ func delete_signal(sig_name: String) -> void:
 	else:
 		push_warning("Signal not found: " + sig_name)
 
-# --------- Command & Signal Registry Getters ---------
+# ============ Command & Signal Registry Getters ============
 func has_command(cmd_name: String) -> bool: return _commands.has(cmd_name)
 func has_signal_connected(sig_name: String) -> bool: return _signals.has(sig_name)
 func get_commands() -> Dictionary[String, Callable]: return _commands.duplicate()
 func get_signals() -> Dictionary[String, Dictionary]: return _signals.duplicate()
 
-# --------- Input processing ---------
+# ============ Input processing ============
 func _on_input_submitted(input: String) -> void:
-	var clean: String = input.strip_edges()
+	var clean := input.strip_edges()
 	if clean.is_empty():
 		_focus_input(true)
 		return
@@ -182,7 +182,7 @@ func _on_input_submitted(input: String) -> void:
 	
 	# Calling callback & outputting result
 	if _commands.has(cmd_name):
-		var target: Callable = _commands[cmd_name]
+		var target := _commands[cmd_name]
 		var expected_args := target.get_argument_count()
 		
 		# Check if args passed match the function args
@@ -194,14 +194,14 @@ func _on_input_submitted(input: String) -> void:
 			)
 		
 		# Call & output callback/result
-		var result := target.callv(parts)
+		var result := target.callv(Array(parts))
 		if result != null: output_callback(str(result))
 	else:
 		output_error("ERROR: Unknown command " + cmd_name)
 	
 	_focus_input(true)
 
-# --------- Visibility & Opacity ---------
+# ============ Visibility & Opacity ============
 func _handle_alpha_command(...args) -> Variant:
 	if args.size() > 0:
 		set_alpha(str(args[0]).to_float())
@@ -217,12 +217,10 @@ func _on_visibility_changed() -> void:
 	else:
 		input_line.release_focus()
 
-# --------- Default commands ---------
+# ============ Default commands ============
 func _load_def_commands() -> void:
 	add_command("help", _help_command)
 	add_command("cls", clear_output)
-	#add_command("set_alpha", func(val: String) -> void: set_alpha(val.to_float()))
-	#add_command("get_alpha", get_alpha)
 	add_command("alpha", _handle_alpha_command)
 	add_command("quit", _quit_program)
 
@@ -240,7 +238,7 @@ func _help_command() -> void:
 func _quit_program() -> void:
 	get_tree().quit()
 
-# --------- Output ---------
+# ============ Output ============
 func _append_formatted(text: String, format: String) -> void:
 	var clean := text.replace("[", "[lb]")
 	output_rtl.append_text(format % clean + ("" if clean.ends_with("\n") else "\n"))
@@ -256,7 +254,7 @@ func _output_signal(name: String, args: Array) -> void:
 
 func clear_output() -> void: output_rtl.clear()
 
-# --------- Movement & Resizing ---------
+# ============ Movement & Resizing ============
 func _on_panel_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		_dragging = event.pressed
@@ -288,7 +286,7 @@ func _on_viewport_size_changed() -> void:
 	control.size = _clamp_size(control.size, control.position)
 	control.position = _clamp_pos(control.position, control.size)
 
-# --------- Property Setters/Getters ---------
+# ============ Property Setters/Getters ============
 func set_title_label(value: String) -> void:
 	_title_label = value
 	if is_node_ready(): title_label.text = _title_label
@@ -364,7 +362,7 @@ func set_input_background(value: Color) -> void:
 	if _sb_input_bg: _sb_input_bg.bg_color = value
 func get_input_background() -> Color: return _input_bg
 
-# --------- Helpers ---------
+# ============ Helpers ============
 func _focus_input(clear: bool = false) -> void:
 	if clear: input_line.clear()
 	input_line.grab_focus()
@@ -399,7 +397,7 @@ func _clamp_pos(position: Vector2, size: Vector2) -> Vector2:
 func _compute_default_window_size() -> Vector2:
 	return get_viewport().get_visible_rect().size * 0.5
 
-# --------- UI Setup ---------
+# ============ UI Setup ============
 func _generate_ui() -> void:
 	# Main control
 	control = Control.new()
