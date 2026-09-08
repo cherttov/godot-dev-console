@@ -33,14 +33,14 @@ var _signals: Dictionary[String, Dictionary] = {} # { "signal": Signal, "callbac
 var _command_history: Array[String] = []
 var _history_index := -1
 
-# For console dragging
+# Console dragging
 var _dragging := false
 var _drag_offset := Vector2.ZERO
 
-# For console resizing
+# Console resizing
 var _is_resizing := false
 
-# Cached config (initial values pulled from DevConsole in _ready)
+# Cached config (initial values assigned by DevConsole in _ready)
 const TOGGLE_KEYS := {
 	ToggleKey.QUOTE_LEFT: KEY_QUOTELEFT,
 	ToggleKey.TAB: KEY_TAB,
@@ -59,6 +59,7 @@ var _keep_position_after_closing := false
 var _keep_topmost := true
 var _toggle_keybind := ToggleKey.QUOTE_LEFT
 var _close_on_escape := true
+var _cmd_suggest := true
 
 # Cached theme
 var _header_bg := Color(0.204, 0.204, 0.204, 1.0)
@@ -83,6 +84,7 @@ func _ready() -> void:
 	# Connecting signals
 	visibility_changed.connect(_on_visibility_changed)
 	close_btn.pressed.connect(func(): visible = false)
+	input_line.text_changed.connect(_on_input_changed)
 	input_line.text_submitted.connect(_on_input_submitted)
 	header_panel.gui_input.connect(_on_panel_gui_input)
 	resize_anchor.gui_input.connect(_on_anchor_gui_input)
@@ -201,13 +203,19 @@ func _on_input_submitted(input: String) -> void:
 	
 	_focus_input(true)
 
+func _on_input_changed(text: String) -> void:
+	if _cmd_suggest:
+		for name in _commands.keys():
+			if name.to_lower().begins_with(text.to_lower()):
+				print(name)
+
 # ============ Visibility & Opacity ============
 func _handle_alpha_command(...args) -> Variant:
 	if args.size() > 0:
 		set_alpha(str(args[0]).to_float())
 		return null
 	else:
-		return get_alpha()
+		return float(control.modulate.a)
 
 func _on_visibility_changed() -> void:
 	if visible:
@@ -290,13 +298,11 @@ func _on_viewport_size_changed() -> void:
 func set_title_label(value: String) -> void:
 	_title_label = value
 	if is_node_ready(): title_label.text = _title_label
-func get_title_label() -> String: return _title_label
 
 func set_use_default_commands(value: bool) -> void:
 	_use_def_cmds = value
 	_unload_def_commands()
 	if value: _load_def_commands()
-func get_use_default_commands() -> bool: return _use_def_cmds
 
 func set_use_command_history(value: bool) -> void:
 	_use_command_history = value
@@ -308,59 +314,49 @@ func set_use_command_history(value: bool) -> void:
 	else:
 		_command_history.clear()
 		_history_index = -1
-func get_use_command_history() -> bool: return _use_command_history
 
 func set_view_default_commands(value: bool) -> void: _view_def_cmds = value
-func get_view_default_commands() -> bool: return _view_def_cmds
 
 func set_keep_size_after_closing(value: bool) -> void: _keep_size_after_closing = value
-func get_keep_size_after_closing() -> bool: return _keep_size_after_closing
 
 func set_keep_position_after_closing(value: bool) -> void: _keep_position_after_closing = value
-func get_keep_position_after_closing() -> bool: return _keep_position_after_closing
 
 func set_keep_topmost(value: bool) -> void:
 	_keep_topmost = value
 	layer = RenderingServer.CANVAS_LAYER_MAX if value else 0
-func get_keep_topmost() -> bool: return _keep_topmost
 
 func set_toggle_keybind(value: int) -> void:
 	_toggle_keybind = value
 	if InputMap.has_action("dev_console_toggle"): InputMap.action_erase_events("dev_console_toggle")
 	_add_keybind("dev_console_toggle", TOGGLE_KEYS.get(value, KEY_QUOTELEFT))
-func get_toggle_keybind() -> int: return _toggle_keybind
 
 func set_close_on_escape(value: bool) -> void:
 	_close_on_escape = value
 	if InputMap.has_action("dev_console_escape"): InputMap.action_erase_events("dev_console_escape")
 	if value: _add_keybind("dev_console_escape", KEY_ESCAPE)
-func get_close_on_escape() -> bool: return _close_on_escape
+
+func set_command_suggestions(value: bool) -> void: _cmd_suggest = value
 
 func set_alpha(value: float) -> void:
 	control.modulate.a = clampf(value, 0.5, 1.0)
-func get_alpha() -> float: return float(control.modulate.a)
 
 func set_header_background(value: Color) -> void:
 	_header_bg = value
 	if _sb_header_bg: _sb_header_bg.bg_color = value
-func get_header_background() -> Color: return _header_bg
 
 func set_output_background(value: Color) -> void:
 	_output_bg = value
 	if _sb_output_bg: _sb_output_bg.bg_color = value
-func get_output_background() -> Color: return _output_bg
 
 func set_selection_highlight(value: Color) -> void:
 	_selection_highlight = value
 	if is_instance_valid(control):
 		control.theme.set_color("selection_color", "LineEdit", value)
 		control.theme.set_color("selection_color", "RichTextLabel", value)
-func get_selection_highlight() -> Color: return _selection_highlight
 
 func set_input_background(value: Color) -> void:
 	_input_bg = value
 	if _sb_input_bg: _sb_input_bg.bg_color = value
-func get_input_background() -> Color: return _input_bg
 
 # ============ Helpers ============
 func _focus_input(clear: bool = false) -> void:

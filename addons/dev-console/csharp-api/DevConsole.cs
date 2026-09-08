@@ -253,6 +253,20 @@ public static class DevConsole
 		}
 	}
 
+	public static bool CommandSuggestions
+	{
+		get
+		{
+			var console = GetConsole();
+			if (console != null) { return console.Get("command_suggestions").AsBool(); }
+			return ProjectSettings.GetSetting("dev_console/configuration/command_suggestions", true).AsBool();
+		}
+		set
+		{
+			GetConsole()?.Set("command_suggestions", value);
+		}
+	}
+
 	// Theme
 	public static float Alpha
 	{
