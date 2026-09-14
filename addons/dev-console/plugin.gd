@@ -14,10 +14,10 @@ var PLUGIN_SETTINGS := {
 	"dev_console/configuration/debug_only": { "default": true },
 	"dev_console/configuration/toggle_keybind": { 
 		"default": 0, # QuoteLeft
-		"info": { "type": TYPE_INT, "hint": PROPERTY_HINT_ENUM, "hint_string": "QuoteLeft,Tab,F1,F2,F3,F4,F5" } 
+		"info": { "type": TYPE_INT, "hint": PROPERTY_HINT_ENUM, "hint_string": "QuoteLeft,F1,F2,F3,F4,F5" } 
 	},
 	"dev_console/configuration/close_on_escape": { "default": true },
-	"dev_console/configuration/command_suggestions": { "default": true },
+	"dev_console/configuration/command_autocomplete": { "default": true },
 	"dev_console/theme/console_transparency": { 
 		"default": 0.9, 
 		"info": { "type": TYPE_FLOAT, "hint": PROPERTY_HINT_RANGE, "hint_string": "0.5,1.0,0.1" } 

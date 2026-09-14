@@ -26,7 +26,7 @@ func _ready() -> void:
 		_console.set_keep_topmost(keep_topmost)
 		_console.set_toggle_keybind(toggle_keybind)
 		_console.set_close_on_escape(close_on_escape)
-		_console.set_command_suggestions(command_suggestions)
+		_console.set_command_autocomplete(command_autocomplete)
 		_console.set_alpha(alpha)
 		_console.set_header_background(header_background)
 		_console.set_output_background(output_background)
@@ -133,9 +133,9 @@ var close_on_escape := ProjectSettings.get_setting("dev_console/configuration/cl
 		close_on_escape = value
 		_defer_or_call(func(): _console.set_close_on_escape(value))
 
-var command_suggestions := ProjectSettings.get_setting("dev_console/configuration/command_suggestions", true):
+var command_autocomplete := ProjectSettings.get_setting("dev_console/configuration/command_autocomplete", true):
 	set(value):
-		command_suggestions = value
+		command_autocomplete = value
 		_defer_or_call(func(): _console.set_command_suggestions(value))
 
 # Theme

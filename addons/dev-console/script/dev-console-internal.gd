@@ -4,7 +4,6 @@ extends CanvasLayer
 # Toggle key enum
 enum ToggleKey {
 	QUOTE_LEFT,
-	TAB,
 	F1,
 	F2,
 	F3,
@@ -44,7 +43,6 @@ var _is_resizing := false
 # Cached config (initial values assigned by DevConsole in _ready)
 const TOGGLE_KEYS := {
 	ToggleKey.QUOTE_LEFT: KEY_QUOTELEFT,
-	ToggleKey.TAB: KEY_TAB,
 	ToggleKey.F1: KEY_F1,
 	ToggleKey.F2: KEY_F2,
 	ToggleKey.F3: KEY_F3,
@@ -60,7 +58,7 @@ var _keep_position_after_closing := false
 var _keep_topmost := true
 var _toggle_keybind := ToggleKey.QUOTE_LEFT
 var _close_on_escape := true
-var _cmd_suggest := true
+var _autocomplete := true
 
 # Cached theme
 var _header_bg := Color(0.204, 0.204, 0.204, 1.0)
@@ -121,6 +119,12 @@ func _input(event: InputEvent) -> void:
 			_navigate_history(1)
 		elif event.is_action_pressed("dev_console_arrow_down"):
 			_navigate_history(-1)
+	
+	# Autocomplete
+	if _autocomplete and event.is_action_pressed("dev_console_autocomplete"):
+		_complete_cmd()
+		get_viewport().set_input_as_handled()
+		return
 
 	# Close on Escape (ESC)
 	if _close_on_escape and event.is_action_pressed("dev_console_escape"):
@@ -207,18 +211,24 @@ func _on_input_submitted(input: String) -> void:
 func _on_input_changed(text: String) -> void:
 	auto_line.text = ""
 	
-	if not _cmd_suggest:
+	if not _autocomplete:
 		return
 	
 	if text.is_empty():
 		return
 	
-	for name: String in _commands.keys():
-		if name.to_lower().begins_with(text.to_lower()):
-			var completion := name.substr(text.length())
-			auto_line.text = " ".repeat(text.length()) + completion
-			auto_line.caret_column = input_line.caret_column
-			return
+	var match_name := _get_autocomplete_match(text)
+	if match_name != "":
+		var completion := match_name.substr(text.length())
+		auto_line.text = " ".repeat(text.length()) + completion
+		auto_line.caret_column = input_line.caret_column
+
+func _complete_cmd() -> void:
+	var match_name := _get_autocomplete_match(input_line.text)
+	if match_name != "":
+		input_line.text = match_name + " "
+		_focus_input()
+		_on_input_changed(input_line.text)
 
 # ============ Visibility & Opacity ============
 func _handle_alpha_command(...args) -> Variant:
@@ -346,7 +356,10 @@ func set_close_on_escape(value: bool) -> void:
 	if InputMap.has_action("dev_console_escape"): InputMap.action_erase_events("dev_console_escape")
 	if value: _add_keybind("dev_console_escape", KEY_ESCAPE)
 
-func set_command_suggestions(value: bool) -> void: _cmd_suggest = value
+func set_command_autocomplete(value: bool) -> void: 
+	_autocomplete = value
+	if InputMap.has_action("dev_console_autocomplete"): InputMap.action_erase_events("dev_console_autocomplete")
+	if value: _add_keybind("dev_console_autocomplete", KEY_TAB)
 
 func set_alpha(value: float) -> void:
 	control.modulate.a = clampf(value, 0.5, 1.0)
@@ -374,6 +387,14 @@ func _focus_input(clear: bool = false) -> void:
 	if clear: input_line.clear()
 	input_line.grab_focus()
 	input_line.caret_column = input_line.text.length()
+
+func _get_autocomplete_match(text: String) -> String:
+	if text.is_empty(): 
+		return ""
+	for name: String in _commands.keys():
+		if name.to_lower().begins_with(text.to_lower()):
+			return name
+	return ""
 
 func _navigate_history(direction: int) -> void:
 	_history_index += direction
