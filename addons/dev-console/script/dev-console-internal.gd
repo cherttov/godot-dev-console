@@ -19,6 +19,7 @@ var title_label: Label
 var close_btn: Button
 var output_rtl: RichTextLabel
 var input_line: LineEdit
+var auto_line: LineEdit
 var resize_anchor: Panel
 
 # Window sizes
@@ -204,10 +205,20 @@ func _on_input_submitted(input: String) -> void:
 	_focus_input(true)
 
 func _on_input_changed(text: String) -> void:
-	if _cmd_suggest:
-		for name in _commands.keys():
-			if name.to_lower().begins_with(text.to_lower()):
-				print(name)
+	auto_line.text = ""
+	
+	if not _cmd_suggest:
+		return
+	
+	if text.is_empty():
+		return
+	
+	for name: String in _commands.keys():
+		if name.to_lower().begins_with(text.to_lower()):
+			var completion := name.substr(text.length())
+			auto_line.text = " ".repeat(text.length()) + completion
+			auto_line.caret_column = input_line.caret_column
+			return
 
 # ============ Visibility & Opacity ============
 func _handle_alpha_command(...args) -> Variant:
@@ -251,13 +262,13 @@ func _append_formatted(text: String, format: String) -> void:
 	var clean := text.replace("[", "[lb]")
 	output_rtl.append_text(format % clean + ("" if clean.ends_with("\n") else "\n"))
 
-func output_input(text: String) -> void: _append_formatted(text, "[font_size=14][color=gray] > %s[/color][/font_size]")
+func output_input(text: String) -> void: _append_formatted(text, "[font_size=14][color=gray]> %s[/color][/font_size]")
 func output_error(text: String) -> void: _append_formatted(text, "[color=red]%s[/color]")
 func output_warning(text: String) -> void: _append_formatted(text, "[color=orange]%s[/color]")
 func output_callback(text: String) -> void: _append_formatted(text, "%s")
 func _output_signal(name: String, args: Array) -> void:
 	var arg_text := ", ".join(args.map(func(a): return str(a)))
-	output_rtl.append_text("[font_size=14][color=cyan] > Signal emitted: " + name.replace("[", "[lb]") + "[/color][/font_size]\n")
+	output_rtl.append_text("[font_size=14][color=cyan]> Signal emitted: " + name.replace("[", "[lb]") + "[/color][/font_size]\n")
 	output_rtl.append_text(arg_text.replace("[", "[lb]") + "\n")
 
 func clear_output() -> void: output_rtl.clear()
@@ -435,7 +446,8 @@ func _generate_ui() -> void:
 	title_label.name = "TitleLabel"
 	title_label.unique_name_in_owner = true
 	title_label.text = "CONSOLE"
-	title_label.add_theme_font_size_override("font_size", 12)
+	title_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	title_label.add_theme_font_size_override("font_size", 15)
 	title_margin.add_child(title_label)
 	
 	# Close button
@@ -475,16 +487,39 @@ func _generate_ui() -> void:
 	output_rtl.scroll_following = true
 	output_rtl.selection_enabled = true
 	output_margin.add_child(output_rtl)
-
-	# Input LineEdit 
+	
+	# Input Container (InputLineEdit/AutocompleteLineEdit)
+	var input_container := Control.new()
+	input_container.name = "InputContainer"
+	input_container.size_flags_vertical = Control.SIZE_SHRINK_END
+	vbox.add_child(input_container)
+	
+	# Input LineEdit
 	input_line = LineEdit.new()
 	input_line.name = "Input"
 	input_line.unique_name_in_owner = true
-	input_line.size_flags_vertical = Control.SIZE_SHRINK_END
+	input_line.set_anchors_preset(Control.PRESET_FULL_RECT)
 	input_line.keep_editing_on_text_submit = true
 	input_line.virtual_keyboard_enabled = false
-	vbox.add_child(input_line)
-
+	input_container.add_child(input_line)
+	
+	# Autocomplete LineEdit
+	auto_line = LineEdit.new()
+	auto_line.name = "Autocomplete"
+	auto_line.unique_name_in_owner = true
+	auto_line.set_anchors_preset(Control.PRESET_FULL_RECT)
+	auto_line.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	auto_line.editable = false
+	auto_line.focus_mode = Control.FOCUS_NONE
+	var transparent_sb := _sb_input_bg.duplicate()
+	transparent_sb.bg_color = Color(0, 0, 0, 0)
+	auto_line.add_theme_stylebox_override("read_only", transparent_sb)
+	auto_line.add_theme_stylebox_override("normal", transparent_sb)
+	input_container.add_child(auto_line)
+	
+	# Set InputContaienr min_size
+	input_container.custom_minimum_size.y = input_line.get_combined_minimum_size().y
+	
 	# Resize Anchor
 	resize_anchor = Panel.new()
 	resize_anchor.name = "ResizeAnchor"
@@ -506,6 +541,13 @@ func _generate_ui() -> void:
 
 func _generate_theme() -> Theme:
 	var theme := Theme.new()
+	var font := preload("res://addons/dev-console/font/CascadiaMono-Regular.ttf")
+	if (font):
+		theme.default_font = font
+		theme.default_font_size = 14
+		font.hinting = TextServer.HINTING_LIGHT
+		font.subpixel_positioning = TextServer.SUBPIXEL_POSITIONING_AUTO
+		font.generate_mipmaps = false
 	
 	# BackgroundPanel Style (Custom Type Variation of Panel)
 	theme.add_type("BackgroundPanel")
