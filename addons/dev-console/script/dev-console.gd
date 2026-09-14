@@ -136,7 +136,7 @@ var close_on_escape := ProjectSettings.get_setting("dev_console/configuration/cl
 var command_autocomplete := ProjectSettings.get_setting("dev_console/configuration/command_autocomplete", true):
 	set(value):
 		command_autocomplete = value
-		_defer_or_call(func(): _console.set_command_suggestions(value))
+		_defer_or_call(func(): _console.set_command_autocomplete(value))
 
 # Theme
 var alpha := ProjectSettings.get_setting("dev_console/theme/console_transparency", 0.9):
