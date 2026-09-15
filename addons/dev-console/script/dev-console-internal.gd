@@ -4,7 +4,6 @@ extends CanvasLayer
 # Toggle key enum
 enum ToggleKey {
 	QUOTE_LEFT,
-	TAB,
 	F1,
 	F2,
 	F3,
@@ -19,6 +18,7 @@ var title_label: Label
 var close_btn: Button
 var output_rtl: RichTextLabel
 var input_line: LineEdit
+var auto_line: LineEdit
 var resize_anchor: Panel
 
 # Window sizes
@@ -33,17 +33,16 @@ var _signals: Dictionary[String, Dictionary] = {} # { "signal": Signal, "callbac
 var _command_history: Array[String] = []
 var _history_index := -1
 
-# For console dragging
+# Console dragging
 var _dragging := false
 var _drag_offset := Vector2.ZERO
 
-# For console resizing
+# Console resizing
 var _is_resizing := false
 
-# Cached config (initial values pulled from DevConsole in _ready)
+# Cached config (initial values assigned by DevConsole in _ready)
 const TOGGLE_KEYS := {
 	ToggleKey.QUOTE_LEFT: KEY_QUOTELEFT,
-	ToggleKey.TAB: KEY_TAB,
 	ToggleKey.F1: KEY_F1,
 	ToggleKey.F2: KEY_F2,
 	ToggleKey.F3: KEY_F3,
@@ -59,6 +58,7 @@ var _keep_position_after_closing := false
 var _keep_topmost := true
 var _toggle_keybind := ToggleKey.QUOTE_LEFT
 var _close_on_escape := true
+var _autocomplete := true
 
 # Cached theme
 var _header_bg := Color(0.204, 0.204, 0.204, 1.0)
@@ -83,6 +83,7 @@ func _ready() -> void:
 	# Connecting signals
 	visibility_changed.connect(_on_visibility_changed)
 	close_btn.pressed.connect(func(): visible = false)
+	input_line.text_changed.connect(_on_input_changed)
 	input_line.text_submitted.connect(_on_input_submitted)
 	header_panel.gui_input.connect(_on_panel_gui_input)
 	resize_anchor.gui_input.connect(_on_anchor_gui_input)
@@ -118,6 +119,12 @@ func _input(event: InputEvent) -> void:
 			_navigate_history(1)
 		elif event.is_action_pressed("dev_console_arrow_down"):
 			_navigate_history(-1)
+	
+	# Autocomplete
+	if _autocomplete and event.is_action_pressed("dev_console_autocomplete"):
+		_complete_cmd()
+		get_viewport().set_input_as_handled()
+		return
 
 	# Close on Escape (ESC)
 	if _close_on_escape and event.is_action_pressed("dev_console_escape"):
@@ -201,13 +208,35 @@ func _on_input_submitted(input: String) -> void:
 	
 	_focus_input(true)
 
+func _on_input_changed(text: String) -> void:
+	auto_line.text = ""
+	
+	if not _autocomplete:
+		return
+	
+	if text.is_empty():
+		return
+	
+	var match_name := _get_autocomplete_match(text)
+	if match_name != "":
+		var completion := match_name.substr(text.length())
+		auto_line.text = " ".repeat(text.length()) + completion
+		auto_line.caret_column = input_line.caret_column
+
+func _complete_cmd() -> void:
+	var match_name := _get_autocomplete_match(input_line.text)
+	if match_name != "":
+		input_line.text = match_name + " "
+		_focus_input()
+		_on_input_changed(input_line.text)
+
 # ============ Visibility & Opacity ============
 func _handle_alpha_command(...args) -> Variant:
 	if args.size() > 0:
 		set_alpha(str(args[0]).to_float())
 		return null
 	else:
-		return get_alpha()
+		return float(control.modulate.a)
 
 func _on_visibility_changed() -> void:
 	if visible:
@@ -243,13 +272,13 @@ func _append_formatted(text: String, format: String) -> void:
 	var clean := text.replace("[", "[lb]")
 	output_rtl.append_text(format % clean + ("" if clean.ends_with("\n") else "\n"))
 
-func output_input(text: String) -> void: _append_formatted(text, "[font_size=14][color=gray] > %s[/color][/font_size]")
+func output_input(text: String) -> void: _append_formatted(text, "[font_size=14][color=gray]> %s[/color][/font_size]")
 func output_error(text: String) -> void: _append_formatted(text, "[color=red]%s[/color]")
 func output_warning(text: String) -> void: _append_formatted(text, "[color=orange]%s[/color]")
 func output_callback(text: String) -> void: _append_formatted(text, "%s")
 func _output_signal(name: String, args: Array) -> void:
 	var arg_text := ", ".join(args.map(func(a): return str(a)))
-	output_rtl.append_text("[font_size=14][color=cyan] > Signal emitted: " + name.replace("[", "[lb]") + "[/color][/font_size]\n")
+	output_rtl.append_text("[font_size=14][color=cyan]> Signal emitted: " + name.replace("[", "[lb]") + "[/color][/font_size]\n")
 	output_rtl.append_text(arg_text.replace("[", "[lb]") + "\n")
 
 func clear_output() -> void: output_rtl.clear()
@@ -290,13 +319,11 @@ func _on_viewport_size_changed() -> void:
 func set_title_label(value: String) -> void:
 	_title_label = value
 	if is_node_ready(): title_label.text = _title_label
-func get_title_label() -> String: return _title_label
 
 func set_use_default_commands(value: bool) -> void:
 	_use_def_cmds = value
 	_unload_def_commands()
 	if value: _load_def_commands()
-func get_use_default_commands() -> bool: return _use_def_cmds
 
 func set_use_command_history(value: bool) -> void:
 	_use_command_history = value
@@ -308,65 +335,66 @@ func set_use_command_history(value: bool) -> void:
 	else:
 		_command_history.clear()
 		_history_index = -1
-func get_use_command_history() -> bool: return _use_command_history
 
 func set_view_default_commands(value: bool) -> void: _view_def_cmds = value
-func get_view_default_commands() -> bool: return _view_def_cmds
 
 func set_keep_size_after_closing(value: bool) -> void: _keep_size_after_closing = value
-func get_keep_size_after_closing() -> bool: return _keep_size_after_closing
 
 func set_keep_position_after_closing(value: bool) -> void: _keep_position_after_closing = value
-func get_keep_position_after_closing() -> bool: return _keep_position_after_closing
 
 func set_keep_topmost(value: bool) -> void:
 	_keep_topmost = value
 	layer = RenderingServer.CANVAS_LAYER_MAX if value else 0
-func get_keep_topmost() -> bool: return _keep_topmost
 
 func set_toggle_keybind(value: int) -> void:
 	_toggle_keybind = value
 	if InputMap.has_action("dev_console_toggle"): InputMap.action_erase_events("dev_console_toggle")
 	_add_keybind("dev_console_toggle", TOGGLE_KEYS.get(value, KEY_QUOTELEFT))
-func get_toggle_keybind() -> int: return _toggle_keybind
 
 func set_close_on_escape(value: bool) -> void:
 	_close_on_escape = value
 	if InputMap.has_action("dev_console_escape"): InputMap.action_erase_events("dev_console_escape")
 	if value: _add_keybind("dev_console_escape", KEY_ESCAPE)
-func get_close_on_escape() -> bool: return _close_on_escape
+
+func set_command_autocomplete(value: bool) -> void: 
+	_autocomplete = value
+	if InputMap.has_action("dev_console_autocomplete"): InputMap.action_erase_events("dev_console_autocomplete")
+	if value: _add_keybind("dev_console_autocomplete", KEY_TAB)
 
 func set_alpha(value: float) -> void:
 	control.modulate.a = clampf(value, 0.5, 1.0)
-func get_alpha() -> float: return float(control.modulate.a)
 
 func set_header_background(value: Color) -> void:
 	_header_bg = value
 	if _sb_header_bg: _sb_header_bg.bg_color = value
-func get_header_background() -> Color: return _header_bg
 
 func set_output_background(value: Color) -> void:
 	_output_bg = value
 	if _sb_output_bg: _sb_output_bg.bg_color = value
-func get_output_background() -> Color: return _output_bg
 
 func set_selection_highlight(value: Color) -> void:
 	_selection_highlight = value
 	if is_instance_valid(control):
 		control.theme.set_color("selection_color", "LineEdit", value)
 		control.theme.set_color("selection_color", "RichTextLabel", value)
-func get_selection_highlight() -> Color: return _selection_highlight
 
 func set_input_background(value: Color) -> void:
 	_input_bg = value
 	if _sb_input_bg: _sb_input_bg.bg_color = value
-func get_input_background() -> Color: return _input_bg
 
 # ============ Helpers ============
 func _focus_input(clear: bool = false) -> void:
 	if clear: input_line.clear()
 	input_line.grab_focus()
 	input_line.caret_column = input_line.text.length()
+
+func _get_autocomplete_match(text: String) -> String:
+	if text.is_empty(): 
+		return ""
+	for name: String in _commands.keys():
+		if name.to_lower().begins_with(text.to_lower()):
+			return name
+	return ""
 
 func _navigate_history(direction: int) -> void:
 	_history_index += direction
@@ -439,7 +467,8 @@ func _generate_ui() -> void:
 	title_label.name = "TitleLabel"
 	title_label.unique_name_in_owner = true
 	title_label.text = "CONSOLE"
-	title_label.add_theme_font_size_override("font_size", 12)
+	title_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	title_label.add_theme_font_size_override("font_size", 15)
 	title_margin.add_child(title_label)
 	
 	# Close button
@@ -479,16 +508,39 @@ func _generate_ui() -> void:
 	output_rtl.scroll_following = true
 	output_rtl.selection_enabled = true
 	output_margin.add_child(output_rtl)
-
-	# Input LineEdit 
+	
+	# Input Container (InputLineEdit/AutocompleteLineEdit)
+	var input_container := Control.new()
+	input_container.name = "InputContainer"
+	input_container.size_flags_vertical = Control.SIZE_SHRINK_END
+	vbox.add_child(input_container)
+	
+	# Input LineEdit
 	input_line = LineEdit.new()
 	input_line.name = "Input"
 	input_line.unique_name_in_owner = true
-	input_line.size_flags_vertical = Control.SIZE_SHRINK_END
+	input_line.set_anchors_preset(Control.PRESET_FULL_RECT)
 	input_line.keep_editing_on_text_submit = true
 	input_line.virtual_keyboard_enabled = false
-	vbox.add_child(input_line)
-
+	input_container.add_child(input_line)
+	
+	# Autocomplete LineEdit
+	auto_line = LineEdit.new()
+	auto_line.name = "Autocomplete"
+	auto_line.unique_name_in_owner = true
+	auto_line.set_anchors_preset(Control.PRESET_FULL_RECT)
+	auto_line.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	auto_line.editable = false
+	auto_line.focus_mode = Control.FOCUS_NONE
+	var transparent_sb := _sb_input_bg.duplicate()
+	transparent_sb.bg_color = Color(0, 0, 0, 0)
+	auto_line.add_theme_stylebox_override("read_only", transparent_sb)
+	auto_line.add_theme_stylebox_override("normal", transparent_sb)
+	input_container.add_child(auto_line)
+	
+	# Set InputContaienr min_size
+	input_container.custom_minimum_size.y = input_line.get_combined_minimum_size().y
+	
 	# Resize Anchor
 	resize_anchor = Panel.new()
 	resize_anchor.name = "ResizeAnchor"
@@ -510,6 +562,13 @@ func _generate_ui() -> void:
 
 func _generate_theme() -> Theme:
 	var theme := Theme.new()
+	var font := preload("res://addons/dev-console/font/CascadiaMono-Regular.ttf")
+	if (font):
+		theme.default_font = font
+		theme.default_font_size = 14
+		font.hinting = TextServer.HINTING_LIGHT
+		font.subpixel_positioning = TextServer.SUBPIXEL_POSITIONING_AUTO
+		font.generate_mipmaps = false
 	
 	# BackgroundPanel Style (Custom Type Variation of Panel)
 	theme.add_type("BackgroundPanel")

@@ -6,12 +6,11 @@ public static class DevConsole
 	public enum ToggleKey
 	{
 		QuoteLeft = 0,
-		Tab = 1,
-		F1 = 2,
-		F2 = 3,
-		F3 = 4,
-		F4 = 5,
-		F5 = 6
+		F1 = 1,
+		F2 = 2,
+		F3 = 3,
+		F4 = 4,
+		F5 = 5
 	}
 
 	private static Node _gdConsole;
@@ -250,6 +249,20 @@ public static class DevConsole
 		set
 		{
 			GetConsole()?.Set("close_on_escape", value);
+		}
+	}
+
+	public static bool CommandAutocomplete
+	{
+		get
+		{
+			var console = GetConsole();
+			if (console != null) { return console.Get("command_autocomplete").AsBool(); }
+			return ProjectSettings.GetSetting("dev_console/configuration/command_autocomplete", true).AsBool();
+		}
+		set
+		{
+			GetConsole()?.Set("command_autocomplete", value);
 		}
 	}
 
