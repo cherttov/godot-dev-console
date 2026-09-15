@@ -27,6 +27,7 @@ There will be the following parameters:
 |`Debug Only`                     | Boolean             |
 |`Toggle Keybind`                 | Integer             |
 |`Close On Escape`                | Boolean             |
+|`Command Autocomplete`           | Boolean             |
 |-                                |-                    |
 |`Console Transparency`           | Float *(0.5 to 1.0)*|
 |`Header Background`              | Color               |
@@ -120,8 +121,9 @@ DevConsole.view_default_commands # bool (default: true)
 DevConsole.keep_size_after_closing # bool (default: false)
 DevConsole.keep_position_after_closing # bool (default: false)
 DevConsole.keep_topmost # bool (default: true)
-DevConsole.toggle_keybind # String (default: "QuoteLeft") ... available: QuoteLeft, Tab, F1 to F5
+DevConsole.toggle_keybind # String (default: "QuoteLeft") ... available: QuoteLeft, F1 to F5
 DevConsole.close_on_escape # bool (default: true)
+DevConsole.command_autocomplete # bool (default: true)
 
 DevConsole.alpha # float (default: 0.9)
 DevConsole.header_background # Color (default: Color(0.204, 0.204, 0.204, 1.0))
@@ -193,6 +195,8 @@ Almost identical to GDScript functions, but use `CamelCase` instead of `snake_ca
 **Language:** GDScript/C#  
 **Minimum version:** Godot 4.5.0  
 **Maximum version:** Godot 4.x.x  
+**Font:** [Cascadia Mono](https://github.com/microsoft/cascadia-code)  
+> **Note:** Font is included in the `addons/dev_console/font/` directory
 
 ## AI Usage ##
 AI was used to refactor the code, improve overall code structure and test edge cases.
