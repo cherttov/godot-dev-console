@@ -72,6 +72,8 @@ var _sb_input_bg: StyleBoxFlat
 
 # ============ Init ============
 func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	
 	# Generate UI
 	_generate_ui()
 	
