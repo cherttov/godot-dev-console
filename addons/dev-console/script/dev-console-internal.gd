@@ -393,7 +393,9 @@ func _focus_input(clear: bool = false) -> void:
 func _get_autocomplete_match(text: String) -> String:
 	if text.is_empty(): 
 		return ""
-	for name: String in _commands.keys():
+	var command_names := _commands.keys()
+	command_names.sort()
+	for name: String in command_names:
 		if name.to_lower().begins_with(text.to_lower()):
 			return name
 	return ""
