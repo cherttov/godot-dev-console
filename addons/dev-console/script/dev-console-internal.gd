@@ -28,7 +28,8 @@ var _cur_resize_size := Vector2.ZERO
 
 # Commands dictionary
 const DEF_COMMANDS := ["help", "cls", "alpha", "quit"]
-var _commands: Dictionary[String, Callable] = {}
+var _commands: Dictionary[String, Callable] = {} # { "command_name": String, "callback": Callable }
+var _command_descriptions: Dictionary[String, String] = {} # { "command_name": String, "description": String }
 var _signals: Dictionary[String, Dictionary] = {} # { "signal": Signal, "callback": Callable }
 var _command_history: Array[String] = []
 var _history_index := -1
@@ -138,8 +139,9 @@ func _input(event: InputEvent) -> void:
 		_resize_console_window(event)
 
 # ============ Command & Signal Registration ============
-func add_command(cmd_name: String, callback: Callable) -> void:
+func add_command(cmd_name: String, callback: Callable, desc: String = "") -> void:
 	_commands[cmd_name] = callback
+	if !desc.is_empty(): _command_descriptions[cmd_name] = desc
 
 func add_signal(sig_name: String, target: Signal) -> void:
 	if _signals.has(sig_name): delete_signal(sig_name)
@@ -152,6 +154,7 @@ func add_signal(sig_name: String, target: Signal) -> void:
 	target.connect(callable)
 
 func delete_command(cmd_name: String) -> void:
+	_command_descriptions.erase(cmd_name)
 	if not _commands.erase(cmd_name):
 		push_warning("Command not found: " + cmd_name)
 
@@ -250,10 +253,10 @@ func _on_visibility_changed() -> void:
 
 # ============ Default commands ============
 func _load_def_commands() -> void:
-	add_command("help", _help_command)
-	add_command("cls", clear_output)
-	add_command("alpha", _handle_alpha_command)
-	add_command("quit", _quit_program)
+	add_command("help", _help_command, "Displays available commands.")
+	add_command("cls", clear_output, "Clears console's output window.")
+	add_command("alpha", _handle_alpha_command, "Gets and sets console opacity.")
+	add_command("quit", _quit_program, "Exits the program.")
 
 func _unload_def_commands() -> void:
 	for cmd in DEF_COMMANDS:
@@ -261,23 +264,26 @@ func _unload_def_commands() -> void:
 
 func _help_command() -> void:
 	var list := []
-	for cmd in _commands.keys():
+	for cmd: String in _commands.keys():
 		if !_view_def_cmds and cmd in DEF_COMMANDS: continue
-		list.append(cmd)
-	output_callback("\n".join(list))
+		var desc: String = _command_descriptions.get(cmd, "")
+		var line := cmd
+		if not desc.is_empty(): 
+			line += _get_formatted(desc, " [color=#888888][i]- %s[/i][/color]").strip_edges(false, true)
+		list.append(line)
+	output_callback("\n".join(list), false)
 
 func _quit_program() -> void:
 	get_tree().quit()
 
 # ============ Output ============
-func _append_formatted(text: String, format: String) -> void:
-	var clean := text.replace("[", "[lb]")
-	output_rtl.append_text(format % clean + ("" if clean.ends_with("\n") else "\n"))
+func _append_formatted(text: String, format: String, escape: bool = true) -> void:
+	output_rtl.append_text(_get_formatted(text, format, escape))
 
 func output_input(text: String) -> void: _append_formatted(text, "[font_size=14][color=gray]> %s[/color][/font_size]")
 func output_error(text: String) -> void: _append_formatted(text, "[color=red]%s[/color]")
 func output_warning(text: String) -> void: _append_formatted(text, "[color=orange]%s[/color]")
-func output_callback(text: String) -> void: _append_formatted(text, "%s")
+func output_callback(text: String, escape: bool = true) -> void: _append_formatted(text, "%s", escape)
 func _output_signal(name: String, args: Array) -> void:
 	var arg_text := ", ".join(args.map(func(a): return str(a)))
 	output_rtl.append_text("[font_size=14][color=cyan]> Signal emitted: " + name.replace("[", "[lb]") + "[/color][/font_size]\n")
@@ -428,6 +434,10 @@ func _clamp_pos(position: Vector2, size: Vector2) -> Vector2:
 
 func _compute_default_window_size() -> Vector2:
 	return get_viewport().get_visible_rect().size * 0.5
+
+func _get_formatted(text: String, format: String, escape: bool = true) -> String:
+	var clean := text.replace("[", "[lb]") if escape else text
+	return format % clean + ("" if clean.ends_with("\n") else "\n")
 
 # ============ UI Setup ============
 func _generate_ui() -> void:

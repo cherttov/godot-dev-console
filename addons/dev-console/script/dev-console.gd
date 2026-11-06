@@ -46,7 +46,7 @@ func _defer_or_call(action: Callable) -> void:
 
 # ========== PUBLIC METHODS ==========
 # Command & Signal Registration
-func add_command(command_name: String, callback: Callable) -> void: _defer_or_call(func(): _console.add_command(command_name, callback))
+func add_command(command_name: String, callback: Callable, description: String = "") -> void: _defer_or_call(func(): _console.add_command(command_name, callback))
 
 func add_signal(signal_name: String, target_signal: Signal) -> void: _defer_or_call(func(): _console.add_signal(signal_name, target_signal))
 
