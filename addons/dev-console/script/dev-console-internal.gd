@@ -143,6 +143,10 @@ func add_command(cmd_name: String, callback: Callable, desc: String = "") -> voi
 	_commands[cmd_name] = callback
 	if !desc.is_empty(): _command_descriptions[cmd_name] = desc
 
+func add_description(cmd_name: String, desc: String) -> void:
+	if not _commands.has(cmd_name): push_warning("Command not found: " + cmd_name)
+	_command_descriptions[cmd_name] = desc
+
 func add_signal(sig_name: String, target: Signal) -> void:
 	if _signals.has(sig_name): delete_signal(sig_name)
 	
@@ -155,8 +159,10 @@ func add_signal(sig_name: String, target: Signal) -> void:
 
 func delete_command(cmd_name: String) -> void:
 	_command_descriptions.erase(cmd_name)
-	if not _commands.erase(cmd_name):
-		push_warning("Command not found: " + cmd_name)
+	if not _commands.erase(cmd_name): push_warning("Command not found: " + cmd_name)
+
+func delete_description(cmd_name: String) -> void:
+	if not _command_descriptions.erase(cmd_name): push_warning("Description not found for command: " + cmd_name)
 
 func delete_signal(sig_name: String) -> void:
 	var sig := _signals.get(sig_name)
