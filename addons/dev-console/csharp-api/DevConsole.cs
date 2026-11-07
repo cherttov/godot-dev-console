@@ -43,6 +43,16 @@ public static class DevConsole
 		GetConsole()?.Call("add_command", commandName, callback);
 	}
 
+	public static void AddCommand(string commandName, Callable callback, string description)
+	{
+		GetConsole()?.Call("add_command", commandName, callback, description);
+	}
+
+	public static void AddDescription(string commandName, string description)
+	{
+		GetConsole()?.Call("add_description", commandName, description);
+	}
+
 	public static void AddSignal(string signalName, Signal targetSignal)
 	{
 		GetConsole()?.Call("add_signal", signalName, targetSignal);
@@ -51,6 +61,11 @@ public static class DevConsole
 	public static void DeleteCommand(string commandName)
 	{
 		GetConsole()?.Call("delete_command", commandName);
+	}
+
+	public static void DeleteDescription(string commandName)
+	{
+		GetConsole()?.Call("delete_description", commandName);
 	}
 
 	public static void DeleteSignal(string signalName)
@@ -66,6 +81,13 @@ public static class DevConsole
 		return console.Call("has_command", commandName).AsBool();
 	}
 
+	public static bool HasDescription(string commandName)
+	{
+		var console = GetConsole();
+		if (console == null) { return false; }
+		return console.Call("has_description", commandName).AsBool();
+	}
+
 	public static bool HasSignalConnected(string signalName)
 	{
 		var console = GetConsole();
@@ -78,6 +100,13 @@ public static class DevConsole
 		var console = GetConsole();
 		if (console == null) { return new Dictionary<string, Callable>(); }
 		return console.Call("get_commands").AsGodotDictionary<string, Callable>();
+	}
+
+	public static Dictionary<string, string> GetDescriptions()
+	{
+		var console = GetConsole();
+		if (console == null) { return new Dictionary<string, string>(); }
+		return console.Call("get_descriptions").AsGodotDictionary<string, string>();
 	}
 
 	public static Dictionary<string, Dictionary<string, Variant>> GetSignals()
