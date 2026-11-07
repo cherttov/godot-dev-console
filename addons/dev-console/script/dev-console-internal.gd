@@ -252,6 +252,8 @@ func _handle_alpha_command(...args) -> Variant:
 		return float(control.modulate.a)
 
 func _on_visibility_changed() -> void:
+	_dragging = false
+	_is_resizing = false
 	if visible:
 		if !_keep_position_after_closing: control.position = Vector2(0.0, 0.0)
 		if !_keep_size_after_closing: control.size = _def_window_size
