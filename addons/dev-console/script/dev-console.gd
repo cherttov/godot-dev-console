@@ -63,12 +63,20 @@ func has_command(command_name: String) -> bool:
 	if _console_ready: return _console.has_command(command_name)
 	return false
 
+func has_description(command_name: String) -> bool:
+	if _console_ready: return _console.has_description(command_name)
+	return false
+
 func has_signal_connected(signal_name: String) -> bool:
 	if _console_ready: return _console.has_signal_connected(signal_name)
 	return false
 
 func get_commands() -> Dictionary[String, Callable]:
 	if _console_ready: return _console.get_commands()
+	return { }
+
+func get_descriptions() -> Dictionary[String, String]:
+	if _console_ready: return _console.get_descriptions();
 	return { }
 
 func get_signals() -> Dictionary[String, Dictionary]:

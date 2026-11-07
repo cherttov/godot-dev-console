@@ -174,8 +174,10 @@ func delete_signal(sig_name: String) -> void:
 
 # ============ Command & Signal Registry Getters ============
 func has_command(cmd_name: String) -> bool: return _commands.has(cmd_name)
+func has_description(cmd_name: String) -> bool: return _command_descriptions.has(cmd_name)
 func has_signal_connected(sig_name: String) -> bool: return _signals.has(sig_name)
 func get_commands() -> Dictionary[String, Callable]: return _commands.duplicate()
+func get_descriptions() -> Dictionary[String, String]: return _command_descriptions.duplicate()
 func get_signals() -> Dictionary[String, Dictionary]: return _signals.duplicate()
 
 # ============ Input processing ============
