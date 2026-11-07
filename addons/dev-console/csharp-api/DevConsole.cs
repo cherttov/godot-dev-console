@@ -19,18 +19,14 @@ public static class DevConsole
 	private static Node GetConsole()
 	{
 		if (_gdConsole != null && GodotObject.IsInstanceValid(_gdConsole))
-		{
 			return _gdConsole;
-		}
 
 		if (Engine.GetMainLoop() is SceneTree tree)
 		{
 			_gdConsole = tree.Root.GetNode<Node>("DevConsole");
 
 			if (_gdConsole == null)
-			{
 				GD.PushError("Failed to find DevConsole autoload. Check project settings.");
-			}
 		}
 
 		return _gdConsole;
@@ -38,104 +34,83 @@ public static class DevConsole
 
 	#region Public methods
 	// Command & Signal Registration
-	public static void AddCommand(string commandName, Callable callback)
-	{
+	public static void AddCommand(string commandName, Callable callback) =>
 		GetConsole()?.Call("add_command", commandName, callback);
-	}
 
-	public static void AddCommand(string commandName, Callable callback, string description)
-	{
+	public static void AddCommand(string commandName, Callable callback, string description) =>
 		GetConsole()?.Call("add_command", commandName, callback, description);
-	}
 
-	public static void AddDescription(string commandName, string description)
-	{
+	public static void AddDescription(string commandName, string description) =>
 		GetConsole()?.Call("add_description", commandName, description);
-	}
 
-	public static void AddSignal(string signalName, Signal targetSignal)
-	{
+	public static void AddSignal(string signalName, Signal targetSignal) =>
 		GetConsole()?.Call("add_signal", signalName, targetSignal);
-	}
 
-	public static void DeleteCommand(string commandName)
-	{
+	public static void DeleteCommand(string commandName) =>
 		GetConsole()?.Call("delete_command", commandName);
-	}
 
-	public static void DeleteDescription(string commandName)
-	{
+	public static void DeleteDescription(string commandName) =>
 		GetConsole()?.Call("delete_description", commandName);
-	}
 
-	public static void DeleteSignal(string signalName)
-	{
+	public static void DeleteSignal(string signalName) =>
 		GetConsole()?.Call("delete_signal", signalName);
-	}
 
 	// Command & Signal Registry Getters
 	public static bool HasCommand(string commandName)
 	{
 		var console = GetConsole();
-		if (console == null) { return false; }
+		if (console == null) return false;
 		return console.Call("has_command", commandName).AsBool();
 	}
 
 	public static bool HasDescription(string commandName)
 	{
 		var console = GetConsole();
-		if (console == null) { return false; }
+		if (console == null) return false;
 		return console.Call("has_description", commandName).AsBool();
 	}
 
 	public static bool HasSignalConnected(string signalName)
 	{
 		var console = GetConsole();
-		if (console == null) { return false; }
+		if (console == null) return false;
 		return console.Call("has_signal_connected", signalName).AsBool();
 	}
 
 	public static Dictionary<string, Callable> GetCommands()
 	{
 		var console = GetConsole();
-		if (console == null) { return new Dictionary<string, Callable>(); }
+		if (console == null) return new Dictionary<string, Callable>();
 		return console.Call("get_commands").AsGodotDictionary<string, Callable>();
 	}
 
 	public static Dictionary<string, string> GetDescriptions()
 	{
 		var console = GetConsole();
-		if (console == null) { return new Dictionary<string, string>(); }
+		if (console == null) return new Dictionary<string, string>();
 		return console.Call("get_descriptions").AsGodotDictionary<string, string>();
 	}
 
 	public static Dictionary<string, Dictionary<string, Variant>> GetSignals()
 	{
 		var console = GetConsole();
-		if (console == null) { return new Dictionary<string, Dictionary<string, Variant>>(); }
+		if (console == null) return new Dictionary<string, Dictionary<string, Variant>>();
 		return console.Call("get_signals").AsGodotDictionary<string, Dictionary<string, Variant>>();
 	}
 
 	// Output
-	public static void PrintLine(string text) 
-	{
+	public static void PrintLine(string text) =>
 		GetConsole()?.Call("print_line", text);
-	}
 
-	public static void PrintError(string text) 
-	{
+	public static void PrintError(string text) =>
 		GetConsole()?.Call("print_error", text);
-	}
 
-	public static void PrintWarning(string text) 
-	{
+	public static void PrintWarning(string text) =>
 		GetConsole()?.Call("print_warning", text);
-	}
 
-	public static void ClearOutput() 
-	{
+	public static void ClearOutput() =>
 		GetConsole()?.Call("clear_output");
-	}
+	
 	#endregion
 
 	#region Properties
@@ -145,13 +120,10 @@ public static class DevConsole
 		get
 		{
 			var console = GetConsole();
-			if (console != null) { return console.Get("visible").AsBool(); }
+			if (console != null) return console.Get("visible").AsBool();
 			return false;
 		}
-		set
-		{
-			GetConsole()?.Set("visible", value);
-		}
+		set => GetConsole()?.Set("visible", value);
 	}
 
 	// Configuration
@@ -160,13 +132,10 @@ public static class DevConsole
 		get
 		{
 			var console = GetConsole();
-			if (console != null) { return console.Get("title_label").AsString(); }
+			if (console != null) return console.Get("title_label").AsString();
 			return ProjectSettings.GetSetting("dev_console/configuration/title_label", "CONSOLE").AsString();
 		}
-		set
-		{
-			GetConsole()?.Set("title_label", value);
-		}
+		set => GetConsole()?.Set("title_label", value);
 	}
 
 	public static bool UseDefaultCommands
@@ -174,13 +143,10 @@ public static class DevConsole
 		get
 		{
 			var console = GetConsole();
-			if (console != null) { return console.Get("use_default_commands").AsBool(); }
+			if (console != null) return console.Get("use_default_commands").AsBool();
 			return ProjectSettings.GetSetting("dev_console/configuration/use_default_commands", true).AsBool();
 		}
-		set
-		{
-			GetConsole()?.Set("use_default_commands", value);
-		}
+		set => GetConsole()?.Set("use_default_commands", value);
 	}
 
 	public static bool UseCommandHistory
@@ -188,13 +154,10 @@ public static class DevConsole
 		get
 		{
 			var console = GetConsole();
-			if (console != null) { return console.Get("use_command_history").AsBool(); }
+			if (console != null) return console.Get("use_command_history").AsBool();
 			return ProjectSettings.GetSetting("dev_console/configuration/use_command_history", true).AsBool();
 		}
-		set
-		{
-			GetConsole()?.Set("use_command_history", value);
-		}
+		set => GetConsole()?.Set("use_command_history", value);
 	}
 
 	public static bool ViewDefaultCommands
@@ -202,13 +165,10 @@ public static class DevConsole
 		get
 		{
 			var console = GetConsole();
-			if (console != null) { return console.Get("view_default_commands").AsBool(); }
+			if (console != null) return console.Get("view_default_commands").AsBool();
 			return ProjectSettings.GetSetting("dev_console/configuration/view_default_commands", true).AsBool();
 		}
-		set
-		{
-			GetConsole()?.Set("view_default_commands", value);
-		}
+		set => GetConsole()?.Set("view_default_commands", value);
 	}
 
 	public static bool KeepSizeAfterClosing
@@ -216,13 +176,10 @@ public static class DevConsole
 		get
 		{
 			var console = GetConsole();
-			if (console != null) { return console.Get("keep_size_after_closing").AsBool(); }
+			if (console != null) return console.Get("keep_size_after_closing").AsBool();
 			return ProjectSettings.GetSetting("dev_console/configuration/keep_size_after_closing", false).AsBool();
 		}
-		set
-		{
-			GetConsole()?.Set("keep_size_after_closing", value);
-		}
+		set => GetConsole()?.Set("keep_size_after_closing", value);
 	}
 
 	public static bool KeepPositionAfterClosing
@@ -230,13 +187,10 @@ public static class DevConsole
 		get
 		{
 			var console = GetConsole();
-			if (console != null) { return console.Get("keep_position_after_closing").AsBool(); }
+			if (console != null) return console.Get("keep_position_after_closing").AsBool();
 			return ProjectSettings.GetSetting("dev_console/configuration/keep_position_after_closing", false).AsBool();
 		}
-		set
-		{
-			GetConsole()?.Set("keep_position_after_closing", value);
-		}
+		set => GetConsole()?.Set("keep_position_after_closing", value);
 	}
 
 	public static bool KeepTopmost
@@ -244,13 +198,10 @@ public static class DevConsole
 		get
 		{
 			var console = GetConsole();
-			if (console != null) { return console.Get("keep_topmost").AsBool(); }
+			if (console != null) return console.Get("keep_topmost").AsBool();
 			return ProjectSettings.GetSetting("dev_console/configuration/keep_topmost", true).AsBool();
 		}
-		set
-		{
-			GetConsole()?.Set("keep_topmost", value);
-		}
+		set => GetConsole()?.Set("keep_topmost", value);
 	}
 
 	public static ToggleKey ToggleKeybind
@@ -258,13 +209,10 @@ public static class DevConsole
 		get
 		{
 			var console = GetConsole();
-			if (console != null) { return (ToggleKey)console.Get("toggle_keybind").AsInt32(); }
+			if (console != null) return (ToggleKey)console.Get("toggle_keybind").AsInt32();
 			return (ToggleKey)ProjectSettings.GetSetting("dev_console/configuration/toggle_keybind", (int)ToggleKey.QuoteLeft).AsInt32();
 		}
-		set
-		{
-			GetConsole()?.Set("toggle_keybind", (int)value);
-		}
+		set => GetConsole()?.Set("toggle_keybind", (int)value);
 	}
 
 	public static bool CloseOnEscape
@@ -272,13 +220,10 @@ public static class DevConsole
 		get
 		{
 			var console = GetConsole();
-			if (console != null) { return console.Get("close_on_escape").AsBool(); }
+			if (console != null) return console.Get("close_on_escape").AsBool();
 			return ProjectSettings.GetSetting("dev_console/configuration/close_on_escape", true).AsBool();
 		}
-		set
-		{
-			GetConsole()?.Set("close_on_escape", value);
-		}
+		set => GetConsole()?.Set("close_on_escape", value);
 	}
 
 	public static bool CommandAutocomplete
@@ -286,13 +231,10 @@ public static class DevConsole
 		get
 		{
 			var console = GetConsole();
-			if (console != null) { return console.Get("command_autocomplete").AsBool(); }
+			if (console != null) return console.Get("command_autocomplete").AsBool();
 			return ProjectSettings.GetSetting("dev_console/configuration/command_autocomplete", true).AsBool();
 		}
-		set
-		{
-			GetConsole()?.Set("command_autocomplete", value);
-		}
+		set => GetConsole()?.Set("command_autocomplete", value);
 	}
 
 	// Theme
@@ -301,13 +243,10 @@ public static class DevConsole
 		get
 		{
 			var console = GetConsole();
-			if (console != null) { return console.Get("alpha").AsSingle(); }
+			if (console != null) return console.Get("alpha").AsSingle();
 			return ProjectSettings.GetSetting("dev_console/theme/console_transparency", 0.9).AsSingle();
 		}
-		set
-		{
-			GetConsole()?.Set("alpha", value);
-		}
+		set => GetConsole()?.Set("alpha", value);
 	}
 
 	public static Color HeaderBackground
@@ -315,13 +254,10 @@ public static class DevConsole
 		get
 		{
 			var console = GetConsole();
-			if (console != null) { return console.Get("header_background").AsColor(); }
+			if (console != null) return console.Get("header_background").AsColor();
 			return ProjectSettings.GetSetting("dev_console/theme/header_background", new Color(0.204f, 0.204f, 0.204f, 1.0f)).AsColor();
 		}
-		set
-		{
-			GetConsole()?.Set("header_background", value);
-		}
+		set => GetConsole()?.Set("header_background", value);
 	}
 
 	public static Color OutputBackground
@@ -329,13 +265,10 @@ public static class DevConsole
 		get
 		{
 			var console = GetConsole();
-			if (console != null) { return console.Get("output_background").AsColor(); }
+			if (console != null) return console.Get("output_background").AsColor();
 			return ProjectSettings.GetSetting("dev_console/theme/output_background", new Color(0.137f, 0.137f, 0.137f, 1.0f)).AsColor();
 		}
-		set
-		{
-			GetConsole()?.Set("output_background", value);
-		}
+		set => GetConsole()?.Set("output_background", value);
 	}
 
 	public static Color SelectionHighlight
@@ -343,13 +276,10 @@ public static class DevConsole
 		get
 		{
 			var console = GetConsole();
-			if (console != null) { return console.Get("selection_highlight").AsColor(); }
+			if (console != null) return console.Get("selection_highlight").AsColor();
 			return ProjectSettings.GetSetting("dev_console/theme/selection_highlight", new Color(0.204f, 0.204f, 0.204f, 0.878f)).AsColor();
 		}
-		set
-		{
-			GetConsole()?.Set("selection_highlight", value);
-		}
+		set => GetConsole()?.Set("selection_highlight", value);
 	}
 
 	public static Color InputBackground
@@ -357,13 +287,10 @@ public static class DevConsole
 		get
 		{
 			var console = GetConsole();
-			if (console != null) { return console.Get("input_background").AsColor(); }
+			if (console != null) return console.Get("input_background").AsColor();
 			return ProjectSettings.GetSetting("dev_console/theme/input_background", new Color(0.114f, 0.114f, 0.114f, 1.0f)).AsColor();
 		}
-		set
-		{
-			GetConsole()?.Set("input_background", value);
-		}
+		set => GetConsole()?.Set("input_background", value);
 	}
 	#endregion
 }
