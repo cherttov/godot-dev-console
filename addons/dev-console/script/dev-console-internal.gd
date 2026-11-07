@@ -400,7 +400,9 @@ func set_input_background(value: Color) -> void:
 
 # ============ Helpers ============
 func _focus_input(clear: bool = false) -> void:
-	if clear: input_line.clear()
+	if clear: 
+		input_line.clear()
+		_on_input_changed("")
 	input_line.grab_focus()
 	input_line.caret_column = input_line.text.length()
 
@@ -419,9 +421,11 @@ func _navigate_history(direction: int) -> void:
 	if _history_index >= _command_history.size() or _history_index < 0:
 		_history_index = -1
 		_focus_input(true)
+		_on_input_changed(input_line.text)
 		return
 	input_line.text = _command_history[(_command_history.size() - 1) - _history_index]
 	_focus_input()
+	_on_input_changed(input_line.text)
 	get_viewport().set_input_as_handled()
 
 func _add_keybind(action: String, keycode: Key) -> void:
