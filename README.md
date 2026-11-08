@@ -127,28 +127,37 @@ DevConsole.add_command("sync_stats", func() -> String:
 ```
 > **Note:** While passing parameters to a lambda function, you must pass everything as a **String** (e.g. `str(id = 5)`)
 
-### Other functions ###
+### Functions documentation ###
 ```gdscript
-DevConsole.get_commands(); # returns Dictionary[String, Callable]
-DevConsole.get_descriptions(); # returns Dictionary[String, String]
-DevConsole.get_aliases(); # returns Dictionary[String, String]
-DevConsole.get_signals(); # returns Dictionary[String, Dictionary[String, Variant]]
+# Adders
+DevConsole.add_command(command_name: String, callback: Callable, description: String = "") -> void;
+DevConsole.add_description(command_name: String, description: String) -> void;
+DevConsole.add_alias(alias: String, command_name: String) -> void;
+DevConsole.add_signal(signal_name: String, target_signal: Signal) -> void;
 
-DevConsole.delete_command("print");
-DevConsole.delete_description("print");
-DevConsole.delete_alias("echo");
-DevConsole.delete_signal("test");
+# Deleters
+DevConsole.delete_command(command_name: String) -> void;
+DevConsole.delete_description(command_name: String) -> void;
+DevConsole.delete_alias(alias: String) -> void;
+DevConsole.delete_signal(signal_name: String) -> void;
 
-DevConsole.has_command("print"); # returns bool
-DevConsole.has_description("print"); # returns bool
-DevConsole.has_alias("echo"); returns bool
-DevConsole.has_signal_connected("test"); # returs bool
+# Getters
+DevConsole.has_command(command_name: String) -> bool;
+DevConsole.has_description(command_name: String) -> bool;
+DevConsole.has_alias(alias: String) -> bool;
+DevConsole.has_signal_connected(signal_name: String) -> bool;
 
-DevConsole.print_line("Hello World!"); # Outputs to console white text
-DevConsole.print_warning("Hello, World?"); # Outputs to console orange text
-DevConsole.print_error("Goodbye World!"); # Outputs to console red text
+DevConsole.get_commands() -> Dictionary[String, Callable]; # => {"command_name": "callback"}
+DevConsole.get_descriptions() -> Dictionary[String, String]; # => {"command_name": "description"}
+DevConsole.get_aliases() -> Dictionary[String, String]; # => {"alias": "command_name"}
+DevConsole.get_signals() -> Dictionary[String, Dictionary[String, Variant]]; # { "signal_name": { "signal": Signal, "callback": Callable } }
 
-DevConsole.clear_output(); # Clears the console
+# Other
+DevConsole.print_line(text: String) -> void; # Outputs white text to console
+DevConsole.print_warning(text: String) -> void; # Outputs orange text to console
+DevConsole.print_error(text: String) -> void; # Outputs red text to console
+
+DevConsole.clear_output() -> void; # Clears the console
 ```
 
 ### Properties ###
