@@ -12,7 +12,7 @@ An in-game developer console addon for Godot.
 After installation turn `OFF` and `ON` the plugin, this ensures the configuration settings load properly.
 > **Note:** Before updating or deleting the asset, turn it `OFF` in the **ProjectSettings > Plugins**
 
-By openning the `ProjectSettings` **(Project > Project Settings > General)** and scrolling down you can find the `DevConsole/Configuration` tab.  
+By opening the `ProjectSettings` **(Project > Project Settings > General)** and scrolling down you can find the `DevConsole/Configuration` tab.  
 
 There will be the following parameters:
 |Parameter                        |Value Type           |
@@ -37,20 +37,23 @@ There will be the following parameters:
 
 > **Note:** To reset the settings just turn `OFF` and `ON` the plugin
 
-By default the keybind for openning/closing the console is `KEY_QUOTELEFT`.
+By default the keybind for opening/closing the console is `KEY_QUOTELEFT`.
 
 ## Usage (GDScript) ##
-Do not use the `DevConsoleInternal` class, intead use the `DevConsole` singleton as shown below
+Do not use the `DevConsoleInternal` class, instead use the `DevConsole` singleton as shown below
 
 ### Adding commands ###
 **IMPORTANT:** All the parameters passed into a command must be [strings](https://docs.godotengine.org/en/stable/classes/class_string.html).  
 If you need other types, you must parse them manually inside your function (e.g. `int(amount)`)
 
-In order to use, add commands with reference to a coresponding function in `_ready` function like this:
+In order to use, add commands with reference to a corresponding function in `_ready` function like this:
 ```gdscript
 func _ready() -> void:
   # Register the command "print" to call the _print function
   DevConsole.add_command("print", _print);
+
+  # Register the command "hi" that calls _say_hi function with a description "Prints hi into console"
+  DevConsole.add_command("hi", _say_hi, "Prints hi into console");
 
 # Print function that takes any amount of String and returns them
 func _print(first_word: String, ...others) -> String:
@@ -58,9 +61,41 @@ func _print(first_word: String, ...others) -> String:
   for word in others:
     output += " " + word;
   return output;
+
+# Function with no arguments that returns "Hi"
+func _say_hi() -> String:
+	return "Hi";
 ```
 > **Note:** By returning a string you pass an output to the console, which will be displayed in it.  
 (Anything other than String will be converted to String)
+
+### Adding descriptions ###
+Add a description for a command like this:
+```gdscript
+func _ready() -> void:
+  # Either add a description by passing it as the 3rd argument into "DevConsole.add_command()" function
+  DevConsole.add_command("test", _test, "Test command.");
+
+  # Or add it later using the "DevConsole.add_description()" function
+  DevConsole.add_description("test", "Test command.");
+
+func _test() -> void:
+	return;
+```
+
+### Adding aliases ###
+Add an alias for a command like this:
+```gdscript
+func _ready() -> void:
+  DevConsole.add_command("test", _test);
+
+  # Add an alias "test_alias" for a command "test"
+  DevConsole.add_alias("test_alias", "test");
+
+func _test() -> void:
+	return;
+```
+> **Note:** Aliases are not autocompleted or shown in the `help` command output.
 
 ### Adding signals ###
 Add a signal for console to listen to like this:
@@ -72,7 +107,7 @@ func _ready() -> void:
   # Register the signal named "test" that passes the signal 'test' as the second parameter
   DevConsole.add_signal("test", test);
 
-# Let's emit the signal on 'ESC" clicked
+# Let's emit the signal on 'ESC' clicked
 func _input(event: InputEvent) -> void:
   if event.is_action_pressed("ui_cancel"):
     emit_signal("test", "Hello World!");
@@ -90,25 +125,41 @@ DevConsole.add_command("sync_stats", func() -> String:
   ];
 );
 ```
-> **Note:** While passing parameters to a lambda function, you must pass everything as a **String** (e.g. `str(id = 5)`)
+> **Note:** While passing parameters to a lambda function, you must pass everything as a **String** (e.g. `str(id)` where `id: int`)
 
-### Other functions ###
+### Functions documentation ###
 ```gdscript
-DevConsole.get_commands(); # returns Dictionary[String, Callable]
-DevConsole.get_signals(); # returns Dictionary[String, Dictionary[String, Variant]]
+# Adders
+DevConsole.add_command(command_name: String, callback: Callable, description: String = "") -> void;
+DevConsole.add_description(command_name: String, description: String) -> void;
+DevConsole.add_alias(alias: String, command_name: String) -> void;
+DevConsole.add_signal(signal_name: String, target_signal: Signal) -> void;
 
-DevConsole.delete_command("print");
-DevConsole.delete_signal("test");
+# Deleters
+DevConsole.delete_command(command_name: String) -> void;
+DevConsole.delete_description(command_name: String) -> void;
+DevConsole.delete_alias(alias: String) -> void;
+DevConsole.delete_signal(signal_name: String) -> void;
 
-DevConsole.has_command("print"); # returns bool
-DevConsole.has_signal_connected("test"); # returs bool
+# Getters
+DevConsole.has_command(command_name: String) -> bool;
+DevConsole.has_description(command_name: String) -> bool;
+DevConsole.has_alias(alias: String) -> bool;
+DevConsole.has_signal_connected(signal_name: String) -> bool;
 
-DevConsole.print_line("Hello World!"); # Outputs to console white text
-DevConsole.print_warning("Hello, World?"); # Outputs to console orange text
-DevConsole.print_error("Goodbye World!"); # Outputs to console red text
+DevConsole.get_commands() -> Dictionary[String, Callable]; # => {"command_name": Callable}
+DevConsole.get_descriptions() -> Dictionary[String, String]; # => {"command_name": "description"}
+DevConsole.get_aliases() -> Dictionary[String, String]; # => {"alias": "command_name"}
+DevConsole.get_signals() -> Dictionary[String, Dictionary[String, Variant]]; # { "signal_name": { "signal": Signal, "callback": Callable } }
 
-DevConsole.clear_output(); # Clears the console
+# Other
+DevConsole.print_line(text: String) -> void; # Outputs white text to console
+DevConsole.print_warning(text: String) -> void; # Outputs orange text to console
+DevConsole.print_error(text: String) -> void; # Outputs red text to console
+
+DevConsole.clear_output() -> void; # Clears the console
 ```
+> **Note:** `has_*/get_*` functions return false/empty_dictionary if ran before the console is ready (e.g. running `add_*` and `has_*` in `_ready()` function)
 
 ### Properties ###
 ```gdscript
@@ -121,11 +172,11 @@ DevConsole.view_default_commands # bool (default: true)
 DevConsole.keep_size_after_closing # bool (default: false)
 DevConsole.keep_position_after_closing # bool (default: false)
 DevConsole.keep_topmost # bool (default: true)
-DevConsole.toggle_keybind # String (default: "QuoteLeft") ... available: QuoteLeft, F1 to F5
+DevConsole.toggle_keybind # int/Enum<DevConsole.ToggleKey> (default: DevConsole.ToggleKey.QUOTE_LEFT) ...available: QUOTE_LEFT, F1 to F5
 DevConsole.close_on_escape # bool (default: true)
 DevConsole.command_autocomplete # bool (default: true)
 
-DevConsole.alpha # float (default: 0.9)
+DevConsole.alpha # float (default: 0.9, clamped(0.5, 1.0))
 DevConsole.header_background # Color (default: Color(0.204, 0.204, 0.204, 1.0))
 DevConsole.output_background # Color (default: Color(0.137, 0.137, 0.137, 1.0))
 DevConsole.selection_highlight # Color (default: Color(0.204, 0.204, 0.204, 0.878))
@@ -149,7 +200,7 @@ public partial class Main : Node
   // It is recommended to make all parameters a 'string' to avoid unexpected behavior
   private string Heal(string amount)
   {
-    int parsedAmount = (int)amount;
+    int.TryParse(amount, out int parsedAmount);
     return $"Healed player for {parsedAmount} HP!";
   }
 }
@@ -172,7 +223,7 @@ public partial class Main : Node
 
   public override void _Input(InputEvent @event)
   {
-    if (@event.IsActionPressed("ui_accept")
+    if (@event.IsActionPressed("ui_accept"))
     {
       EmitSignal(SignalName.TestSignal, "Hello World!");
     }
@@ -184,19 +235,19 @@ public partial class Main : Node
 Almost identical to GDScript functions, but use `CamelCase` instead of `snake_case`
 
 ## Default Commands ##
-|Command           |Functionality           |
-|------------------|---------------------|
-|`help`            | Outputs all registered commands. Ignores default commands based on Console setup |
-|`cls`             | Clears the Console output |
+|Command           |Functionality                                                                               |
+|------------------|--------------------------------------------------------------------------------------------|
+|`help`            | Outputs all registered commands. Ignores default commands based on Console setup           |
+|`cls`             | Clears the Console output                                                                  |
 |`alpha {float}`   | If no float provided it acts as a getter. If a float value is provided it acts as a setter |
-|`quit`            | Exits the game |
+|`quit`            | Exits the game                                                                             |
 
 ## Requirements ##
 **Language:** GDScript/C#  
 **Minimum version:** Godot 4.5.0  
 **Maximum version:** Godot 4.x.x  
 **Font:** [Cascadia Mono](https://github.com/microsoft/cascadia-code)  
-> **Note:** Font is included in the `addons/dev_console/font/` directory
+> **Note:** Font is included in the `addons/dev-console/font/` directory
 
 ## AI Usage ##
 AI was used to refactor the code, improve overall code structure and test edge cases.
