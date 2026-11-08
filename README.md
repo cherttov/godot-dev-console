@@ -52,15 +52,50 @@ func _ready() -> void:
   # Register the command "print" to call the _print function
   DevConsole.add_command("print", _print);
 
+  # Register the command "hi" that calls _say_hi function with a description "Prints hi into console"
+  DevConsole.add_command("hi", _say_hi, "Prints hi into console");
+
 # Print function that takes any amount of String and returns them
 func _print(first_word: String, ...others) -> String:
   var output: String = first_word;
   for word in others:
     output += " " + word;
   return output;
+
+# Function with no arguments that returns "Hi"
+func _say_hi() -> String:
+	return "Hi";
 ```
 > **Note:** By returning a string you pass an output to the console, which will be displayed in it.  
 (Anything other than String will be converted to String)
+
+### Adding descriptions ###
+Add a description for a command like this:
+```gdscript
+func _ready() -> void:
+  # Either add a description by passing it as the 3rd argument into "DevConsole.add_command()" function
+  DevConsole.add_command("test", _test, "Test command.");
+
+  # Or add it later using the "DevConsole.add_description()" function
+  DevConsole.add_description("test", "Test command.");
+
+func _test() -> void:
+	return;
+```
+
+### Adding aliases ###
+Add an alias for a command like this:
+```gdscript
+func _ready() -> void:
+  DevConsole.add_command("test", _test);
+
+  # Add an alias "test_alias" for a command "test"
+  DevConsole.add_alias("test", "test_alias");
+
+func _test() -> void:
+	return;
+```
+> **Note:** Alias is not shown in the `help` command output.
 
 ### Adding signals ###
 Add a signal for console to listen to like this:
@@ -95,12 +130,18 @@ DevConsole.add_command("sync_stats", func() -> String:
 ### Other functions ###
 ```gdscript
 DevConsole.get_commands(); # returns Dictionary[String, Callable]
+DevConsole.get_descriptions(); # returns Dictionary[String, String]
+DevConsole.get_aliases(); # returns Dictionary[String, String]
 DevConsole.get_signals(); # returns Dictionary[String, Dictionary[String, Variant]]
 
 DevConsole.delete_command("print");
+DevConsole.delete_description("print");
+DevConsole.delete_alias("echo");
 DevConsole.delete_signal("test");
 
 DevConsole.has_command("print"); # returns bool
+DevConsole.has_description("print"); # returns bool
+DevConsole.has_alias("echo"); returns bool
 DevConsole.has_signal_connected("test"); # returs bool
 
 DevConsole.print_line("Hello World!"); # Outputs to console white text
@@ -184,12 +225,12 @@ public partial class Main : Node
 Almost identical to GDScript functions, but use `CamelCase` instead of `snake_case`
 
 ## Default Commands ##
-|Command           |Functionality           |
-|------------------|---------------------|
-|`help`            | Outputs all registered commands. Ignores default commands based on Console setup |
-|`cls`             | Clears the Console output |
+|Command           |Functionality                                                                               |
+|------------------|--------------------------------------------------------------------------------------------|
+|`help`            | Outputs all registered commands. Ignores default commands based on Console setup           |
+|`cls`             | Clears the Console output                                                                  |
 |`alpha {float}`   | If no float provided it acts as a getter. If a float value is provided it acts as a setter |
-|`quit`            | Exits the game |
+|`quit`            | Exits the game                                                                             |
 
 ## Requirements ##
 **Language:** GDScript/C#  
