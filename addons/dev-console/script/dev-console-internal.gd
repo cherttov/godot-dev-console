@@ -31,7 +31,7 @@ const DEF_COMMANDS := ["help", "cls", "alpha", "quit"]
 var _commands: Dictionary[String, Callable] = {} # { "command_name": String, "callback": Callable }
 var _command_descriptions: Dictionary[String, String] = {} # { "command_name": String, "description": String }
 var _aliases: Dictionary[String, String] = {} # { "alias": String", command_name": String }
-var _signals: Dictionary[String, Dictionary] = {} # { "signal": Signal, "callback": Callable }
+var _signals: Dictionary[String, Dictionary] = {} # { "signal_name": { "signal": Signal, "callback": Callable } }
 var _command_history: Array[String] = []
 var _history_index := -1
 
