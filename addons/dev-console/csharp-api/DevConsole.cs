@@ -130,7 +130,7 @@ public static class DevConsole
 
 	public static void ClearOutput() =>
 		GetConsole()?.Call("clear_output");
-	
+
 	#endregion
 
 	#region Properties

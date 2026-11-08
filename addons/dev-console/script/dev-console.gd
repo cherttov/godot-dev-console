@@ -81,19 +81,19 @@ func has_signal_connected(signal_name: String) -> bool:
 
 func get_commands() -> Dictionary[String, Callable]:
 	if _console_ready: return _console.get_commands()
-	return { }
+	return {}
 
 func get_descriptions() -> Dictionary[String, String]:
 	if _console_ready: return _console.get_descriptions()
-	return { }
+	return {}
 
 func get_aliases() -> Dictionary[String, String]:
 	if _console_ready: return _console.get_aliases()
-	return { }
+	return {}
 
 func get_signals() -> Dictionary[String, Dictionary]:
 	if _console_ready: return _console.get_signals()
-	return { }
+	return {}
 
 # Output
 func print_line(text: String) -> void: _defer_or_call(func(): _console.output_callback(text))

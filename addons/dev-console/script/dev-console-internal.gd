@@ -223,9 +223,9 @@ func _on_input_submitted(input: String) -> void:
 		# Check if args passed match the function args
 		if parts.size() < expected_args:
 			output_warning(
-				"WARNING: " + cmd_name 
-				+ " expects " + str(expected_args)
-				+ " arguments, but received " + str(parts.size())
+				"WARNING: " + cmd_name
+				+" expects " + str(expected_args)
+				+" arguments, but received " + str(parts.size())
 			)
 		
 		# Call & output callback/result
@@ -293,7 +293,7 @@ func _help_command() -> void:
 		if !_view_def_cmds and cmd in DEF_COMMANDS: continue
 		var desc: String = _command_descriptions.get(cmd, "")
 		var line := cmd
-		if not desc.is_empty(): 
+		if not desc.is_empty():
 			line += _get_formatted(desc, " [color=#888888][i]- %s[/i][/color]").strip_edges(false, true)
 		list.append(line)
 	output_callback("\n".join(list), false)
@@ -389,7 +389,7 @@ func set_close_on_escape(value: bool) -> void:
 	if InputMap.has_action("dev_console_escape"): InputMap.action_erase_events("dev_console_escape")
 	if value: _add_keybind("dev_console_escape", KEY_ESCAPE)
 
-func set_command_autocomplete(value: bool) -> void: 
+func set_command_autocomplete(value: bool) -> void:
 	_autocomplete = value
 	if InputMap.has_action("dev_console_autocomplete"): InputMap.action_erase_events("dev_console_autocomplete")
 	if value: _add_keybind("dev_console_autocomplete", KEY_TAB)
@@ -417,14 +417,14 @@ func set_input_background(value: Color) -> void:
 
 # ============ Helpers ============
 func _focus_input(clear: bool = false) -> void:
-	if clear: 
+	if clear:
 		input_line.clear()
 		_on_input_changed("")
 	input_line.grab_focus()
 	input_line.caret_column = input_line.text.length()
 
 func _get_autocomplete_match(text: String) -> String:
-	if text.is_empty(): 
+	if text.is_empty():
 		return ""
 	var command_names := _commands.keys()
 	command_names.sort()
