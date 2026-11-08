@@ -30,6 +30,7 @@ var _cur_resize_size := Vector2.ZERO
 const DEF_COMMANDS := ["help", "cls", "alpha", "quit"]
 var _commands: Dictionary[String, Callable] = {} # { "command_name": String, "callback": Callable }
 var _command_descriptions: Dictionary[String, String] = {} # { "command_name": String, "description": String }
+var _aliases: Dictionary[String, String] = {} # { "alias": String", command_name": String }
 var _signals: Dictionary[String, Dictionary] = {} # { "signal": Signal, "callback": Callable }
 var _command_history: Array[String] = []
 var _history_index := -1
@@ -147,9 +148,13 @@ func add_description(cmd_name: String, desc: String) -> void:
 	if not _commands.has(cmd_name): push_warning("Command not found: " + cmd_name)
 	_command_descriptions[cmd_name] = desc
 
+func add_alias(alias: String, cmd_name: String) -> void:
+	if not _commands.has(cmd_name): push_warning("Command not found: " + cmd_name)
+	if _aliases.has(alias): push_warning("Alias with this name already exists: " + alias)
+	_aliases[alias] = cmd_name
+
 func add_signal(sig_name: String, target: Signal) -> void:
 	if _signals.has(sig_name): delete_signal(sig_name)
-	
 	var callable := func(...args): _output_signal(sig_name, args)
 	_signals[sig_name] = {
 		"signal": target,
@@ -159,10 +164,15 @@ func add_signal(sig_name: String, target: Signal) -> void:
 
 func delete_command(cmd_name: String) -> void:
 	_command_descriptions.erase(cmd_name)
+	for alias in _aliases.keys():
+		if _aliases[alias] == cmd_name: _aliases.erase(alias)
 	if not _commands.erase(cmd_name): push_warning("Command not found: " + cmd_name)
 
 func delete_description(cmd_name: String) -> void:
 	if not _command_descriptions.erase(cmd_name): push_warning("Description not found for command: " + cmd_name)
+
+func delete_alias(alias: String) -> void:
+	if not _aliases.erase(alias): push_warning("Alias not found: " + alias)
 
 func delete_signal(sig_name: String) -> void:
 	var sig := _signals.get(sig_name)
@@ -175,9 +185,11 @@ func delete_signal(sig_name: String) -> void:
 # ============ Command & Signal Registry Getters ============
 func has_command(cmd_name: String) -> bool: return _commands.has(cmd_name)
 func has_description(cmd_name: String) -> bool: return _command_descriptions.has(cmd_name)
+func has_alias(alias: String) -> bool: return _aliases.has(alias)
 func has_signal_connected(sig_name: String) -> bool: return _signals.has(sig_name)
 func get_commands() -> Dictionary[String, Callable]: return _commands.duplicate()
 func get_descriptions() -> Dictionary[String, String]: return _command_descriptions.duplicate()
+func get_aliases() -> Dictionary[String, String]: return _aliases.duplicate()
 func get_signals() -> Dictionary[String, Dictionary]: return _signals.duplicate()
 
 # ============ Input processing ============
@@ -199,6 +211,9 @@ func _on_input_submitted(input: String) -> void:
 	
 	# Outputting input
 	output_input(clean)
+	
+	# Matching command if input is an alias
+	if _aliases.has(cmd_name): cmd_name = _aliases[cmd_name]
 	
 	# Calling callback & outputting result
 	if _commands.has(cmd_name):

@@ -50,11 +50,15 @@ func add_command(command_name: String, callback: Callable, description: String =
 
 func add_description(command_name: String, description: String) -> void: _defer_or_call(func(): _console.add_description(command_name, description))
 
+func add_alias(alias: String, command_name: String) -> void: _defer_or_call(func(): _console.add_alias(alias, command_name))
+
 func add_signal(signal_name: String, target_signal: Signal) -> void: _defer_or_call(func(): _console.add_signal(signal_name, target_signal))
 
 func delete_command(command_name: String) -> void: _defer_or_call(func(): _console.delete_command(command_name))
 
 func delete_description(command_name: String) -> void: _defer_or_call(func(): _console.delete_description(command_name))
+
+func delete_alias(alias: String) -> void: _defer_or_call(func(): _console.delete_alias(alias))
 
 func delete_signal(signal_name: String) -> void: _defer_or_call(func(): _console.delete_signal(signal_name))
 
@@ -67,6 +71,10 @@ func has_description(command_name: String) -> bool:
 	if _console_ready: return _console.has_description(command_name)
 	return false
 
+func has_alias(alias: String) -> bool:
+	if _console_ready: return _console.has_alias(alias)
+	return false
+
 func has_signal_connected(signal_name: String) -> bool:
 	if _console_ready: return _console.has_signal_connected(signal_name)
 	return false
@@ -76,7 +84,11 @@ func get_commands() -> Dictionary[String, Callable]:
 	return { }
 
 func get_descriptions() -> Dictionary[String, String]:
-	if _console_ready: return _console.get_descriptions();
+	if _console_ready: return _console.get_descriptions()
+	return { }
+
+func get_aliases() -> Dictionary[String, String]:
+	if _console_ready: return _console.get_aliases()
 	return { }
 
 func get_signals() -> Dictionary[String, Dictionary]:
