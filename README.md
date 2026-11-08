@@ -172,7 +172,6 @@ DevConsole.view_default_commands # bool (default: true)
 DevConsole.keep_size_after_closing # bool (default: false)
 DevConsole.keep_position_after_closing # bool (default: false)
 DevConsole.keep_topmost # bool (default: true)
-DevConsole.debug_only # bool (default: true)
 DevConsole.toggle_keybind # int/Enum<DevConsole.ToggleKey> (default: DevConsole.ToggleKey.QUOTE_LEFT) ...available: QUOTE_LEFT, F1 to F5
 DevConsole.close_on_escape # bool (default: true)
 DevConsole.command_autocomplete # bool (default: true)
