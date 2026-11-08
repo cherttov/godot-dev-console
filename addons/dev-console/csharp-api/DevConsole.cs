@@ -14,6 +14,7 @@ public static class DevConsole
 	}
 
 	private static Node _gdConsole;
+	private static bool _missingReported;
 
 	// Console init method
 	private static Node GetConsole()
@@ -25,8 +26,12 @@ public static class DevConsole
 		{
 			_gdConsole = tree.Root.GetNode<Node>("DevConsole");
 
-			if (_gdConsole == null)
+			if (_gdConsole == null && !_missingReported)
+			{
+				_missingReported = true;
 				GD.PushError("Failed to find DevConsole autoload. Check project settings.");
+			}
+
 		}
 
 		return _gdConsole;
