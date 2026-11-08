@@ -43,6 +43,9 @@ public static class DevConsole
 	public static void AddDescription(string commandName, string description) =>
 		GetConsole()?.Call("add_description", commandName, description);
 
+	public static void AddAlias(string alias, string commandName) =>
+		GetConsole()?.Call("add_alias", alias, commandName);
+
 	public static void AddSignal(string signalName, Signal targetSignal) =>
 		GetConsole()?.Call("add_signal", signalName, targetSignal);
 
@@ -51,6 +54,9 @@ public static class DevConsole
 
 	public static void DeleteDescription(string commandName) =>
 		GetConsole()?.Call("delete_description", commandName);
+
+	public static void DeleteAlias(string alias) =>
+		GetConsole()?.Call("delete_alias", alias);
 
 	public static void DeleteSignal(string signalName) =>
 		GetConsole()?.Call("delete_signal", signalName);
@@ -68,6 +74,13 @@ public static class DevConsole
 		var console = GetConsole();
 		if (console == null) return false;
 		return console.Call("has_description", commandName).AsBool();
+	}
+
+	public static bool HasAlias(string alias)
+	{
+		var console = GetConsole();
+		if (console == null) return false;
+		return console.Call("has_alias", alias).AsBool();
 	}
 
 	public static bool HasSignalConnected(string signalName)
@@ -89,6 +102,13 @@ public static class DevConsole
 		var console = GetConsole();
 		if (console == null) return new Dictionary<string, string>();
 		return console.Call("get_descriptions").AsGodotDictionary<string, string>();
+	}
+
+	public static Dictionary<string, string> GetAliases()
+	{
+		var console = GetConsole();
+		if (console == null) return new Dictionary<string, string>();
+		return console.Call("get_aliases").AsGodotDictionary<string, string>();
 	}
 
 	public static Dictionary<string, Dictionary<string, Variant>> GetSignals()
