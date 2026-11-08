@@ -28,9 +28,10 @@ var _cur_resize_size := Vector2.ZERO
 
 # Commands dictionary
 const DEF_COMMANDS := ["help", "cls", "alpha", "quit"]
-var _commands: Dictionary[String, Callable] = {} # { "command_name": String, "callback": Callable }
-var _command_descriptions: Dictionary[String, String] = {} # { "command_name": String, "description": String }
-var _aliases: Dictionary[String, String] = {} # { "alias": String", command_name": String }
+const MAX_OUTPUT_PARAGRAPHS := 1000 # Oldest output lines are dropped past this limit
+var _commands: Dictionary[String, Callable] = {} # { "command_name": Callable }
+var _command_descriptions: Dictionary[String, String] = {} # { "command_name": "description" }
+var _aliases: Dictionary[String, String] = {} # { "alias": "command_name" }
 var _signals: Dictionary[String, Dictionary] = {} # { "signal_name": { "signal": Signal, "callback": Callable } }
 var _command_history: Array[String] = []
 var _history_index := -1
@@ -142,15 +143,22 @@ func _input(event: InputEvent) -> void:
 # ============ Command & Signal Registration ============
 func add_command(cmd_name: String, callback: Callable, desc: String = "") -> void:
 	_commands[cmd_name] = callback
-	if !desc.is_empty(): _command_descriptions[cmd_name] = desc
+	if desc.is_empty(): _command_descriptions.erase(cmd_name)
+	else: _command_descriptions[cmd_name] = desc
 
 func add_description(cmd_name: String, desc: String) -> void:
-	if not _commands.has(cmd_name): push_warning("Command not found: " + cmd_name)
+	if not _commands.has(cmd_name):
+		push_warning("Command not found: " + cmd_name)
+		return
 	_command_descriptions[cmd_name] = desc
 
 func add_alias(alias: String, cmd_name: String) -> void:
-	if not _commands.has(cmd_name): push_warning("Command not found: " + cmd_name)
-	if _aliases.has(alias): push_warning("Alias with this name already exists: " + alias)
+	if not _commands.has(cmd_name):
+		push_warning("Command not found: " + cmd_name)
+		return
+	if _aliases.has(alias):
+		push_warning("Alias with this name already exists: " + alias)
+		return
 	_aliases[alias] = cmd_name
 
 func add_signal(sig_name: String, target: Signal) -> void:
@@ -158,7 +166,7 @@ func add_signal(sig_name: String, target: Signal) -> void:
 	var callable := func(...args): _output_signal(sig_name, args)
 	_signals[sig_name] = {
 		"signal": target,
-		"callable": callable
+		"callback": callable
 	}
 	target.connect(callable)
 
@@ -177,7 +185,7 @@ func delete_alias(alias: String) -> void:
 func delete_signal(sig_name: String) -> void:
 	var sig := _signals.get(sig_name)
 	if sig:
-		if sig["signal"].is_connected(sig["callable"]): sig["signal"].disconnect(sig["callable"])
+		if sig["signal"].is_connected(sig["callback"]): sig["signal"].disconnect(sig["callback"])
 		_signals.erase(sig_name)
 	else:
 		push_warning("Signal not found: " + sig_name)
@@ -217,8 +225,14 @@ func _on_input_submitted(input: String) -> void:
 	
 	# Calling callback & outputting result
 	if _commands.has(cmd_name):
-		var target := _commands[cmd_name]
+		var target: Callable = _commands[cmd_name]
 		var expected_args := target.get_argument_count()
+		
+		# Check if command callable is valid
+		if not target.is_valid():
+			output_error("ERROR: Command " + cmd_name + " is no longer valid")
+			_focus_input(true)
+			return
 		
 		# Check if args passed match the function args
 		if parts.size() < expected_args:
@@ -229,7 +243,7 @@ func _on_input_submitted(input: String) -> void:
 			)
 		
 		# Call & output callback/result
-		var result := target.callv(Array(parts))
+		var result: Variant = target.callv(Array(parts))
 		if result != null: output_callback(str(result))
 	else:
 		output_error("ERROR: Unknown command " + cmd_name)
@@ -286,13 +300,16 @@ func _load_def_commands() -> void:
 func _unload_def_commands() -> void:
 	for cmd in DEF_COMMANDS:
 		_commands.erase(cmd)
+		_command_descriptions.erase(cmd)
 
 func _help_command() -> void:
 	var list := []
-	for cmd: String in _commands.keys():
+	var names: Array = _commands.keys()
+	names.sort()
+	for cmd: String in names:
 		if !_view_def_cmds and cmd in DEF_COMMANDS: continue
 		var desc: String = _command_descriptions.get(cmd, "")
-		var line := cmd
+		var line := cmd.replace("[", "[lb]")
 		if not desc.is_empty():
 			line += _get_formatted(desc, " [color=#888888][i]- %s[/i][/color]").strip_edges(false, true)
 		list.append(line)
@@ -304,15 +321,22 @@ func _quit_program() -> void:
 # ============ Output ============
 func _append_formatted(text: String, format: String, escape: bool = true) -> void:
 	output_rtl.append_text(_get_formatted(text, format, escape))
+	_trim_output()
+
+func _trim_output() -> void:
+	var excess := output_rtl.get_paragraph_count() - MAX_OUTPUT_PARAGRAPHS
+	for i in range(maxi(excess, 0)):
+		output_rtl.remove_paragraph(0)
 
 func output_input(text: String) -> void: _append_formatted(text, "[font_size=14][color=gray]> %s[/color][/font_size]")
 func output_error(text: String) -> void: _append_formatted(text, "[color=red]%s[/color]")
 func output_warning(text: String) -> void: _append_formatted(text, "[color=orange]%s[/color]")
 func output_callback(text: String, escape: bool = true) -> void: _append_formatted(text, "%s", escape)
-func _output_signal(name: String, args: Array) -> void:
+func _output_signal(signal_name: String, args: Array) -> void:
 	var arg_text := ", ".join(args.map(func(a): return str(a)))
-	output_rtl.append_text("[font_size=14][color=cyan]> Signal emitted: " + name.replace("[", "[lb]") + "[/color][/font_size]\n")
+	output_rtl.append_text("[font_size=14][color=cyan]> Signal emitted: " + signal_name.replace("[", "[lb]") + "[/color][/font_size]\n")
 	output_rtl.append_text(arg_text.replace("[", "[lb]") + "\n")
+	_trim_output()
 
 func clear_output() -> void: output_rtl.clear()
 
@@ -428,22 +452,24 @@ func _get_autocomplete_match(text: String) -> String:
 		return ""
 	var command_names := _commands.keys()
 	command_names.sort()
-	for name: String in command_names:
-		if name.to_lower().begins_with(text.to_lower()):
-			return name
+	for command_name: String in command_names:
+		if command_name.to_lower().begins_with(text.to_lower()):
+			return command_name
 	return ""
 
 func _navigate_history(direction: int) -> void:
-	_history_index += direction
-	if _history_index >= _command_history.size() or _history_index < 0:
-		_history_index = -1
-		_focus_input(true)
-		_on_input_changed(input_line.text)
-		return
-	input_line.text = _command_history[(_command_history.size() - 1) - _history_index]
-	_focus_input()
-	_on_input_changed(input_line.text)
 	get_viewport().set_input_as_handled()
+	
+	var new_index := clampi(_history_index + direction, -1, _command_history.size() - 1)
+	if new_index == _history_index: return
+	_history_index = new_index
+	
+	if _history_index == -1:
+		_focus_input(true)
+	else:
+		input_line.text = _command_history[(_command_history.size() - 1) - _history_index]
+		_focus_input()
+	_on_input_changed(input_line.text)
 
 func _add_keybind(action: String, keycode: Key) -> void:
 	if !InputMap.has_action(action): InputMap.add_action(action)
@@ -605,8 +631,8 @@ func _generate_ui() -> void:
 
 func _generate_theme() -> Theme:
 	var theme := Theme.new()
-	var font := preload("res://addons/dev-console/font/CascadiaMono-Regular.ttf")
-	if (font):
+	var font := load("res://addons/dev-console/font/CascadiaMono-Regular.ttf") as FontFile
+	if font:
 		theme.default_font = font
 		theme.default_font_size = 14
 		font.hinting = TextServer.HINTING_LIGHT
