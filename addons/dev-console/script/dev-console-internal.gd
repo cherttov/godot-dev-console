@@ -208,9 +208,10 @@ func _on_input_submitted(input: String) -> void:
 		return
 	
 	# Command history
-	if _command_history.is_empty() or _command_history.back() != clean:
-		_command_history.append(clean)
-	_history_index = -1
+	if _use_command_history:
+		if _command_history.is_empty() or _command_history.back() != clean:
+			_command_history.append(clean)
+		_history_index = -1
 	
 	# Splitting input
 	var parts: PackedStringArray = clean.split(" ", false)
