@@ -29,6 +29,7 @@ var _cur_resize_size := Vector2.ZERO
 # Commands dictionary
 const DEF_COMMANDS := ["help", "cls", "alpha", "quit"]
 const MAX_OUTPUT_PARAGRAPHS := 1000 # Oldest output lines are dropped past this limit
+const MAX_HISTORY_SIZE := 100 # Oldest history entries are dropped past this limit
 var _commands: Dictionary[String, Callable] = {} # { "command_name": Callable }
 var _command_descriptions: Dictionary[String, String] = {} # { "command_name": "description" }
 var _aliases: Dictionary[String, String] = {} # { "alias": "command_name" }
@@ -211,6 +212,7 @@ func _on_input_submitted(input: String) -> void:
 	if _use_command_history:
 		if _command_history.is_empty() or _command_history.back() != clean:
 			_command_history.append(clean)
+			if _command_history.size() > MAX_HISTORY_SIZE: _command_history.pop_front()
 		_history_index = -1
 	
 	# Splitting input
