@@ -567,7 +567,7 @@ func _generate_ui() -> void:
 	output_margin.name = "MarginContainer"
 	output_margin.set_anchors_preset(Control.PRESET_FULL_RECT)
 	output_margin.add_theme_constant_override("margin_left", 3)
-	output_margin.add_theme_constant_override("margin_right", 3)
+	output_margin.add_theme_constant_override("margin_right", 0)
 	output_bg_panel.add_child(output_margin)
 
 	# Output RichTextLabel
@@ -677,13 +677,17 @@ func _generate_theme() -> Theme:
 	theme.set_color("selection_color", "LineEdit", _selection_highlight)
 	_sb_input_bg = StyleBoxFlat.new()
 	_sb_input_bg.bg_color = _input_bg
+	_sb_input_bg.content_margin_left = 3.0
+	_sb_input_bg.content_margin_right = 6.0 # resize_anchor right border + input left padding
 	theme.set_stylebox("focus", "LineEdit", _sb_input_bg)
 	theme.set_stylebox("normal", "LineEdit", _sb_input_bg)
 	
 	# RichTextLabel Style
 	theme.set_color("selection_color", "RichTextLabel", _selection_highlight)
-	theme.set_constant("paragraph_separation", "RichTextLabel", -2)
+	theme.set_constant("line_separation", "RichTextLabel", 2)
+	theme.set_constant("paragraph_separation", "RichTextLabel", 0)
 	var sb_rtl_normal := StyleBoxEmpty.new()
+	sb_rtl_normal.content_margin_top = 2.0
 	sb_rtl_normal.content_margin_bottom = 2.0
 	theme.set_stylebox("normal", "RichTextLabel", sb_rtl_normal)
 	
