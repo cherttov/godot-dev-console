@@ -682,6 +682,27 @@ func _generate_theme() -> Theme:
 	theme.set_stylebox("focus", "LineEdit", _sb_input_bg)
 	theme.set_stylebox("normal", "LineEdit", _sb_input_bg)
 	
+	# VScrollBar Style
+	var sb_scroll := StyleBoxFlat.new()
+	sb_scroll.bg_color = Color(0, 0, 0, 0)
+	sb_scroll.content_margin_left = 4.0
+	sb_scroll.content_margin_right = 4.0
+	theme.set_stylebox("scroll", "VScrollBar", sb_scroll)
+	theme.set_stylebox("scroll_focus", "VScrollBar", sb_scroll)
+	
+	var sb_grabber := StyleBoxFlat.new()
+	sb_grabber.bg_color = Color(0.4, 0.4, 0.4, 0.6)
+	sb_grabber.corner_radius_top_left = 0
+	sb_grabber.corner_radius_top_right = 0
+	sb_grabber.corner_radius_bottom_right = 0
+	sb_grabber.corner_radius_bottom_left = 0
+	theme.set_stylebox("grabber", "VScrollBar", sb_grabber)
+
+	var sb_grabber_hl := sb_grabber.duplicate()
+	sb_grabber_hl.bg_color = Color(0.6, 0.6, 0.6, 0.9)
+	theme.set_stylebox("grabber_highlight", "VScrollBar", sb_grabber_hl)
+	theme.set_stylebox("grabber_pressed", "VScrollBar", sb_grabber_hl)
+	
 	# RichTextLabel Style
 	theme.set_color("selection_color", "RichTextLabel", _selection_highlight)
 	theme.set_constant("line_separation", "RichTextLabel", 2)
