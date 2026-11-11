@@ -684,7 +684,7 @@ func _generate_theme() -> Theme:
 	
 	# VScrollBar Style
 	var sb_scroll := StyleBoxFlat.new()
-	sb_scroll.bg_color = Color(0, 0, 0, 0)
+	sb_scroll.bg_color = Color(0, 0, 0, 0.1)
 	sb_scroll.content_margin_left = 4.0
 	sb_scroll.content_margin_right = 4.0
 	theme.set_stylebox("scroll", "VScrollBar", sb_scroll)
@@ -699,7 +699,7 @@ func _generate_theme() -> Theme:
 	theme.set_stylebox("grabber", "VScrollBar", sb_grabber)
 
 	var sb_grabber_hl := sb_grabber.duplicate()
-	sb_grabber_hl.bg_color = Color(0.6, 0.6, 0.6, 0.9)
+	sb_grabber_hl.bg_color = Color(0.4, 0.4, 0.4, 0.8)
 	theme.set_stylebox("grabber_highlight", "VScrollBar", sb_grabber_hl)
 	theme.set_stylebox("grabber_pressed", "VScrollBar", sb_grabber_hl)
 	
