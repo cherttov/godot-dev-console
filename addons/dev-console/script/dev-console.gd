@@ -34,6 +34,11 @@ func _ready() -> void:
 		_console.set_alpha(alpha)
 		_console.set_header_background(header_background)
 		_console.set_output_background(output_background)
+		_console.set_primary_text_color(primary_text_color)
+		_console.set_secondary_text_color(secondary_text_color)
+		_console.set_warning_color(warning_color)
+		_console.set_error_color(error_color)
+		_console.set_signal_color(signal_color)
 		_console.set_selection_highlight(selection_highlight)
 		_console.set_input_background(input_background)
 		
@@ -182,6 +187,31 @@ var output_background: Color = ProjectSettings.get_setting("dev_console/theme/ou
 	set(value):
 		output_background = value
 		_defer_or_call(func(): _console.set_output_background(value))
+
+var primary_text_color: Color = ProjectSettings.get_setting("dev_console/theme/primary_text", Color(1, 1, 1, 1.0)):
+	set(value):
+		primary_text_color = value
+		_defer_or_call(func(): _console.set_primary_text_color(value))
+
+var secondary_text_color: Color = ProjectSettings.get_setting("dev_console/theme/secondary_text", Color(0.745, 0.745, 0.745, 1.0)):
+	set(value):
+		secondary_text_color = value
+		_defer_or_call(func(): _console.set_secondary_text_color(value))
+
+var warning_color: Color = ProjectSettings.get_setting("dev_console/theme/warning_text", Color(1.0, 0.647, 0, 1.0)):
+	set(value):
+		warning_color = value
+		_defer_or_call(func(): _console.set_warning_color(value))
+
+var error_color: Color = ProjectSettings.get_setting("dev_console/theme/error_text", Color(1, 0, 0, 1.0)):
+	set(value):
+		error_color = value
+		_defer_or_call(func(): _console.set_error_color(value))
+
+var signal_color: Color = ProjectSettings.get_setting("dev_console/theme/signal_text", Color(0, 1, 1, 1.0)):
+	set(value):
+		signal_color = value
+		_defer_or_call(func(): _console.set_signal_color(value))
 
 var selection_highlight: Color = ProjectSettings.get_setting("dev_console/theme/selection_highlight", Color(0.204, 0.204, 0.204, 0.878)):
 	set(value):

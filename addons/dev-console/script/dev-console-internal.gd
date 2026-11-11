@@ -65,8 +65,14 @@ var _close_on_escape := true
 var _autocomplete := true
 
 # Cached theme
+const DARKENED_ALPHA_MULTIPLIER := 0.6
 var _header_bg := Color(0.204, 0.204, 0.204, 1.0)
 var _output_bg := Color(0.137, 0.137, 0.137, 1.0)
+var _primary_text_clr := Color(1, 1, 1, 1.0)
+var _secondary_text_clr := Color(0.745, 0.745, 0.745, 1.0)
+var _warning_clr := Color(1.0, 0.647, 0, 1.0)
+var _error_clr := Color(1, 0, 0, 1.0)
+var _signal_clr := Color(0, 1, 1, 1.0)
 var _selection_highlight := Color(0.204, 0.204, 0.204, 0.878)
 var _input_bg := Color(0.114, 0.114, 0.114, 1.0)
 
@@ -309,12 +315,13 @@ func _help_command() -> void:
 	var list := []
 	var names: Array = _commands.keys()
 	names.sort()
+	var sec_hex := _secondary_text_clr.to_html(false)
 	for cmd: String in names:
 		if !_view_def_cmds and cmd in DEF_COMMANDS: continue
 		var desc: String = _command_descriptions.get(cmd, "")
 		var line := cmd.replace("[", "[lb]")
 		if not desc.is_empty():
-			line += _get_formatted(desc, " [color=#888888][i]- %s[/i][/color]").strip_edges(false, true)
+			line += _get_formatted(desc, " [color=#" + sec_hex + "][i]- %s[/i][/color]").strip_edges(false, true)
 		list.append(line)
 	output_callback("\n".join(list), false)
 
@@ -331,13 +338,22 @@ func _trim_output() -> void:
 	for i in range(maxi(excess, 0)):
 		output_rtl.remove_paragraph(0)
 
-func output_input(text: String) -> void: _append_formatted(text, "[font_size=14][color=gray]> %s[/color][/font_size]")
-func output_error(text: String) -> void: _append_formatted(text, "[color=red]%s[/color]")
-func output_warning(text: String) -> void: _append_formatted(text, "[color=orange]%s[/color]")
-func output_callback(text: String, escape: bool = true) -> void: _append_formatted(text, "%s", escape)
+func output_input(text: String) -> void: 
+	_append_formatted(text, "[font_size=14][color=#" + _secondary_text_clr.to_html(false) + "]> %s[/color][/font_size]")
+
+func output_error(text: String) -> void: 
+	_append_formatted(text, "[color=#" + _error_clr.to_html(false) + "]%s[/color]")
+
+func output_warning(text: String) -> void: 
+	_append_formatted(text, "[color=#" + _warning_clr.to_html(false) + "]%s[/color]")
+
+func output_callback(text: String, escape: bool = true) -> void: 
+	_append_formatted(text, "%s", escape)
+
 func _output_signal(signal_name: String, args: Array) -> void:
 	var arg_text := ", ".join(args.map(func(a): return str(a)))
-	output_rtl.append_text("[font_size=14][color=cyan]> Signal emitted: " + signal_name.replace("[", "[lb]") + "[/color][/font_size]\n")
+	var sig_hex := _signal_clr.to_html(false)
+	output_rtl.append_text("[font_size=14][color=#" + sig_hex + "]> Signal emitted: " + signal_name.replace("[", "[lb]") + "[/color][/font_size]\n")
 	output_rtl.append_text(arg_text.replace("[", "[lb]") + "\n")
 	_trim_output()
 
@@ -431,6 +447,35 @@ func set_header_background(value: Color) -> void:
 func set_output_background(value: Color) -> void:
 	_output_bg = value
 	if _sb_output_bg: _sb_output_bg.bg_color = value
+
+func set_primary_text_color(value: Color) -> void:
+	_primary_text_clr = value
+	if is_instance_valid(title_label):
+		title_label.add_theme_color_override("font_color", value)
+	if is_instance_valid(close_btn):
+		close_btn.add_theme_color_override("font_color", value)
+		close_btn.add_theme_color_override("font_hover_color", value)
+		close_btn.add_theme_color_override("font_pressed_color", value)
+		close_btn.add_theme_color_override("font_focus_color", value)
+	if is_instance_valid(input_line):
+		input_line.add_theme_color_override("font_color", value)
+		input_line.add_theme_color_override("caret_color", value)
+	if is_instance_valid(output_rtl):
+		output_rtl.add_theme_color_override("default_color", value)
+
+func set_secondary_text_color(value: Color) -> void:
+	_secondary_text_clr = value
+	if is_instance_valid(auto_line):
+		auto_line.self_modulate = Color(value, value.a * DARKENED_ALPHA_MULTIPLIER)
+
+func set_warning_color(value: Color) -> void:
+	_warning_clr = value
+
+func set_error_color(value: Color) -> void:
+	_error_clr = value
+
+func set_signal_color(value: Color) -> void:
+	_signal_clr = value
 
 func set_selection_highlight(value: Color) -> void:
 	_selection_highlight = value
@@ -608,6 +653,7 @@ func _generate_ui() -> void:
 	transparent_sb.bg_color = Color(0, 0, 0, 0)
 	auto_line.add_theme_stylebox_override("read_only", transparent_sb)
 	auto_line.add_theme_stylebox_override("normal", transparent_sb)
+	auto_line.add_theme_color_override("font_uneditable_color", Color.WHITE)
 	input_container.add_child(auto_line)
 	
 	# Set InputContaienr min_size
@@ -631,6 +677,10 @@ func _generate_ui() -> void:
 	sb_anchor.border_width_bottom = 2
 	resize_anchor.add_theme_stylebox_override("panel", sb_anchor)
 	control.add_child(resize_anchor)
+	
+	# Apply initial text colors to all created UI nodes
+	set_primary_text_color(_primary_text_clr)
+	set_secondary_text_color(_secondary_text_clr)
 
 func _generate_theme() -> Theme:
 	var theme := Theme.new()

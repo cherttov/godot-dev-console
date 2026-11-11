@@ -30,6 +30,26 @@ var PLUGIN_SETTINGS := {
 		"default": Color(0.137, 0.137, 0.137, 1.0),
 		"info": {"type": TYPE_COLOR}
 	},
+	"dev_console/theme/primary_text": {
+		"default": Color(1, 1, 1, 1.0),
+		"info": {"type": TYPE_COLOR}
+	},
+	"dev_console/theme/secondary_text": {
+		"default": Color(0.745, 0.745, 0.745, 1.0),
+		"info": {"type": TYPE_COLOR}
+	},
+	"dev_console/theme/warning_text": {
+		"default": Color(1.0, 0.647, 0, 1.0),
+		"info": {"type": TYPE_COLOR}
+	},
+	"dev_console/theme/error_text": {
+		"default": Color(1, 0, 0, 1.0),
+		"info": {"type": TYPE_COLOR}
+	},
+	"dev_console/theme/signal_text": {
+		"default": Color(0, 1, 1, 1.0),
+		"info": {"type": TYPE_COLOR}
+	},
 	"dev_console/theme/selection_highlight": {
 		"default": Color(0.204, 0.204, 0.204, 0.878),
 		"info": {"type": TYPE_COLOR}
