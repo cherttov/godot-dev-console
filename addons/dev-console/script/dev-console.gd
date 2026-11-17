@@ -34,13 +34,14 @@ func _ready() -> void:
 		_console.set_alpha(alpha)
 		_console.set_header_background(header_background)
 		_console.set_output_background(output_background)
+		_console.set_input_background(input_background)
+		_console.set_corner_radius(corner_radius)
 		_console.set_primary_text_color(primary_text_color)
 		_console.set_secondary_text_color(secondary_text_color)
 		_console.set_warning_color(warning_color)
 		_console.set_error_color(error_color)
 		_console.set_signal_color(signal_color)
 		_console.set_selection_highlight(selection_highlight)
-		_console.set_input_background(input_background)
 		
 		for call in _pending_calls: call.call()
 		_pending_calls.clear()
@@ -188,6 +189,16 @@ var output_background: Color = ProjectSettings.get_setting("dev_console/theme/ou
 		output_background = value
 		_defer_or_call(func(): _console.set_output_background(value))
 
+var input_background: Color = ProjectSettings.get_setting("dev_console/theme/input_background", Color(0.114, 0.114, 0.114, 1.0)):
+	set(value):
+		input_background = value
+		_defer_or_call(func(): _console.set_input_background(value))
+
+var corner_radius: int = ProjectSettings.get_setting("dev_console/theme/corner_radius", 0):
+	set(value):
+		corner_radius = value
+		_defer_or_call(func(): _console.set_corner_radius(value))
+
 var primary_text_color: Color = ProjectSettings.get_setting("dev_console/theme/primary_text", Color(1, 1, 1, 1.0)):
 	set(value):
 		primary_text_color = value
@@ -217,8 +228,3 @@ var selection_highlight: Color = ProjectSettings.get_setting("dev_console/theme/
 	set(value):
 		selection_highlight = value
 		_defer_or_call(func(): _console.set_selection_highlight(value))
-
-var input_background: Color = ProjectSettings.get_setting("dev_console/theme/input_background", Color(0.114, 0.114, 0.114, 1.0)):
-	set(value):
-		input_background = value
-		_defer_or_call(func(): _console.set_input_background(value))

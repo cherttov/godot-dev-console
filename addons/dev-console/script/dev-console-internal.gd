@@ -68,17 +68,22 @@ var _autocomplete := true
 const DARKENED_ALPHA_MULTIPLIER := 0.6
 var _header_bg := Color(0.204, 0.204, 0.204, 1.0)
 var _output_bg := Color(0.137, 0.137, 0.137, 1.0)
+var _input_bg := Color(0.114, 0.114, 0.114, 1.0)
+var _corner_radius := 0
 var _primary_text_clr := Color(1, 1, 1, 1.0)
 var _secondary_text_clr := Color(0.745, 0.745, 0.745, 1.0)
 var _warning_clr := Color(1.0, 0.647, 0, 1.0)
 var _error_clr := Color(1, 0, 0, 1.0)
 var _signal_clr := Color(0, 1, 1, 1.0)
 var _selection_highlight := Color(0.204, 0.204, 0.204, 0.878)
-var _input_bg := Color(0.114, 0.114, 0.114, 1.0)
 
+var _sb_btn_normal: StyleBoxFlat
+var _sb_btn_hover: StyleBoxFlat
+var _sb_btn_pressed: StyleBoxFlat
 var _sb_header_bg: StyleBoxFlat
 var _sb_output_bg: StyleBoxFlat
 var _sb_input_bg: StyleBoxFlat
+var _sb_resize_anchor: StyleBoxFlat
 
 # ============ Init ============
 func _ready() -> void:
@@ -448,6 +453,27 @@ func set_output_background(value: Color) -> void:
 	_output_bg = value
 	if _sb_output_bg: _sb_output_bg.bg_color = value
 
+func set_input_background(value: Color) -> void:
+	_input_bg = value
+	if _sb_input_bg: _sb_input_bg.bg_color = value
+
+func set_corner_radius(value: int) -> void:
+	_corner_radius = value
+	if _sb_header_bg:
+		_sb_header_bg.corner_radius_top_left = value
+		_sb_header_bg.corner_radius_top_right = value
+	if _sb_input_bg:
+		_sb_input_bg.corner_radius_bottom_left = value
+		_sb_input_bg.corner_radius_bottom_right = value
+	if _sb_resize_anchor:
+		_sb_resize_anchor.corner_radius_bottom_right = value
+	if _sb_btn_normal:
+		_sb_btn_normal.corner_radius_top_right = value
+	if _sb_btn_hover:
+		_sb_btn_hover.corner_radius_top_right = value
+	if _sb_btn_pressed:
+		_sb_btn_pressed.corner_radius_top_right = value
+
 func set_primary_text_color(value: Color) -> void:
 	_primary_text_clr = value
 	if is_instance_valid(title_label):
@@ -482,10 +508,6 @@ func set_selection_highlight(value: Color) -> void:
 	if is_instance_valid(control):
 		control.theme.set_color("selection_color", "LineEdit", value)
 		control.theme.set_color("selection_color", "RichTextLabel", value)
-
-func set_input_background(value: Color) -> void:
-	_input_bg = value
-	if _sb_input_bg: _sb_input_bg.bg_color = value
 
 # ============ Helpers ============
 func _focus_input(clear: bool = false) -> void:
@@ -671,11 +693,7 @@ func _generate_ui() -> void:
 	resize_anchor.grow_vertical = Control.GROW_DIRECTION_BEGIN
 	resize_anchor.mouse_default_cursor_shape = Control.CURSOR_FDIAGSIZE
 	resize_anchor.self_modulate = Color(1, 1, 1, 0.7)
-	var sb_anchor := StyleBoxFlat.new()
-	sb_anchor.bg_color = Color(0, 0, 0, 0)
-	sb_anchor.border_width_right = 2
-	sb_anchor.border_width_bottom = 2
-	resize_anchor.add_theme_stylebox_override("panel", sb_anchor)
+	resize_anchor.add_theme_stylebox_override("panel", _sb_resize_anchor)
 	control.add_child(resize_anchor)
 	
 	# Apply initial text colors to all created UI nodes
@@ -703,25 +721,28 @@ func _generate_theme() -> Theme:
 	theme.add_type("HeaderPanel")
 	theme.set_type_variation("HeaderPanel", "Panel")
 	_sb_header_bg = StyleBoxFlat.new()
+	_sb_header_bg.corner_radius_top_left = _corner_radius
+	_sb_header_bg.corner_radius_top_right = _corner_radius
 	_sb_header_bg.bg_color = _header_bg
 	theme.set_stylebox("panel", "HeaderPanel", _sb_header_bg)
 	
 	# Button Style
-	var sb_btn_normal := StyleBoxFlat.new()
-	sb_btn_normal.content_margin_left = 2.0
-	sb_btn_normal.content_margin_top = 2.0
-	sb_btn_normal.content_margin_right = 0.0
-	sb_btn_normal.content_margin_bottom = 0.0
-	sb_btn_normal.bg_color = Color(0.6, 0.6, 0.6, 0.0)
-	theme.set_stylebox("normal", "Button", sb_btn_normal)
+	_sb_btn_normal = StyleBoxFlat.new()
+	_sb_btn_normal.content_margin_left = 2.0
+	_sb_btn_normal.content_margin_top = 2.0
+	_sb_btn_normal.content_margin_right = 0.0
+	_sb_btn_normal.content_margin_bottom = 0.0
+	_sb_btn_normal.corner_radius_top_right = _corner_radius
+	_sb_btn_normal.bg_color = Color(0.6, 0.6, 0.6, 0.0)
+	theme.set_stylebox("normal", "Button", _sb_btn_normal)
 	
-	var sb_btn_hover := sb_btn_normal.duplicate()
-	sb_btn_hover.bg_color = Color(1.0, 1.0, 1.0, 0.094)
-	theme.set_stylebox("hover", "Button", sb_btn_hover)
+	_sb_btn_hover = _sb_btn_normal.duplicate()
+	_sb_btn_hover.bg_color = Color(1.0, 1.0, 1.0, 0.094)
+	theme.set_stylebox("hover", "Button", _sb_btn_hover)
 	
-	var sb_btn_pressed := sb_btn_normal.duplicate()
-	sb_btn_pressed.bg_color = Color(1.0, 1.0, 1.0, 0.047)
-	theme.set_stylebox("pressed", "Button", sb_btn_pressed)
+	_sb_btn_pressed = _sb_btn_normal.duplicate()
+	_sb_btn_pressed.bg_color = Color(1.0, 1.0, 1.0, 0.047)
+	theme.set_stylebox("pressed", "Button", _sb_btn_pressed)
 	
 	# LineEdit Style
 	theme.set_color("selection_color", "LineEdit", _selection_highlight)
@@ -729,6 +750,8 @@ func _generate_theme() -> Theme:
 	_sb_input_bg.bg_color = _input_bg
 	_sb_input_bg.content_margin_left = 3.0
 	_sb_input_bg.content_margin_right = 6.0 # resize_anchor right border + input left padding
+	_sb_input_bg.corner_radius_bottom_left = _corner_radius
+	_sb_input_bg.corner_radius_bottom_right = _corner_radius
 	theme.set_stylebox("focus", "LineEdit", _sb_input_bg)
 	theme.set_stylebox("normal", "LineEdit", _sb_input_bg)
 	
@@ -761,5 +784,12 @@ func _generate_theme() -> Theme:
 	sb_rtl_normal.content_margin_top = 2.0
 	sb_rtl_normal.content_margin_bottom = 2.0
 	theme.set_stylebox("normal", "RichTextLabel", sb_rtl_normal)
+	
+	# ResizeAnchor Style
+	_sb_resize_anchor = StyleBoxFlat.new()
+	_sb_resize_anchor.bg_color = Color(0, 0, 0, 0)
+	_sb_resize_anchor.border_width_right = 2
+	_sb_resize_anchor.border_width_bottom = 2
+	_sb_resize_anchor.corner_radius_bottom_right = _corner_radius
 	
 	return theme
