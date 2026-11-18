@@ -38,9 +38,9 @@ func _ready() -> void:
 		_console.set_corner_radius(corner_radius)
 		_console.set_primary_text_color(primary_text_color)
 		_console.set_secondary_text_color(secondary_text_color)
-		_console.set_warning_color(warning_color)
-		_console.set_error_color(error_color)
-		_console.set_signal_color(signal_color)
+		_console.set_warning_color(warning_text_color)
+		_console.set_error_color(error_text_color)
+		_console.set_signal_color(signal_text_color)
 		_console.set_selection_highlight(selection_highlight)
 		
 		for call in _pending_calls: call.call()
@@ -199,7 +199,7 @@ var corner_radius: int = ProjectSettings.get_setting("dev_console/theme/corner_r
 		corner_radius = value
 		_defer_or_call(func(): _console.set_corner_radius(value))
 
-var primary_text_color: Color = ProjectSettings.get_setting("dev_console/theme/primary_text", Color(1, 1, 1, 1.0)):
+var primary_text_color: Color = ProjectSettings.get_setting("dev_console/theme/primary_text", Color(1.0, 1.0, 1.0, 1.0)):
 	set(value):
 		primary_text_color = value
 		_defer_or_call(func(): _console.set_primary_text_color(value))
@@ -209,19 +209,19 @@ var secondary_text_color: Color = ProjectSettings.get_setting("dev_console/theme
 		secondary_text_color = value
 		_defer_or_call(func(): _console.set_secondary_text_color(value))
 
-var warning_color: Color = ProjectSettings.get_setting("dev_console/theme/warning_text", Color(1.0, 0.647, 0, 1.0)):
+var warning_text_color: Color = ProjectSettings.get_setting("dev_console/theme/warning_text", Color(1.0, 0.647, 0.0, 1.0)):
 	set(value):
-		warning_color = value
+		warning_text_color = value
 		_defer_or_call(func(): _console.set_warning_color(value))
 
-var error_color: Color = ProjectSettings.get_setting("dev_console/theme/error_text", Color(1, 0, 0, 1.0)):
+var error_text_color: Color = ProjectSettings.get_setting("dev_console/theme/error_text", Color(1.0, 0.0, 0.0, 1.0)):
 	set(value):
-		error_color = value
+		error_text_color = value
 		_defer_or_call(func(): _console.set_error_color(value))
 
-var signal_color: Color = ProjectSettings.get_setting("dev_console/theme/signal_text", Color(0, 1, 1, 1.0)):
+var signal_text_color: Color = ProjectSettings.get_setting("dev_console/theme/signal_text", Color(0.0, 1.0, 1.0, 1.0)):
 	set(value):
-		signal_color = value
+		signal_text_color = value
 		_defer_or_call(func(): _console.set_signal_color(value))
 
 var selection_highlight: Color = ProjectSettings.get_setting("dev_console/theme/selection_highlight", Color(0.204, 0.204, 0.204, 0.878)):

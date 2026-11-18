@@ -70,11 +70,11 @@ var _header_bg := Color(0.204, 0.204, 0.204, 1.0)
 var _output_bg := Color(0.137, 0.137, 0.137, 1.0)
 var _input_bg := Color(0.114, 0.114, 0.114, 1.0)
 var _corner_radius := 0
-var _primary_text_clr := Color(1, 1, 1, 1.0)
+var _primary_text_clr := Color(1.0, 1.0, 1.0, 1.0)
 var _secondary_text_clr := Color(0.745, 0.745, 0.745, 1.0)
-var _warning_clr := Color(1.0, 0.647, 0, 1.0)
-var _error_clr := Color(1, 0, 0, 1.0)
-var _signal_clr := Color(0, 1, 1, 1.0)
+var _warning_clr := Color(1.0, 0.647, 0.0, 1.0)
+var _error_clr := Color(1.0, 0.0, 0.0, 1.0)
+var _signal_clr := Color(0.0, 1.0, 1.0, 1.0)
 var _selection_highlight := Color(0.204, 0.204, 0.204, 0.878)
 
 var _sb_btn_normal: StyleBoxFlat

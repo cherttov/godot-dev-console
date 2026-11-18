@@ -39,7 +39,7 @@ var PLUGIN_SETTINGS := {
 		"info": {"type": TYPE_INT, "hint": PROPERTY_HINT_RANGE, "hint_string": "0,6,1"}
 	},
 	"dev_console/theme/primary_text": {
-		"default": Color(1, 1, 1, 1.0),
+		"default": Color(1.0, 1.0, 1.0, 1.0),
 		"info": {"type": TYPE_COLOR}
 	},
 	"dev_console/theme/secondary_text": {
@@ -47,15 +47,15 @@ var PLUGIN_SETTINGS := {
 		"info": {"type": TYPE_COLOR}
 	},
 	"dev_console/theme/warning_text": {
-		"default": Color(1.0, 0.647, 0, 1.0),
+		"default": Color(1.0, 0.647, 0.0, 1.0),
 		"info": {"type": TYPE_COLOR}
 	},
 	"dev_console/theme/error_text": {
-		"default": Color(1, 0, 0, 1.0),
+		"default": Color(1.0, 0.0, 0.0, 1.0),
 		"info": {"type": TYPE_COLOR}
 	},
 	"dev_console/theme/signal_text": {
-		"default": Color(0, 1, 1, 1.0),
+		"default": Color(0.0, 1.0, 1.0, 1.0),
 		"info": {"type": TYPE_COLOR}
 	},
 	"dev_console/theme/selection_highlight": {
