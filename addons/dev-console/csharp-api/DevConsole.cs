@@ -296,17 +296,6 @@ public static class DevConsole
 		set => GetConsole()?.Set("output_background", value);
 	}
 
-	public static Color SelectionHighlight
-	{
-		get
-		{
-			var console = GetConsole();
-			if (console != null) return console.Get("selection_highlight").AsColor();
-			return ProjectSettings.GetSetting("dev_console/theme/selection_highlight", new Color(0.204f, 0.204f, 0.204f, 0.878f)).AsColor();
-		}
-		set => GetConsole()?.Set("selection_highlight", value);
-	}
-
 	public static Color InputBackground
 	{
 		get
@@ -316,6 +305,83 @@ public static class DevConsole
 			return ProjectSettings.GetSetting("dev_console/theme/input_background", new Color(0.114f, 0.114f, 0.114f, 1.0f)).AsColor();
 		}
 		set => GetConsole()?.Set("input_background", value);
+	}
+
+	public static int CornerRadius
+	{
+		get
+		{
+			var console = GetConsole();
+			if (console != null) return console.Get("corner_radius").AsInt16();
+			return ProjectSettings.GetSetting("dev_console/theme/corner_radius", 0).AsInt16();
+		}
+		set => GetConsole()?.Set("corner_radius", value);
+	}
+
+	public static Color PrimaryTextColor
+	{
+		get
+		{
+			var console = GetConsole();
+			if (console != null) return console.Get("primary_text_color").AsColor();
+			return ProjectSettings.GetSetting("dev_console/theme/primary_text", new Color(1f, 1f, 1f, 1f)).AsColor();
+		}
+		set => GetConsole()?.Set("primary_text_color", value);
+	}
+
+	public static Color SecondaryTextColor
+	{
+		get
+		{
+			var console = GetConsole();
+			if (console != null) return console.Get("secondary_text_color").AsColor();
+			return ProjectSettings.GetSetting("dev_console/theme/secondary_text", new Color(0.745f, 0.745f, 0.745f, 1f)).AsColor();
+		}
+		set => GetConsole()?.Set("secondary_text_color", value);
+	}
+
+	public static Color WarningTextColor
+	{
+		get
+		{
+			var console = GetConsole();
+			if (console != null) return console.Get("warning_text_color").AsColor();
+			return ProjectSettings.GetSetting("dev_console/theme/warning_text", new Color(1f, 0.647f, 0f, 1f)).AsColor();
+		}
+		set => GetConsole()?.Set("warning_text_color", value);
+	}
+
+	public static Color ErrorColor
+	{
+		get
+		{
+			var console = GetConsole();
+			if (console != null) return console.Get("error_text_color").AsColor();
+			return ProjectSettings.GetSetting("dev_console/theme/error_text", new Color(1f, 0f, 0f, 1f)).AsColor();
+		}
+		set => GetConsole()?.Set("error_text_color", value);
+	}
+
+	public static Color SignalTextColor
+	{
+		get
+		{
+			var console = GetConsole();
+			if (console != null) return console.Get("signal_text_color").AsColor();
+			return ProjectSettings.GetSetting("dev_console/theme/signal_text", new Color(0f, 1f, 1f, 1f)).AsColor();
+		}
+		set => GetConsole()?.Set("signal_text_color", value);
+	}
+
+	public static Color SelectionHighlight
+	{
+		get
+		{
+			var console = GetConsole();
+			if (console != null) return console.Get("selection_highlight").AsColor();
+			return ProjectSettings.GetSetting("dev_console/theme/selection_highlight", new Color(0.204f, 0.204f, 0.204f, 0.878f)).AsColor();
+		}
+		set => GetConsole()?.Set("selection_highlight", value);
 	}
 	#endregion
 }
