@@ -318,59 +318,59 @@ public static class DevConsole
 		set => GetConsole()?.Set("corner_radius", value);
 	}
 
-	public static Color PrimaryTextColor
+	public static Color PrimaryText
 	{
 		get
 		{
 			var console = GetConsole();
-			if (console != null) return console.Get("primary_text_color").AsColor();
+			if (console != null) return console.Get("primary_text").AsColor();
 			return ProjectSettings.GetSetting("dev_console/theme/primary_text", new Color(1f, 1f, 1f, 1f)).AsColor();
 		}
-		set => GetConsole()?.Set("primary_text_color", value);
+		set => GetConsole()?.Set("primary_text", value);
 	}
 
-	public static Color SecondaryTextColor
+	public static Color SecondaryText
 	{
 		get
 		{
 			var console = GetConsole();
-			if (console != null) return console.Get("secondary_text_color").AsColor();
+			if (console != null) return console.Get("secondary_text").AsColor();
 			return ProjectSettings.GetSetting("dev_console/theme/secondary_text", new Color(0.745f, 0.745f, 0.745f, 1f)).AsColor();
 		}
-		set => GetConsole()?.Set("secondary_text_color", value);
+		set => GetConsole()?.Set("secondary_text", value);
 	}
 
-	public static Color WarningTextColor
+	public static Color WarningText
 	{
 		get
 		{
 			var console = GetConsole();
-			if (console != null) return console.Get("warning_text_color").AsColor();
+			if (console != null) return console.Get("warning_text").AsColor();
 			return ProjectSettings.GetSetting("dev_console/theme/warning_text", new Color(1f, 0.647f, 0f, 1f)).AsColor();
 		}
-		set => GetConsole()?.Set("warning_text_color", value);
+		set => GetConsole()?.Set("warning_text", value);
 	}
 
-	public static Color ErrorColor
+	public static Color ErrorText
 	{
 		get
 		{
 			var console = GetConsole();
-			if (console != null) return console.Get("error_text_color").AsColor();
+			if (console != null) return console.Get("error_text").AsColor();
 			return ProjectSettings.GetSetting("dev_console/theme/error_text", new Color(1f, 0f, 0f, 1f)).AsColor();
 		}
-		set => GetConsole()?.Set("error_text_color", value);
+		set => GetConsole()?.Set("error_text", value);
 	}
 
-	public static Color SignalTextColor
+	public static Color SignalText
 	{
 		get
 		{
 			var console = GetConsole();
-			if (console != null) return console.Get("signal_text_color").AsColor();
+			if (console != null) return console.Get("signal_text").AsColor();
 			return ProjectSettings.GetSetting("dev_console/theme/signal_text", new Color(0f, 1f, 1f, 1f)).AsColor();
 		}
-		set => GetConsole()?.Set("signal_text_color", value);
+		set => GetConsole()?.Set("signal_text", value);
 	}
 
 	public static Color SelectionHighlight
