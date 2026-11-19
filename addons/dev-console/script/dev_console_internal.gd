@@ -76,6 +76,10 @@ var _warning_clr := Color(1.0, 0.647, 0.0, 1.0)
 var _error_clr := Color(1.0, 0.0, 0.0, 1.0)
 var _signal_clr := Color(0.0, 1.0, 1.0, 1.0)
 var _selection_highlight := Color(0.204, 0.204, 0.204, 0.878)
+var _scrollbar_grabber_corner_radius := 0
+var _scrollbar_bg := Color(0.0, 0.0, 0.0, 0.1)
+var _scrollbar_grabber_normal := Color(0.4, 0.4, 0.4, 0.6)
+var _scrollbar_grabber_hover := Color(0.4, 0.4, 0.4, 0.8)
 
 var _sb_btn_normal: StyleBoxFlat
 var _sb_btn_hover: StyleBoxFlat
@@ -84,6 +88,9 @@ var _sb_header_bg: StyleBoxFlat
 var _sb_output_bg: StyleBoxFlat
 var _sb_input_bg: StyleBoxFlat
 var _sb_resize_anchor: StyleBoxFlat
+var _sb_scroll: StyleBoxFlat
+var _sb_grabber: StyleBoxFlat
+var _sb_grabber_hl: StyleBoxFlat
 
 # ============ Init ============
 func _ready() -> void:
@@ -509,6 +516,27 @@ func set_selection_highlight(value: Color) -> void:
 		control.theme.set_color("selection_color", "LineEdit", value)
 		control.theme.set_color("selection_color", "RichTextLabel", value)
 
+func set_scrollbar_grabber_corner_radius(value: int) -> void:
+	_scrollbar_grabber_corner_radius = maxi(value, 0)
+	for sb in [_sb_grabber, _sb_grabber_hl]:
+		if sb:
+			sb.corner_radius_top_left = _scrollbar_grabber_corner_radius
+			sb.corner_radius_top_right = _scrollbar_grabber_corner_radius
+			sb.corner_radius_bottom_right = _scrollbar_grabber_corner_radius
+			sb.corner_radius_bottom_left = _scrollbar_grabber_corner_radius
+
+func set_scrollbar_background(value: Color) -> void:
+	_scrollbar_bg = value
+	if _sb_scroll: _sb_scroll.bg_color = value
+
+func set_scrollbar_grabber_normal(value: Color) -> void:
+	_scrollbar_grabber_normal = value
+	if _sb_grabber: _sb_grabber.bg_color = value
+
+func set_scrollbar_grabber_hover(value: Color) -> void:
+	_scrollbar_grabber_hover = value
+	if _sb_grabber_hl: _sb_grabber_hl.bg_color = value
+
 # ============ Helpers ============
 func _focus_input(clear: bool = false) -> void:
 	if clear:
@@ -756,25 +784,25 @@ func _generate_theme() -> Theme:
 	theme.set_stylebox("normal", "LineEdit", _sb_input_bg)
 	
 	# VScrollBar Style
-	var sb_scroll := StyleBoxFlat.new()
-	sb_scroll.bg_color = Color(0, 0, 0, 0.1)
-	sb_scroll.content_margin_left = 4.0
-	sb_scroll.content_margin_right = 4.0
-	theme.set_stylebox("scroll", "VScrollBar", sb_scroll)
-	theme.set_stylebox("scroll_focus", "VScrollBar", sb_scroll)
+	_sb_scroll = StyleBoxFlat.new()
+	_sb_scroll.bg_color = _scrollbar_bg
+	_sb_scroll.content_margin_left = 4.0
+	_sb_scroll.content_margin_right = 4.0
+	theme.set_stylebox("scroll", "VScrollBar", _sb_scroll)
+	theme.set_stylebox("scroll_focus", "VScrollBar", _sb_scroll)
 	
-	var sb_grabber := StyleBoxFlat.new()
-	sb_grabber.bg_color = Color(0.4, 0.4, 0.4, 0.6)
-	sb_grabber.corner_radius_top_left = 0
-	sb_grabber.corner_radius_top_right = 0
-	sb_grabber.corner_radius_bottom_right = 0
-	sb_grabber.corner_radius_bottom_left = 0
-	theme.set_stylebox("grabber", "VScrollBar", sb_grabber)
+	_sb_grabber = StyleBoxFlat.new()
+	_sb_grabber.bg_color = Color(0.4, 0.4, 0.4, 0.6)
+	_sb_grabber.corner_radius_top_left = _scrollbar_grabber_corner_radius
+	_sb_grabber.corner_radius_top_right = _scrollbar_grabber_corner_radius
+	_sb_grabber.corner_radius_bottom_right = _scrollbar_grabber_corner_radius
+	_sb_grabber.corner_radius_bottom_left = _scrollbar_grabber_corner_radius
+	theme.set_stylebox("grabber", "VScrollBar", _sb_grabber)
 
-	var sb_grabber_hl := sb_grabber.duplicate()
-	sb_grabber_hl.bg_color = Color(0.4, 0.4, 0.4, 0.8)
-	theme.set_stylebox("grabber_highlight", "VScrollBar", sb_grabber_hl)
-	theme.set_stylebox("grabber_pressed", "VScrollBar", sb_grabber_hl)
+	_sb_grabber_hl = _sb_grabber.duplicate()
+	_sb_grabber_hl.bg_color = _scrollbar_grabber_hover
+	theme.set_stylebox("grabber_highlight", "VScrollBar", _sb_grabber_hl)
+	theme.set_stylebox("grabber_pressed", "VScrollBar", _sb_grabber_hl)
 	
 	# RichTextLabel Style
 	theme.set_color("selection_color", "RichTextLabel", _selection_highlight)

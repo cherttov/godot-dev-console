@@ -61,6 +61,22 @@ var PLUGIN_SETTINGS := {
 	"dev_console/theme/selection_highlight": {
 		"default": Color(0.204, 0.204, 0.204, 0.878),
 		"info": {"type": TYPE_COLOR}
+	},
+	"dev_console/theme/scrollbar_grabber_corner_radius": {
+		"default": 0,
+		"info": {"type": TYPE_INT, "hint": PROPERTY_HINT_RANGE, "hint_string": "0, 6, 1"}
+	},
+	"dev_console/theme/scrollbar_background": {
+		"default": Color(0.0, 0.0, 0.0, 0.1),
+		"info": {"type": TYPE_COLOR}
+	},
+	"dev_console/theme/scrollbar_grabber_normal": {
+		"default": Color(0.4, 0.4, 0.4, 0.6),
+		"info": {"type": TYPE_COLOR}
+	},
+	"dev_console/theme/scrollbar_grabber_hover": {
+		"default": Color(0.4, 0.4, 0.4, 0.8),
+		"info": {"type": TYPE_COLOR}
 	}
 }
 

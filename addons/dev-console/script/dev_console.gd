@@ -42,6 +42,10 @@ func _ready() -> void:
 		_console.set_error_color(error_text)
 		_console.set_signal_color(signal_text)
 		_console.set_selection_highlight(selection_highlight)
+		_console.set_scrollbar_grabber_corner_radius(scrollbar_grabber_corner_radius)
+		_console.set_scrollbar_background(scrollbar_background)
+		_console.set_scrollbar_grabber_normal(scrollbar_grabber_normal)
+		_console.set_scrollbar_grabber_hover(scrollbar_grabber_hover)
 		
 		for call in _pending_calls: call.call()
 		_pending_calls.clear()
@@ -228,3 +232,23 @@ var selection_highlight: Color = ProjectSettings.get_setting("dev_console/theme/
 	set(value):
 		selection_highlight = value
 		_defer_or_call(func(): _console.set_selection_highlight(value))
+
+var scrollbar_grabber_corner_radius: int = ProjectSettings.get_setting("dev_console/theme/scrollbar_grabber_corner_radius", 0):
+	set(value):
+		scrollbar_grabber_corner_radius = value
+		_defer_or_call(func(): _console.set_scrollbar_grabber_corner_radius(value))
+
+var scrollbar_background: Color = ProjectSettings.get_setting("dev_console/theme/scrollbar_background", Color(0.0, 0.0, 0.0, 0.1)):
+	set(value):
+		scrollbar_background = value
+		_defer_or_call(func(): _console.set_scrollbar_background(value))
+
+var scrollbar_grabber_normal: Color = ProjectSettings.get_setting("dev_console/theme/scrollbar_grabber_normal", Color(0.4, 0.4, 0.4, 0.6)):
+	set(value):
+		scrollbar_grabber_normal = value
+		_defer_or_call(func(): _console.set_scrollbar_grabber_normal(value))
+
+var scrollbar_grabber_hover: Color = ProjectSettings.get_setting("dev_console/theme/scrollbar_grabber_hover", Color(0.4, 0.4, 0.4, 0.8)):
+	set(value):
+		scrollbar_grabber_hover = value
+		_defer_or_call(func(): _console.set_scrollbar_grabber_hover(value))
